@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import supabase from '@/config/supabase';
 
 interface Counter {
@@ -13,12 +14,12 @@ interface Counter {
   created_at: string;
 }
 
-
 const CounterPage: React.FC = () => {
   const [counters, setCounters] = useState<Counter[]>([]);
-
   const [loading, setLoading] = useState(true);
-
+  const [clickCount, setClickCount] = useState(0);
+  const [expandedCounters, setExpandedCounters] = useState<Set<number>>(new Set());
+  const router = useRouter();
 
   // Fetch counters from Supabase
   useEffect(() => {
@@ -44,17 +45,46 @@ const CounterPage: React.FC = () => {
     }
   };
 
-  
+  const handleSecretClick = () => {
+    const newClickCount = clickCount + 1;
+    setClickCount(newClickCount);
+
+    if (newClickCount === 5) {
+      router.push('/counter');
+      setClickCount(0);
+    }
+
+    setTimeout(() => {
+      setClickCount(0);
+    }, 3000);
+  };
+
+  const toggleCounterExpansion = (counterId: number) => {
+    const newExpanded = new Set(expandedCounters);
+    if (newExpanded.has(counterId)) {
+      newExpanded.delete(counterId);
+    } else {
+      newExpanded.add(counterId);
+    }
+    setExpandedCounters(newExpanded);
+  };
 
   const getCounterColor = (current: number, goal: number) => {
     if (current >= goal) {
-      return 'bg-green-100 border-green-500 text-green-800';
+      return 'bg-green-50 border-green-400 hover:bg-green-100';
     }
     const progress = current / goal;
     if (progress >= 0.8) {
-      return 'bg-yellow-100 border-yellow-500 text-yellow-800';
+      return 'bg-yellow-50 border-yellow-400 hover:bg-yellow-100';
     }
-    return 'bg-blue-100 border-blue-500 text-blue-800';
+    return 'bg-blue-50 border-blue-400 hover:bg-blue-100';
+  };
+
+  const getProgressColor = (current: number, goal: number) => {
+    if (current >= goal) return 'bg-green-500';
+    const progress = current / goal;
+    if (progress >= 0.8) return 'bg-yellow-500';
+    return 'bg-blue-500';
   };
 
   const getProgressPercentage = (current: number, goal: number) => {
@@ -63,75 +93,107 @@ const CounterPage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-xl text-gray-600">Loading counters...</div>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+        <div className="text-lg sm:text-xl text-gray-600">Loading counters...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-     
-      <div className="max-w-4xl mx-auto px-4">
-
-        
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {counters.map((counter) => (
-              <div
-              key={counter.id}
-              className={`rounded-lg border-2 p-6 transition-all duration-300 ${getCounterColor(
-                counter.current_value,
-                counter.goal_value
-              )}`}
-            >
-              <div className="flex justify-between items-start mb-3">
-                <h3 className="text-lg font-semibold">{counter.title}</h3>
-               
-              </div>
-              
-              
-              {counter.description && (
-                <p className="text-sm opacity-80 mb-4">{counter.description}</p>
-              )}
-
-              <div className="mb-4">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-2xl font-bold">
-                    {counter.current_value}
-                  </span>
-                  <span className="text-sm">
-                    / {counter.goal_value} {counter.unit}
-                  </span>
-                </div>
-                
-                <div className="w-full bg-white bg-opacity-50 rounded-full h-2">
-                  <div
-                    className="bg-current h-2 rounded-full transition-all duration-300"
-                    style={{
-                      width: `${getProgressPercentage(counter.current_value, counter.goal_value)}%`
-                    }}
-                  ></div>
-                </div>
-                
-                <div className="text-right text-xs mt-1">
-                  {getProgressPercentage(counter.current_value, counter.goal_value).toFixed(1)}%
-                </div>
-              </div>
-
-             
-
-              {counter.current_value >= counter.goal_value && (
-                <div className="mt-3 text-center">
-                  <span className="inline-block bg-white bg-opacity-70 px-3 py-1 rounded-full text-sm font-medium">
-                    🎉 Goal Achieved!
-                  </span>
-                </div>
-              )}
-            </div>
-          ))}
+    <div className="min-h-screen bg-gray-50 py-4 sm:py-6 lg:py-8">
+      {/* Secret clickable header */}
+      <div className="text-center mb-6 sm:mb-8 px-4">
+        <div 
+          onClick={handleSecretClick}
+          className="inline-block cursor-pointer select-none"
+        >
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-800">Goal's Status</h1>
         </div>
+      </div>
+     
+      <div className="max-w-6xl mx-auto px-3 sm:px-4 lg:px-6">
+        {counters.length === 0 ? (
+          <div className="text-center py-12">
+            <p className="text-gray-500 text-base sm:text-lg">No counters found</p>
+          </div>
+        ) : (
+          <div className="space-y-2 sm:space-y-3">
+            {counters.map((counter) => (
+              <div
+                key={counter.id}
+                className={`rounded-lg border-2 transition-all duration-200 cursor-pointer ${getCounterColor(
+                  counter.current_value,
+                  counter.goal_value
+                )}`}
+                onClick={() => toggleCounterExpansion(counter.id)}
+              >
+                {/* Main counter line */}
+                <div className="p-3 sm:p-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+                    {/* Title and Value */}
+                    <div className="flex items-center justify-between sm:justify-start flex-1 min-w-0">
+                      <h3 className="text-sm sm:text-base lg:text-lg font-semibold truncate mr-2 sm:mr-4">
+                        {counter.title}
+                      </h3>
+                      <div className="flex items-center gap-1">
+                        <span className="text-lg sm:text-xl lg:text-2xl font-bold">
+                          {counter.current_value}
+                        </span>
+                        <span className="text-xs sm:text-sm text-gray-600">
+                          /{counter.goal_value} {counter.unit}
+                        </span>
+                      </div>
+                    </div>
 
-       
+                    {/* Progress Bar */}
+                    <div className="flex-1 sm:flex-2 max-w-full sm:max-w-xs lg:max-w-sm">
+                      <div className="w-full bg-white bg-opacity-70 rounded-full h-2 sm:h-3">
+                        <div
+                          className={`h-2 sm:h-3 rounded-full transition-all duration-300 ${getProgressColor(
+                            counter.current_value,
+                            counter.goal_value
+                          )}`}
+                          style={{
+                            width: `${getProgressPercentage(counter.current_value, counter.goal_value)}%`
+                          }}
+                        ></div>
+                      </div>
+                    </div>
+
+                    {/* Percentage and Status */}
+                    <div className="flex items-center justify-between sm:justify-end gap-2 sm:gap-3">
+                      <span className="text-xs sm:text-sm font-medium">
+                        {getProgressPercentage(counter.current_value, counter.goal_value).toFixed(1)}%
+                      </span>
+                      {counter.current_value >= counter.goal_value && (
+                        <span className="text-xs sm:text-sm bg-white bg-opacity-70 px-2 py-1 rounded-full font-medium">
+                          🎉
+                        </span>
+                      )}
+                      {/* Expand indicator */}
+                      {counter.description && (
+                        <span className="text-xs text-gray-500 transform transition-transform duration-200 ml-1">
+                          {expandedCounters.has(counter.id) ? '▲' : '▼'}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Expandable description */}
+                {counter.description && expandedCounters.has(counter.id) && (
+                  <div className="px-3 sm:px-4 pb-3 sm:pb-4 pt-0">
+                    <div className="border-t border-white border-opacity-50 pt-2 sm:pt-3">
+                      <p className="text-xs sm:text-sm text-gray-700 leading-relaxed">
+                        {counter.description}
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
