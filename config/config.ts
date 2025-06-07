@@ -1,40 +1,54 @@
-// Add this temporarily to debug the issue
-console.log('Environment variables check:');
-console.log('FIREBASE_ADMIN_PRIVATE_KEY exists:', !!process.env.FIREBASE_ADMIN_PRIVATE_KEY);
-console.log('FIREBASE_ADMIN_CLIENT_EMAIL exists:', !!process.env.FIREBASE_ADMIN_CLIENT_EMAIL);
-console.log('NEXT_PUBLIC_FIREBASE_PROJECT_ID exists:', !!process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID);
-
 export const serverConfig = {
-  cookieName: process.env.AUTH_COOKIE_NAME!,
+  cookieName: 'AuthToken',
   cookieSignatureKeys: [
-    process.env.AUTH_COOKIE_SIGNATURE_KEY_CURRENT!, 
-    process.env.AUTH_COOKIE_SIGNATURE_KEY_PREVIOUS!
+    'secret1', 
+    'secret2'
   ],
   cookieSerializeOptions: {
     path: "/",
     httpOnly: true,
-    secure: process.env.USE_SECURE_COOKIES === "true",
+    secure: false, // was USE_SECURE_COOKIES=false
     sameSite: "lax" as const,
     maxAge: 12 * 60 * 60 * 24 * 1000,
   },
   serviceAccount: {
-    projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID!,
-    clientEmail: process.env.FIREBASE_ADMIN_CLIENT_EMAIL!,
-    privateKey: (() => {
-      const key = process.env.FIREBASE_ADMIN_PRIVATE_KEY;
-      if (!key) {
-        console.error('FIREBASE_ADMIN_PRIVATE_KEY is not defined');
-        return '';
-      }
-      return key.replace(/\\n/g, '\n');
-    })(),
+    projectId: 'reboostify-f18db',
+    clientEmail: 'firebase-adminsdk-9ghxm@reboostify-f18db.iam.gserviceaccount.com',
+    privateKey: `-----BEGIN PRIVATE KEY-----
+MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCrYQiC62t+nPkE
+8FDpJABTtekwOCS8XRG4iyL37ipmKS0cx4rN4jxC37qmZR2n1IONdg3H0S7P1xv3
+oq3W7OHxG8LnXkYOoJyuqNQahWKMJfaLcjGWo4k+Gj5Oj1tUgBSCLMoZvXuf/2RY
+8DsQR88johGLrmdbLNRVtGl426L0y0rY1WH0UD8ZbW9l9HB8mXTuS6AuiiAbvfqw
+kxnLjhb5ORzSAy9ee21PEMEbhlRdgdz00oZL7zMMqYhnhkW5W1XUN6wpjLZS3Hkj
+Tg73/YI4raGi/sYWyacqIY7M//7ecu1J0Xs4YiMqNHi2zHFeSpbhVLsxvWJ3ZCoW
+9U8FzTMBAgMBAAECggEACZHQA1t486d5QjzXD8WqXQJF5KLl7jy2Lhta1wROCslW
+0woTZp6w5b0Pc5Ym20XDGMWUTGmSVxm4XpIPafZtQWTe88NwXwW56gjUWyzCjXfb
+Nfso6LP2CGk3vHRF0cibHI+6s0hA3HTK2iqD6ctQtjkpCKcy70ToEGcUEqMVDN0r
+ytvIaA8Z7nukmuT+0NbIWCSdZoxfM28jYroJcEzmEKa2scv+0RFoGfQ2cQMHU9La
+Hi5CQLaKT9snlRPGoWj2EIplOj8+Axg5403/FamqDtCm6Ah9gDXLjP36LYYC1jjt
+2RDqliq8CRbQwlamsBUhurAT/6fMXmpLFAW+auX4gQKBgQDRu6buXmqnONoP3trT
+Q7nAWOBfZAwzbEk8cJseWRtAiKCK1Bv6lBgnP1Yn5fZ2sGe/2x6qL3F5+JZB3z1Z
+bM13yYniS41+V7EZvxPc+NH4qqJMWFsT5oZ9IzV0jmpvwdv9+mlOej0hAmSMZMGf
+lyy2clweVuvtY7qvjGZIUYUMMQKBgQDRL2ZByehkYnEWzpZCU8yzJ6CpHgiymfTF
+9FFffnUM91g4+TPwVdPIyC2TodG9XgpXyk/4BnhDxXLErgkTHGs02wrYRJaDVX/h
+Huj8Qp/JdcpLajs3THftSTzRj68ISs+pz3DfnJQnEa6QtCkJwqb3bSF9Akl2mdL/
+VBx6rfVv0QKBgCZ4Sh1M+jkkB3ODyBWaRZcPdlBo9If2I9TPPtSpOYNzzCbK0zr6
+MRf52R7GYpfQsacSVSSYQTNDMqRwgztE5sdDE2SLwS9cfGKhls4gYbs/6TchucsD
+rMWFUMfJW6KWJ3kFlo1LhKzqWHEcBhv0ycHJZjY2cV4Avfx3P0eilEnxAoGAUPpC
+YZFhzwp0sNmEPWTnRys9/HnN8CW9Jaxwm8D+WuidVGDUBGOVOpKTYiUwZlgzNMzy
+rBcFE2cqCI0+ohFMRwfMaPAUO/8rI+CtXIoGBRz+FLeo+L03Z7oEOzOeFF2xihDt
+pwKcL4uewhGcGVUrAXlTj2sFOU5O6dyLscoJyyECgYEAkzjE1cY+HnnZyp+oUGLK
+K8RikyOlVEoHFgCAxlcl3xBgWcaNBGYopGM5z8I0us4Q33mFak9Fhp625vZq2rWk
+2u3hEF7mhz9W01WzuwdtqELzWS56vg17icnc/JMSBlfK5T1hrWAqK7/qypRQnTKv
+U2rCfjvtqmSGBAXZyc/wjkI=
+-----END PRIVATE KEY-----`,
   }
 };
 
 export const clientConfig = {
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID!,
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY!,
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN!,
-  databaseURL: process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL!,
-  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID!
+  projectId: 'reboostify-f18db',
+  apiKey: 'AIzaSyDBph54Brl4-HJTRW5S0vJlZMM-nc-nkdg',
+  authDomain: 'reboostify-f18db.firebaseapp.com',
+  databaseURL: 'reboostify-f18db.firebaseio.com',
+  messagingSenderId: '870800978453'
 };
