@@ -8,7 +8,7 @@ import { Group } from "three";
 // Orbit Controls Hook with Touch Support
 function useOrbitControls() {
   const { camera, gl } = useThree();
-  const controlsRef = useRef();
+const controlsRef = useRef<any>(null);
   
   useEffect(() => {
     let isDragging = false;
