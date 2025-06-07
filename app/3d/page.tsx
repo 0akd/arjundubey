@@ -5,28 +5,48 @@ import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { useGLTF } from "@react-three/drei";
 import { Group } from "three";
 
+interface ModelData {
+  path: string;
+  title: string;
+  artist: string;
+  year: string;
+  position: [number, number, number];
+  rotation: [number, number, number];
+  scale: [number, number, number];
+  camera: {
+    position: [number, number, number];
+    fov: number;
+  };
+  lighting: {
+    ambient: { intensity: number };
+    directional: { position: [number, number, number]; intensity: number };
+    pointLight1: { position: [number, number, number]; color: string; intensity: number };
+    pointLight2: { position: [number, number, number]; color: string; intensity: number };
+  };
+}
+
 // Orbit Controls Hook with Touch Support
 function useOrbitControls() {
   const { camera, gl } = useThree();
-const controlsRef = useRef<any>(null);
+  const controlsRef = useRef<any>(null);
   
   useEffect(() => {
     let isDragging = false;
     let previousPosition = { x: 0, y: 0 };
-    let spherical = { radius: 50, phi: Math.PI / 2, theta: 0 };
+    const spherical = { radius: 50, phi: Math.PI / 2, theta: 0 };
     let initialPinchDistance = 0;
     let isPinching = false;
     
     // Get position from mouse or touch event
-    const getEventPosition = (event) => {
-      if (event.touches && event.touches.length > 0) {
+    const getEventPosition = (event: MouseEvent | TouchEvent) => {
+      if ('touches' in event && event.touches.length > 0) {
         return { x: event.touches[0].clientX, y: event.touches[0].clientY };
       }
-      return { x: event.clientX, y: event.clientY };
+      return { x: (event as MouseEvent).clientX, y: (event as MouseEvent).clientY };
     };
     
     // Get distance between two touch points
-    const getPinchDistance = (touches) => {
+    const getPinchDistance = (touches: TouchList) => {
       const dx = touches[0].clientX - touches[1].clientX;
       const dy = touches[0].clientY - touches[1].clientY;
       return Math.sqrt(dx * dx + dy * dy);
@@ -43,13 +63,13 @@ const controlsRef = useRef<any>(null);
     };
     
     // Mouse Events
-    const handleMouseDown = (event) => {
+    const handleMouseDown = (event: MouseEvent) => {
       isDragging = true;
       previousPosition = getEventPosition(event);
       event.preventDefault();
     };
     
-    const handleMouseMove = (event) => {
+    const handleMouseMove = (event: MouseEvent) => {
       if (!isDragging) return;
       
       const currentPosition = getEventPosition(event);
@@ -65,13 +85,13 @@ const controlsRef = useRef<any>(null);
       event.preventDefault();
     };
     
-    const handleMouseUp = (event) => {
+    const handleMouseUp = (event: MouseEvent) => {
       isDragging = false;
       event.preventDefault();
     };
     
     // Touch Events
-    const handleTouchStart = (event) => {
+    const handleTouchStart = (event: TouchEvent) => {
       event.preventDefault();
       
       if (event.touches.length === 1) {
@@ -87,7 +107,7 @@ const controlsRef = useRef<any>(null);
       }
     };
     
-    const handleTouchMove = (event) => {
+    const handleTouchMove = (event: TouchEvent) => {
       event.preventDefault();
       
       if (event.touches.length === 1 && isDragging && !isPinching) {
@@ -115,14 +135,14 @@ const controlsRef = useRef<any>(null);
       }
     };
     
-    const handleTouchEnd = (event) => {
+    const handleTouchEnd = (event: TouchEvent) => {
       event.preventDefault();
       isDragging = false;
       isPinching = false;
     };
     
     // Wheel Event for desktop zoom
-    const handleWheel = (event) => {
+    const handleWheel = (event: WheelEvent) => {
       event.preventDefault();
       spherical.radius += event.deltaY * 0.01;
       spherical.radius = Math.max(10, Math.min(100, spherical.radius));
@@ -162,7 +182,7 @@ const controlsRef = useRef<any>(null);
 }
 
 // Model data with paths, info, positioning, and lighting
-const modelData = [
+const modelData: ModelData[] = [
   {
     path: "/scene/scene.gltf",
     title: "Sculpture Alpha",
@@ -179,11 +199,9 @@ const modelData = [
       pointLight2: { position: [5, 5, 5], color: "#e24a90", intensity: 300 }
     }
   },
-  
- 
 ];
 
-function RotatingModel({ modelData }) {
+function RotatingModel({ modelData }: { modelData: ModelData }) {
   const mesh = useRef<Group>(null!);
   const gltf = useGLTF(modelData.path);
 
@@ -205,7 +223,7 @@ function RotatingModel({ modelData }) {
   );
 }
 
-function InteractiveModel({ modelData }) {
+function InteractiveModel({ modelData }: { modelData: ModelData }) {
   const mesh = useRef<Group>(null!);
   const gltf = useGLTF(modelData.path);
   useOrbitControls();
@@ -222,7 +240,10 @@ function InteractiveModel({ modelData }) {
   );
 }
 
-function ModelWindow({ modelData, onClick }) {
+function ModelWindow({ modelData, onClick }: { 
+  modelData: ModelData; 
+  onClick: () => void; 
+}) {
   return (
     <div 
       className="relative bg-white rounded-lg shadow-2xl overflow-hidden transition-all duration-300 hover:shadow-3xl cursor-pointer hover:scale-105"
@@ -288,7 +309,10 @@ function ModelWindow({ modelData, onClick }) {
   );
 }
 
-function PopupViewer({ modelData, onClose }) {
+function PopupViewer({ modelData, onClose }: { 
+  modelData: ModelData; 
+  onClose: () => void; 
+}) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
