@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { authMiddleware, redirectToHome, redirectToLogin } from "next-firebase-auth-edge";
 import { clientConfig, serverConfig } from "./config/config";
 
-const PUBLIC_PATHS = ['/register', '/login','/stats','/'];
+const PUBLIC_PATHS = ['/register', '/login', '/stats', '/'];
+const AUTH_REQUIRED_PATHS = ['/adminblog', '/counter']; // Add your protected routes here
 
 export async function middleware(request: NextRequest) {
   return authMiddleware(request, {
@@ -14,14 +15,14 @@ export async function middleware(request: NextRequest) {
     cookieSerializeOptions: serverConfig.cookieSerializeOptions,
     serviceAccount: serverConfig.serviceAccount,
     handleValidToken: async ({token, decodedToken}, headers) => {
-      if (PUBLIC_PATHS.includes(request.nextUrl.pathname)) {
+      // Redirect authenticated users away from auth pages only
+      if (['/login', '/register'].includes(request.nextUrl.pathname)) {
         return redirectToHome(request);
       }
 
+      // Allow access to all other pages
       return NextResponse.next({
-        request: {
-          headers
-        }
+        headers
       });
     },
     handleInvalidToken: async (reason) => {
@@ -50,5 +51,4 @@ export const config = {
     "/api/login",
     "/api/logout",
   ],
-
 };
