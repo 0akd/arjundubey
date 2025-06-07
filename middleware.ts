@@ -50,4 +50,5 @@ export const config = {
     "/api/login",
     "/api/logout",
   ],
+   runtime: 'edge', 
 };
