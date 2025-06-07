@@ -1,4 +1,4 @@
-const rawPrivateKey = process.env.FIREBASE_PRIVATE_KEY;
+const rawPrivateKey = process.env.FIREBASE_ADMIN_PRIVATE_KEY;
 if (!rawPrivateKey) {
   throw new Error("FIREBASE_PRIVATE_KEY is missing in the environment variables");
 }
