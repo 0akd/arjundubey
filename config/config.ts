@@ -1,3 +1,7 @@
+const rawPrivateKey = process.env.FIREBASE_PRIVATE_KEY;
+if (!rawPrivateKey) {
+  throw new Error("FIREBASE_PRIVATE_KEY is missing in the environment variables");
+}
 export const serverConfig = {
   cookieName: process.env.AUTH_COOKIE_NAME!,
   cookieSignatureKeys: [process.env.AUTH_COOKIE_SIGNATURE_KEY_CURRENT!, process.env.AUTH_COOKIE_SIGNATURE_KEY_PREVIOUS!],
