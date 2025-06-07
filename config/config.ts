@@ -12,12 +12,12 @@ export const serverConfig = {
     sameSite: "lax" as const,
     maxAge: 12 * 60 * 60 * 24,
   },
-  serviceAccount: {
-    projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID!,
-    clientEmail: process.env.FIREBASE_ADMIN_CLIENT_EMAIL!,
-privateKey: process.env.FIREBASE_PRIVATE_KEY!.replace(/\\n/g, '\n'),
-
-  }
+serviceAccount: {
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID!,
+  clientEmail: process.env.FIREBASE_ADMIN_CLIENT_EMAIL!,
+  privateKey: process.env.FIREBASE_ADMIN_PRIVATE_KEY!.replace(/\\n/g, '\n'),
+}
+  
 };
 
 export const clientConfig = {
