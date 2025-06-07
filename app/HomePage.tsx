@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import supabase from '@/config/supabase';
-
+import Model from './3d/sin/page'
 interface Counter {
   id: number;
   title: string;
@@ -110,6 +110,7 @@ const CounterPage: React.FC = () => {
           <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-800">Goal's Status</h1>
         </div>
       </div>
+      <Model/>
      
       <div className="max-w-6xl mx-auto px-3 sm:px-4 lg:px-6">
         {counters.length === 0 ? (
