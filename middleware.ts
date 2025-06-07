@@ -4,8 +4,72 @@ import { clientConfig, serverConfig } from "./config/config";
 
 const PUBLIC_PATHS = ['/register', '/login', '/stats', '/'];
 const AUTH_REQUIRED_PATHS = ['/adminblog', '/counter']; // Add your protected routes here
+const PASSWORD_PROTECTED_PATHS = ['/counter','/adminblog']; // Routes that need password protection
+const PASSWORD_AUTH_PATH = '/password-auth';
+
+// Password protection logic
+function checkPasswordAuth(request: NextRequest): NextResponse | null {
+  const pathname = request.nextUrl.pathname;
+  
+  // Skip password check for public paths, auth endpoints, and password auth page itself
+  if (PUBLIC_PATHS.includes(pathname) || 
+      pathname.startsWith('/api/') || 
+      pathname === PASSWORD_AUTH_PATH) {
+    return null;
+  }
+  
+  // Check if this path requires password protection
+  const requiresPassword = PASSWORD_PROTECTED_PATHS.some(path => pathname.startsWith(path));
+  
+  if (requiresPassword) {
+    // Check for password auth cookie
+    const passwordAuthCookie = request.cookies.get('password_authenticated');
+    const passwordAuthTime = request.cookies.get('password_auth_time');
+    
+    if (!passwordAuthCookie || passwordAuthCookie.value !== 'true') {
+      // Redirect to password auth page
+      const url = new URL(PASSWORD_AUTH_PATH, request.url);
+      url.searchParams.set('redirect', pathname);
+      return NextResponse.redirect(url);
+    }
+    
+    // Check if password auth has expired (24 hours)
+    if (passwordAuthTime) {
+      const authTime = parseInt(passwordAuthTime.value);
+      const now = Date.now();
+      const twentyFourHours = 24 * 60 * 60 * 1000;
+      
+      if (now - authTime > twentyFourHours) {
+        // Password auth expired, redirect to password auth page
+        const url = new URL(PASSWORD_AUTH_PATH, request.url);
+        url.searchParams.set('redirect', pathname);
+        const response = NextResponse.redirect(url);
+        
+        // Clear expired cookies
+        response.cookies.delete('password_authenticated');
+        response.cookies.delete('password_auth_time');
+        
+        return response;
+      }
+    }
+  }
+  
+  return null;
+}
 
 export async function middleware(request: NextRequest) {
+  // First check password protection
+  const passwordAuthResponse = checkPasswordAuth(request);
+  if (passwordAuthResponse) {
+    return passwordAuthResponse;
+  }
+  
+  // Handle password auth endpoint separately (bypass Firebase auth)
+  if (request.nextUrl.pathname === PASSWORD_AUTH_PATH) {
+    return NextResponse.next();
+  }
+  
+  // Then proceed with Firebase auth middleware
   return authMiddleware(request, {
     loginPath: "/api/login",
     logoutPath: "/api/logout",
@@ -50,5 +114,6 @@ export const config = {
     "/((?!_next|api|.*\\.).*)",
     "/api/login",
     "/api/logout",
+    "/password-auth", // Add password auth route to matcher
   ],
 };
