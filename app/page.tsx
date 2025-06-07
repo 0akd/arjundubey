@@ -5,7 +5,8 @@ import { clientConfig, serverConfig } from "../config/config";
 import HomePage from "./HomePage";
 
 export default async function Home() {
-  const tokens = await getTokens(cookies(), {
+  const cookieStore = await cookies();
+  const tokens = await getTokens(cookieStore, {
     apiKey: clientConfig.apiKey,
     cookieName: serverConfig.cookieName,
     cookieSignatureKeys: serverConfig.cookieSignatureKeys,
@@ -16,4 +17,5 @@ export default async function Home() {
     notFound();
   }
 
-  return (<HomePage email={tokens?.decodedToken.email} />);}
+  return (<HomePage email={tokens?.decodedToken.email} />);
+}

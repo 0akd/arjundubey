@@ -12,6 +12,7 @@ const Delete = () => {
   const [post, setPost] = useState<any>({
     title: "",
     description: "",
+    d:"",
   });
 
   useEffect(() => {

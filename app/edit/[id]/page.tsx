@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 interface Task {
   title: string;
   description: string;
+  d:string;
 }
 
 const Edit = () => {
@@ -18,6 +19,7 @@ const Edit = () => {
   const [post, setPost] = useState<Task>({
     title: "",
     description: "",
+    d:"",
   });
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {

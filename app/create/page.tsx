@@ -10,6 +10,7 @@ export default function Create() {
   const [post, setPost] = useState<any>({
     title: "",
     description: "",
+    d:"",
   });
 
   const onChange = (e: any) => {
