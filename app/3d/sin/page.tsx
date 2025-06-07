@@ -1,15 +1,14 @@
 "use client";
 
 import { useRef } from "react";
-import { Canvas, useFrame, useLoader } from "@react-three/fiber";
-import { OrbitControls } from "@react-three/drei";
-import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
+import { Canvas, useFrame } from "@react-three/fiber";
+import { OrbitControls, useGLTF } from "@react-three/drei";
 import { Mesh } from "three";
 
 function MeshComponent() {
   const fileUrl = "/scene/scene.gltf";
   const mesh = useRef<Mesh>(null!);
-  const gltf = useLoader(GLTFLoader, fileUrl);
+  const gltf = useGLTF(fileUrl);
 
   useFrame(() => {
     mesh.current.rotation.y += 0.01;
@@ -29,8 +28,7 @@ export default function Shiba() {
         <OrbitControls />
         <ambientLight />
         <pointLight position={[10, 10, 10]} />
-         <pointLight position={[-10, -10, -10]} color="#48cc90" intensity={5000} />
-            <pointLight position={[10, 10, 10]} color="#36e2e2" intensity={5000} />
+
         <MeshComponent />
       </Canvas>
     </div>
