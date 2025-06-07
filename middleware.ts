@@ -37,7 +37,7 @@ function checkPasswordAuth(request: NextRequest): NextResponse | null {
     if (passwordAuthTime) {
       const authTime = parseInt(passwordAuthTime.value);
       const now = Date.now();
-      const twentyFourHours = 24 * 60 * 60 * 1000;
+      const twentyFourHours = 1000;
       
       if (now - authTime > twentyFourHours) {
         // Password auth expired, redirect to password auth page
