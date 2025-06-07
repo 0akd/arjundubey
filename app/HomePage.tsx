@@ -2,9 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import supabase from '@/config/supabase';
-import { getAuth, signOut } from "firebase/auth";
-import { useRouter } from "next/navigation";
-import { app } from "../firebase";
+
 interface Counter {
   id: number;
   title: string;
@@ -20,7 +18,7 @@ const CounterPage: React.FC = () => {
   const [counters, setCounters] = useState<Counter[]>([]);
 
   const [loading, setLoading] = useState(true);
- const router = useRouter();
+
 
   // Fetch counters from Supabase
   useEffect(() => {
@@ -70,19 +68,10 @@ const CounterPage: React.FC = () => {
       </div>
     );
   }
-async function handleLogout() {
-    await signOut(getAuth(app));
 
-    await fetch("/api/logout");
-
-    router.push("/login");
-  }
   return (
     <div className="min-h-screen bg-gray-50 py-8">
-       <button
-        onClick={handleLogout}
-        className="text-white bg-gray-600 hover:bg-gray-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-primary-800"
-      ></button>
+     
       <div className="max-w-4xl mx-auto px-4">
 
         
