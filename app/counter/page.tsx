@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import supabase from '@/config/supabase';
+import PP from '@/pp'
 
 interface Counter {
   id: number;
@@ -194,6 +195,7 @@ const CounterPage: React.FC = () => {
   }
 
   return (
+     <PP onUnlock={() => console.log('Access granted!')}>
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-4xl mx-auto px-4">
         <div className="mb-8">
@@ -383,6 +385,7 @@ const CounterPage: React.FC = () => {
         )}
       </div>
     </div>
+    </PP>
   );
 };
 

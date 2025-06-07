@@ -17,5 +17,5 @@ export default async function Home() {
     notFound();
   }
 
-  return (<HomePage email={tokens?.decodedToken.email} />);
+  return (<HomePage />);
 }
