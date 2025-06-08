@@ -13,8 +13,10 @@ function CursorTrailCanvas(props: CursorTrailCanvasProps) {
   const refCanvas = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
+    if (!refCanvas.current) return;
+    
     const { cleanUp, renderTrailCursor } = cursorTrail({
-      ref: refCanvas,
+      ref: refCanvas as React.RefObject<HTMLCanvasElement>,
       color: '#0080FF' ,
     });
     renderTrailCursor();
