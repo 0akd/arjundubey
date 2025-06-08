@@ -55,9 +55,9 @@ const AboutSection: React.FC = () => {
 
   return (
     <section className="" id="about">
-      <div className="md:grid md:grid-cols-2 gap-8 items-center py-8  xl:gap-16 sm:py-16 xl:px-16">
+      <div className="items-center ">
     <Image/>
-        <div className="mt-4 px-4 md:mt-0 text-left flex flex-col h-full">
+        <div className="py-8 lg:px-32 sm:px-3 sm:py-16  mt-4 px-4 md:mt-0 text-left flex flex-col h-full">
           <h2 className="text-4xl font-bold  mb-4">About Me</h2>
           <p className="text-base lg:text-lg">
             I am a full stack web developer with a passion for creating

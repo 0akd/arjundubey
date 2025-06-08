@@ -38,7 +38,7 @@ const ThemeChanger = () => {
 
 export default function NavBar() {
   return (
-    <nav className="w-full   border-b  px-4 py-3 transition-colors duration-300">
+    <nav className="w-full   px-4 py-3 transition-colors duration-300">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         {/* Theme toggle on the left */}
         <div className="flex-shrink-0">
