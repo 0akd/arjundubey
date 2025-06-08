@@ -36,9 +36,9 @@ function CursorTrailCanvas(props: CursorTrailCanvasProps) {
 }
 
 // Default export for Next.js page
-export default function CursorTrailPage() {
+export default function CursorTraillCanvas({ className }: CursorTrailCanvasProps) {
   return (
-    <div className="w-full h-screen">
+    <div className="">
       <CursorTrailCanvas 
         className="w-full h-full"
         style={{ position: 'fixed', top: 0, left: 0, pointerEvents: 'none', zIndex: 9999 }}
