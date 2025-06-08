@@ -71,13 +71,13 @@ const CounterPage: React.FC = () => {
 
   const getCounterColor = (current: number, goal: number) => {
     if (current >= goal) {
-      return ' border-green-400 hover:bg-green-100';
+      return ' border-green-400 ';
     }
     const progress = current / goal;
     if (progress >= 0.8) {
-      return ' border-yellow-400 hover:bg-yellow-100';
+      return ' border-yellow-400 ';
     }
-    return ' border-blue-400 hover:bg-blue-100';
+    return ' border-blue-400 ';
   };
 
   const getProgressColor = (current: number, goal: number) => {
