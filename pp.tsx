@@ -60,68 +60,63 @@ const PasswordProtection: React.FC<PasswordProtectionProps> = ({
     }
   }, []);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const checkPassword = (pwd: string) => {
+  if (isBlocked) {
+    setError(`Please wait ${timeRemaining} seconds before trying again.`);
+    return;
+  }
+
+  if (pwd === CORRECT_PASSWORD) {
+    setIsUnlocked(true);
+    setError('');
+    setAttempts(0);
+    localStorage.removeItem('failedAttempts');
+    localStorage.removeItem('blockEndTime');
+    onUnlock?.();
+  } else {
+    const newAttempts = attempts + 1;
+    setAttempts(newAttempts);
+    localStorage.setItem('failedAttempts', newAttempts.toString());
     
-    if (isBlocked) {
-      setError(`Please wait ${timeRemaining} seconds before trying again.`);
-      return;
-    }
-
-    // Input validation
-    if (!/^\d{3}$/.test(password)) {
-      setError('Password must be exactly 3 digits.');
-      return;
-    }
-
-    if (password === CORRECT_PASSWORD) {
-      setIsUnlocked(true);
-      setError('');
-      setAttempts(0);
-      localStorage.removeItem('failedAttempts');
-      localStorage.removeItem('blockEndTime');
-      onUnlock?.();
-    } else {
-      const newAttempts = attempts + 1;
-      setAttempts(newAttempts);
-      localStorage.setItem('failedAttempts', newAttempts.toString());
+    if (newAttempts >= MAX_ATTEMPTS) {
+      const blockEndTime = Date.now() + (BLOCK_DURATION * 1000);
+      localStorage.setItem('blockEndTime', blockEndTime.toString());
+      setIsBlocked(true);
+      setTimeRemaining(BLOCK_DURATION);
+      setError(`Too many failed attempts. Access blocked for ${BLOCK_DURATION} seconds.`);
       
-      if (newAttempts >= MAX_ATTEMPTS) {
-        const blockEndTime = Date.now() + (BLOCK_DURATION * 1000);
-        localStorage.setItem('blockEndTime', blockEndTime.toString());
-        setIsBlocked(true);
-        setTimeRemaining(BLOCK_DURATION);
-        setError(`Too many failed attempts. Access blocked for ${BLOCK_DURATION} seconds.`);
-        
-        const interval = setInterval(() => {
-          const remaining = Math.ceil((blockEndTime - Date.now()) / 1000);
-          if (remaining <= 0) {
-            setIsBlocked(false);
-            setTimeRemaining(0);
-            setAttempts(0);
-            localStorage.removeItem('blockEndTime');
-            localStorage.removeItem('failedAttempts');
-            clearInterval(interval);
-          } else {
-            setTimeRemaining(remaining);
-          }
-        }, 1000);
-      } else {
-        setError(`Incorrect password. ${MAX_ATTEMPTS - newAttempts} attempts remaining.`);
-      }
+      const interval = setInterval(() => {
+        const remaining = Math.ceil((blockEndTime - Date.now()) / 1000);
+        if (remaining <= 0) {
+          setIsBlocked(false);
+          setTimeRemaining(0);
+          setAttempts(0);
+          localStorage.removeItem('blockEndTime');
+          localStorage.removeItem('failedAttempts');
+          clearInterval(interval);
+        } else {
+          setTimeRemaining(remaining);
+        }
+      }, 1000);
+    } else {
+      setError(`Incorrect password. ${MAX_ATTEMPTS - newAttempts} attempts remaining.`);
     }
-    
-    setPassword('');
-  };
+  }
+};
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    // Only allow digits and limit to 3 characters
-    if (/^\d{0,3}$/.test(value)) {
-      setPassword(value);
-      setError('');
+const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const value = e.target.value;
+  // Only allow digits and limit to 3 characters
+  if (/^\d{0,3}$/.test(value)) {
+    setPassword(value);
+    setError('');
+    
+    // Auto-check password when 3 digits are entered
+    if (value.length === 3) {
+      setTimeout(() => checkPassword(value), 100); // Small delay for better UX
     }
-  };
+  }
+};
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     // Prevent common bypass attempts
@@ -165,38 +160,40 @@ const PasswordProtection: React.FC<PasswordProtectionProps> = ({
           <p className="text-gray-600">Enter the 3-digit password to continue</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
-              Password
-            </label>
-            <input
-              id="password"
-              type="password"
-              value={password}
-              onChange={handleInputChange}
-              disabled={isBlocked}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-center text-2xl tracking-widest disabled:bg-gray-100 disabled:cursor-not-allowed"
-              placeholder="•••"
-              maxLength={3}
-              autoComplete="off"
-              autoFocus
-            />
-          </div>
+        <form  className="space-y-6">
+          <div className="space-y-6">
+  <div>
+    <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+      Password
+    </label>
+    <input
+      id="password"
+      type="password"
+      value={password}
+      onChange={handleInputChange}
+      disabled={isBlocked}
+      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-center text-2xl tracking-widest disabled:bg-gray-100 disabled:cursor-not-allowed"
+      placeholder="•••"
+      maxLength={3}
+      autoComplete="off"
+      autoFocus
+    />
+  </div>
 
-          {error && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-3">
-              <p className="text-red-600 text-sm text-center">{error}</p>
-            </div>
-          )}
+  {error && (
+    <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+      <p className="text-red-600 text-sm text-center">{error}</p>
+    </div>
+  )}
 
-          {isBlocked && (
-            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
-              <p className="text-yellow-800 text-sm text-center">
-                Access blocked. Time remaining: {timeRemaining}s
-              </p>
-            </div>
-          )}
+  {isBlocked && (
+    <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+      <p className="text-yellow-800 text-sm text-center">
+        Access blocked. Time remaining: {timeRemaining}s
+      </p>
+    </div>
+  )}
+</div>
 
           <button
             type="submit"
