@@ -13,11 +13,11 @@ const ThemeChanger = () => {
 
   if (!mounted) return null
 
-  const isDark = theme === 'dark'
+  const isDark = theme === 'light'
 
   return (
     <button
-      onClick={() => setTheme(isDark ? 'light' : 'dark')}
+      onClick={() => setTheme(isDark ? 'dark' : 'light')}
       className="relative p-2 rounded-full  transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-blue-500"
     >
       <div className="relative w-5 h-5">
