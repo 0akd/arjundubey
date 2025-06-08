@@ -5,7 +5,7 @@ import Link from "next/link";
 import { motion, useScroll } from "framer-motion";
 
 export interface ExperienceListIconProps {
-  iconRef: RefObject<HTMLElement>;
+  iconRef: RefObject<HTMLElement | null>;
 }
 
 function ShowCaseLiIcon(props: ExperienceListIconProps) {
