@@ -28,6 +28,7 @@ const CounterPage: React.FC = () => {
   const [counters, setCounters] = useState<Counter[]>([]);
   const [showAddForm, setShowAddForm] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [expandedDescriptions, setExpandedDescriptions] = useState<Set<number>>(new Set());
    const router = useRouter();
   const [newCounter, setNewCounter] = useState<NewCounter>({
     title: '',
@@ -46,7 +47,17 @@ const [editForm, setEditForm] = useState<NewCounter>({
   useEffect(() => {
     fetchCounters();
   }, []);
-
+const toggleDescription = (counterId: number) => {
+  setExpandedDescriptions(prev => {
+    const newSet = new Set(prev);
+    if (newSet.has(counterId)) {
+      newSet.delete(counterId);
+    } else {
+      newSet.add(counterId);
+    }
+    return newSet;
+  });
+};
   const fetchCounters = async () => {
     try {
       const { data, error } = await supabase
@@ -370,154 +381,165 @@ async function handleLogout() {
           </div>
         )}
 
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+       <div className="space-y-4">
   {counters.map((counter) => (
     <div
       key={counter.id}
-      className={`rounded-lg border-2 p-6 transition-all duration-300 ${getCounterColor(
-        counter.current_value,
-        counter.goal_value
-      )}`}
+   className={`rounded-lg border-2 p-6 transition-all duration-300 flex items-center justify-between ${getCounterColor(
+  counter.current_value,
+  counter.goal_value
+)}`}
     >
-      {editingCounter?.id === counter.id ? (
-        // Edit Form
-        <form onSubmit={updateCounterDetails} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium mb-1">Title *</label>
-            <input
-              type="text"
-              value={editForm.title}
-              onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
-              className="w-full px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
-              required
-            />
-          </div>
-          
-          <div>
-            <label className="block text-sm font-medium mb-1">Description</label>
-            <textarea
-              value={editForm.description}
-              onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
-              className="w-full px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
-              rows={2}
-            />
-          </div>
+    {editingCounter?.id === counter.id ? (
+  // Edit Form (keep this section as is - it's already good for list mode)
+  <form onSubmit={updateCounterDetails} className="w-full space-y-4">
+    <div>
+      <label className="block text-sm font-medium mb-1">Title *</label>
+      <input
+        type="text"
+        value={editForm.title}
+        onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
+        className="w-full px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+        required
+      />
+    </div>
+    
+    <div>
+      <label className="block text-sm font-medium mb-1">Description</label>
+      <textarea
+        value={editForm.description}
+        onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
+        className="w-full px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+        rows={2}
+      />
+    </div>
 
-          <div className="grid grid-cols-2 gap-2">
-            <div>
-              <label className="block text-sm font-medium mb-1">Goal *</label>
-              <input
-                type="number"
-                value={editForm.goal_value || ''}
-                onChange={(e) => setEditForm({ ...editForm, goal_value: parseInt(e.target.value) || 0 })}
-                className="w-full px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
-                min="1"
-                required
-              />
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium mb-1">Unit</label>
-              <input
-                type="text"
-                value={editForm.unit}
-                onChange={(e) => setEditForm({ ...editForm, unit: e.target.value })}
-                className="w-full px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
-              />
-            </div>
-          </div>
+    <div className="grid grid-cols-2 gap-2">
+      <div>
+        <label className="block text-sm font-medium mb-1">Goal *</label>
+        <input
+          type="number"
+          value={editForm.goal_value || ''}
+          onChange={(e) => setEditForm({ ...editForm, goal_value: parseInt(e.target.value) || 0 })}
+          className="w-full px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+          min="1"
+          required
+        />
+      </div>
+      
+      <div>
+        <label className="block text-sm font-medium mb-1">Unit</label>
+        <input
+          type="text"
+          value={editForm.unit}
+          onChange={(e) => setEditForm({ ...editForm, unit: e.target.value })}
+          className="w-full px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+        />
+      </div>
+    </div>
 
-          <div className="flex space-x-2">
-            <button
-              type="submit"
-              className="flex-1 bg-white bg-opacity-70 hover:bg-opacity-90 px-3 py-1 rounded text-sm font-medium transition-all"
-            >
-              Save
-            </button>
-            <button
-              type="button"
-              onClick={cancelEdit}
-              className="flex-1 bg-white bg-opacity-50 hover:bg-opacity-70 px-3 py-1 rounded text-sm font-medium transition-all"
-            >
-              Cancel
-            </button>
-          </div>
-        </form>
-      ) : (
-        // Normal Counter Display
-        <>
-          <div className="flex justify-between items-start mb-3">
-            <h3 className="text-lg font-semibold">{counter.title}</h3>
-            <div className="flex space-x-1">
-              <button
-                onClick={() => startEditCounter(counter)}
-                className="text-blue-600 hover:text-blue-800 text-sm font-medium"
-                title="Edit counter"
-              >
-                ✏️
-              </button>
-              <button
-                onClick={() => deleteCounter(counter.id)}
-                className="text-red-500 hover:text-red-700 text-sm"
-                title="Delete counter"
-              >
-                ×
-              </button>
-            </div>
-          </div>
-          
-          {counter.description && (
-            <p className="text-sm opacity-80 mb-4">{counter.description}</p>
-          )}
+    <div className="flex space-x-2">
+      <button
+        type="submit"
+        className="flex-1 bg-white bg-opacity-70 hover:bg-opacity-90 px-3 py-1 rounded text-sm font-medium transition-all"
+      >
+        Save
+      </button>
+      <button
+        type="button"
+        onClick={cancelEdit}
+        className="flex-1 bg-white bg-opacity-50 hover:bg-opacity-70 px-3 py-1 rounded text-sm font-medium transition-all"
+      >
+        Cancel
+      </button>
+    </div>
+  </form>
+) : (
+  // Horizontal Counter Display for List Mode
+  <>
+    {/* Left side - Counter info */}
+    <div className="flex-1 min-w-0">
+      <div className="flex items-center justify-between mb-2">
+        <h3 className="text-lg font-semibold truncate mr-4">{counter.title}</h3>
+        <div className="flex space-x-1 flex-shrink-0">
+          <button
+            onClick={() => startEditCounter(counter)}
+            className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+            title="Edit counter"
+          >
+            ✏️
+          </button>
+          <button
+            onClick={() => deleteCounter(counter.id)}
+            className="text-red-500 hover:text-red-700 text-sm"
+            title="Delete counter"
+          >
+            ×
+          </button>
+        </div>
+      </div>
+      
+      {counter.description && (
+  <div 
+    className="text-sm opacity-80 mb-2 cursor-pointer hover:opacity-100 transition-opacity"
+    onClick={() => toggleDescription(counter.id)}
+    title="Click to expand/collapse description"
+  >
+    <p className={expandedDescriptions.has(counter.id) ? "" : "truncate"}>
+      {counter.description}
+    </p>
+    {counter.description.length > 50 && (
+      <span className="text-xs text-blue-600 hover:text-blue-800">
+        {expandedDescriptions.has(counter.id) ? "Click to collapse" : "Click to expand"}
+      </span>
+    )}
+  </div>
+)}
 
-          <div className="mb-4">
-            <div className="flex justify-between items-center mb-2">
-              <span className="text-2xl font-bold">
-                {counter.current_value}
-              </span>
-              <span className="text-sm">
-                / {counter.goal_value} {counter.unit}
-              </span>
-            </div>
-            
-            <div className="w-full bg-white bg-opacity-50 rounded-full h-2">
-              <div
-                className="bg-current h-2 rounded-full transition-all duration-300"
-                style={{
-                  width: `${getProgressPercentage(counter.current_value, counter.goal_value)}%`
-                }}
-              ></div>
-            </div>
-            
-            <div className="text-right text-xs mt-1">
-              {getProgressPercentage(counter.current_value, counter.goal_value).toFixed(1)}%
-            </div>
+      <div className="flex items-center space-x-4">
+        <span className="text-xl font-bold whitespace-nowrap">
+          {counter.current_value} / {counter.goal_value} {counter.unit}
+        </span>
+        
+        <div className="flex-1 min-w-0">
+          <div className="w-full bg-white bg-opacity-50 rounded-full h-2">
+            <div
+              className="bg-current h-2 rounded-full transition-all duration-300"
+              style={{
+                width: `${getProgressPercentage(counter.current_value, counter.goal_value)}%`
+              }}
+            ></div>
           </div>
-
-          <div className="flex space-x-2">
-            <button
-              onClick={() => decrementCounter(counter.id)}
-              disabled={counter.current_value <= 0}
-              className="flex-1 bg-white bg-opacity-50 hover:bg-opacity-70 disabled:opacity-30 disabled:cursor-not-allowed px-3 py-2 rounded-md font-medium transition-all"
-            >
-              -
-            </button>
-            <button
-              onClick={() => incrementCounter(counter.id)}
-              className="flex-1 bg-white bg-opacity-50 hover:bg-opacity-70 px-3 py-2 rounded-md font-medium transition-all"
-            >
-              +
-            </button>
+          <div className="text-right text-xs mt-1">
+            {getProgressPercentage(counter.current_value, counter.goal_value).toFixed(1)}%
           </div>
+        </div>
+      </div>
+    </div>
 
-          {counter.current_value >= (counter.goal_value*2) && (
-            <div className="mt-3 text-center">
-              <span className="inline-block bg-white bg-opacity-70 px-3 py-1 rounded-full text-sm font-medium">
-                🎉 Goal Achieved!
-              </span>
-            </div>
-          )}
-        </>
+    {/* Right side - Controls */}
+    <div className="flex items-center space-x-2 ml-4">
+      <button
+        onClick={() => decrementCounter(counter.id)}
+        disabled={counter.current_value <= 0}
+        className="bg-white bg-opacity-50 hover:bg-opacity-70 disabled:opacity-30 disabled:cursor-not-allowed px-4 py-2 rounded-md font-medium transition-all"
+      >
+        -
+      </button>
+      <button
+        onClick={() => incrementCounter(counter.id)}
+        className="bg-white bg-opacity-50 hover:bg-opacity-70 px-4 py-2 rounded-md font-medium transition-all"
+      >
+        +
+      </button>
+      
+      {counter.current_value >= (counter.goal_value*2) && (
+        <span className="bg-white bg-opacity-70 px-3 py-1 rounded-full text-sm font-medium whitespace-nowrap">
+          🎉 Goal Achieved!
+        </span>
+      )}
+    </div>
+  </>
       )}
     </div>
   ))}

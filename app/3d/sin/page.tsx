@@ -23,7 +23,7 @@ function MeshComponent() {
 
 export default function Shiba() {
   return (
-    <div className='w-full h-48 sm:h-56 md:h-64 border border-gray-200 rounded-lg overflow-hidden shadow-sm'>
+    <div className='w-full h-48 sm:h-56 md:h-64  rounded-lg overflow-hidden shadow-sm'>
       <Canvas>
         {/* Camera with custom position */}
         <PerspectiveCamera
