@@ -52,7 +52,7 @@ export interface ExperienceShowcaseListItemProps {
 export default function ExperienceShowcaseListItem(
   props: ExperienceShowcaseListItemProps,
 ) {
-  const ref = useRef(null);
+  const ref = useRef<HTMLLIElement>(null);
   return (
     <li ref={ref} className="mx-auto mb-14 flex w-[60%] flex-col gap-1">
       <ShowCaseLiIcon iconRef={ref} />
