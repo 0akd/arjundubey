@@ -1,10 +1,11 @@
 import './globals.css'  // Import your global CSS file
-
+import { ThemeProvider } from 'next-themes'
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html>
+    <html suppressHydrationWarning>
+      <head />
       <body>
-        {children}
+        <ThemeProvider>{children}</ThemeProvider>
       </body>
     </html>
   )

@@ -71,13 +71,13 @@ const CounterPage: React.FC = () => {
 
   const getCounterColor = (current: number, goal: number) => {
     if (current >= goal) {
-      return 'bg-green-50 border-green-400 hover:bg-green-100';
+      return ' border-green-400 hover:bg-green-100';
     }
     const progress = current / goal;
     if (progress >= 0.8) {
-      return 'bg-yellow-50 border-yellow-400 hover:bg-yellow-100';
+      return ' border-yellow-400 hover:bg-yellow-100';
     }
-    return 'bg-blue-50 border-blue-400 hover:bg-blue-100';
+    return ' border-blue-400 hover:bg-blue-100';
   };
 
   const getProgressColor = (current: number, goal: number) => {
@@ -93,21 +93,21 @@ const CounterPage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
-        <div className="text-lg sm:text-xl text-gray-600">Loading counters...</div>
+      <div className="min-h-screen  flex items-center justify-center px-4">
+        <div className="text-lg sm:text-xl ">Loading counters...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-4 sm:py-6 lg:py-8">
+    <div className="min-h-screen  py-4 sm:py-6 lg:py-8">
       {/* Secret clickable header */}
       <div className="text-center mb-6 sm:mb-8 px-4">
         <div 
           onClick={handleSecretClick}
           className="inline-block cursor-pointer select-none"
         >
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-800">Goal's Status</h1>
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold ">Goal's Status</h1>
         </div>
       </div>
       <Model/>
@@ -115,7 +115,7 @@ const CounterPage: React.FC = () => {
       <div className="max-w-6xl mx-auto px-3 sm:px-4 lg:px-6">
         {counters.length === 0 ? (
           <div className="text-center py-12">
-            <p className="text-gray-500 text-base sm:text-lg">No counters found</p>
+            <p className=" text-base sm:text-lg">No counters found</p>
           </div>
         ) : (
           <div className="space-y-2 sm:space-y-3">
@@ -140,7 +140,7 @@ const CounterPage: React.FC = () => {
                         <span className="text-lg sm:text-xl lg:text-2xl font-bold">
                           {counter.current_value}
                         </span>
-                        <span className="text-xs sm:text-sm text-gray-600">
+                        <span className="text-xs sm:text-sm ">
                           /{counter.goal_value} {counter.unit}
                         </span>
                       </div>
@@ -148,7 +148,7 @@ const CounterPage: React.FC = () => {
 
                     {/* Progress Bar */}
                     <div className="flex-1 sm:flex-2 max-w-full sm:max-w-xs lg:max-w-sm">
-                      <div className="w-full bg-white bg-opacity-70 rounded-full h-2 sm:h-3">
+                      <div className="w-full   rounded-full h-2 sm:h-3">
                         <div
                           className={`h-2 sm:h-3 rounded-full transition-all duration-300 ${getProgressColor(
                             counter.current_value,
@@ -167,13 +167,13 @@ const CounterPage: React.FC = () => {
                         {getProgressPercentage(counter.current_value, counter.goal_value).toFixed(1)}%
                       </span>
                       {counter.current_value >= counter.goal_value && (
-                        <span className="text-xs sm:text-sm bg-white bg-opacity-70 px-2 py-1 rounded-full font-medium">
+                        <span className="text-xs sm:text-sm   px-2 py-1 rounded-full font-medium">
                           🎉
                         </span>
                       )}
                       {/* Expand indicator */}
                       {counter.description && (
-                        <span className="text-xs text-gray-500 transform transition-transform duration-200 ml-1">
+                        <span className="text-xs  transform transition-transform duration-200 ml-1">
                           {expandedCounters.has(counter.id) ? '▲' : '▼'}
                         </span>
                       )}
@@ -184,8 +184,8 @@ const CounterPage: React.FC = () => {
                 {/* Expandable description */}
                 {counter.description && expandedCounters.has(counter.id) && (
                   <div className="px-3 sm:px-4 pb-3 sm:pb-4 pt-0">
-                    <div className="border-t border-white border-opacity-50 pt-2 sm:pt-3">
-                      <p className="text-xs sm:text-sm text-gray-700 leading-relaxed">
+                    <div className="border-t border-opacity-50 pt-2 sm:pt-3">
+                      <p className="text-xs sm:text-sm leading-relaxed">
                         {counter.description}
                       </p>
                     </div>
