@@ -1,7 +1,7 @@
 import './globals.css'  // Import your global CSS file
 import { ThemeProvider } from 'next-themes'
 import { cn } from "@/lib/utils";
-import CursorTrailCanvas from "./cursortrail/page";
+import CursorTrailCanvas from "@/cursortrail/page";
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html suppressHydrationWarning>
