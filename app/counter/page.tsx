@@ -35,7 +35,13 @@ const CounterPage: React.FC = () => {
     goal_value: 0,
     unit: ''
   });
-
+const [editingCounter, setEditingCounter] = useState<Counter | null>(null);
+const [editForm, setEditForm] = useState<NewCounter>({
+  title: '',
+  description: '',
+  goal_value: 0,
+  unit: ''
+});
   // Fetch counters from Supabase
   useEffect(() => {
     fetchCounters();
@@ -176,11 +182,11 @@ const CounterPage: React.FC = () => {
   };
 
   const getCounterColor = (current: number, goal: number) => {
-    if (current >= goal) {
+    if (current >= (goal*2)) {
       return 'bg-green-100 border-green-500 text-green-800';
     }
     const progress = current / goal;
-    if (progress >= 0.8) {
+    if (progress >= goal) {
       return 'bg-yellow-100 border-yellow-500 text-yellow-800';
     }
     return 'bg-blue-100 border-blue-500 text-blue-800';
@@ -197,6 +203,56 @@ const CounterPage: React.FC = () => {
       </div>
     );
   }
+const startEditCounter = (counter: Counter) => {
+  setEditingCounter(counter);
+  setEditForm({
+    title: counter.title,
+    description: counter.description,
+    goal_value: counter.goal_value,
+    unit: counter.unit
+  });
+};
+
+const cancelEdit = () => {
+  setEditingCounter(null);
+  setEditForm({ title: '', description: '', goal_value: 0, unit: '' });
+};
+
+const updateCounterDetails = async (e: React.FormEvent) => {
+  e.preventDefault();
+  
+  if (!editForm.title.trim() || editForm.goal_value <= 0 || !editingCounter) {
+    alert('Please fill in all required fields');
+    return;
+  }
+
+  try {
+    const { error } = await supabase
+      .from('counters')
+      .update({
+        title: editForm.title,
+        description: editForm.description,
+        goal_value: editForm.goal_value,
+        unit: editForm.unit
+      })
+      .eq('id', editingCounter.id);
+
+    if (error) {
+      console.error('Error updating counter:', error);
+      alert('Error updating counter');
+    } else {
+      setCounters(counters.map(counter =>
+        counter.id === editingCounter.id
+          ? { ...counter, ...editForm }
+          : counter
+      ));
+      cancelEdit();
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    alert('Error updating counter');
+  }
+};
 
  
 async function handleLogout() {
@@ -315,78 +371,157 @@ async function handleLogout() {
         )}
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {counters.map((counter) => (
-            <div
-              key={counter.id}
-              className={`rounded-lg border-2 p-6 transition-all duration-300 ${getCounterColor(
-                counter.current_value,
-                counter.goal_value
-              )}`}
-            >
-              <div className="flex justify-between items-start mb-3">
-                <h3 className="text-lg font-semibold">{counter.title}</h3>
-                <button
-                  onClick={() => deleteCounter(counter.id)}
-                  className="text-red-500 hover:text-red-700 text-sm"
-                >
-                  ×
-                </button>
-              </div>
-              
-              {counter.description && (
-                <p className="text-sm opacity-80 mb-4">{counter.description}</p>
-              )}
+  {counters.map((counter) => (
+    <div
+      key={counter.id}
+      className={`rounded-lg border-2 p-6 transition-all duration-300 ${getCounterColor(
+        counter.current_value,
+        counter.goal_value
+      )}`}
+    >
+      {editingCounter?.id === counter.id ? (
+        // Edit Form
+        <form onSubmit={updateCounterDetails} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium mb-1">Title *</label>
+            <input
+              type="text"
+              value={editForm.title}
+              onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
+              className="w-full px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+              required
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium mb-1">Description</label>
+            <textarea
+              value={editForm.description}
+              onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
+              className="w-full px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+              rows={2}
+            />
+          </div>
 
-              <div className="mb-4">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-2xl font-bold">
-                    {counter.current_value}
-                  </span>
-                  <span className="text-sm">
-                    / {counter.goal_value} {counter.unit}
-                  </span>
-                </div>
-                
-                <div className="w-full bg-white bg-opacity-50 rounded-full h-2">
-                  <div
-                    className="bg-current h-2 rounded-full transition-all duration-300"
-                    style={{
-                      width: `${getProgressPercentage(counter.current_value, counter.goal_value)}%`
-                    }}
-                  ></div>
-                </div>
-                
-                <div className="text-right text-xs mt-1">
-                  {getProgressPercentage(counter.current_value, counter.goal_value).toFixed(1)}%
-                </div>
-              </div>
-
-              <div className="flex space-x-2">
-                <button
-                  onClick={() => decrementCounter(counter.id)}
-                  disabled={counter.current_value <= 0}
-                  className="flex-1 bg-white bg-opacity-50 hover:bg-opacity-70 disabled:opacity-30 disabled:cursor-not-allowed px-3 py-2 rounded-md font-medium transition-all"
-                >
-                  -
-                </button>
-                <button
-                  onClick={() => incrementCounter(counter.id)}
-                  className="flex-1 bg-white bg-opacity-50 hover:bg-opacity-70 px-3 py-2 rounded-md font-medium transition-all"
-                >
-                  +
-                </button>
-              </div>
-
-              {counter.current_value >= counter.goal_value && (
-                <div className="mt-3 text-center">
-                  <span className="inline-block bg-white bg-opacity-70 px-3 py-1 rounded-full text-sm font-medium">
-                    🎉 Goal Achieved!
-                  </span>
-                </div>
-              )}
+          <div className="grid grid-cols-2 gap-2">
+            <div>
+              <label className="block text-sm font-medium mb-1">Goal *</label>
+              <input
+                type="number"
+                value={editForm.goal_value || ''}
+                onChange={(e) => setEditForm({ ...editForm, goal_value: parseInt(e.target.value) || 0 })}
+                className="w-full px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                min="1"
+                required
+              />
             </div>
-          ))}
-        </div>
+            
+            <div>
+              <label className="block text-sm font-medium mb-1">Unit</label>
+              <input
+                type="text"
+                value={editForm.unit}
+                onChange={(e) => setEditForm({ ...editForm, unit: e.target.value })}
+                className="w-full px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+              />
+            </div>
+          </div>
+
+          <div className="flex space-x-2">
+            <button
+              type="submit"
+              className="flex-1 bg-white bg-opacity-70 hover:bg-opacity-90 px-3 py-1 rounded text-sm font-medium transition-all"
+            >
+              Save
+            </button>
+            <button
+              type="button"
+              onClick={cancelEdit}
+              className="flex-1 bg-white bg-opacity-50 hover:bg-opacity-70 px-3 py-1 rounded text-sm font-medium transition-all"
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+      ) : (
+        // Normal Counter Display
+        <>
+          <div className="flex justify-between items-start mb-3">
+            <h3 className="text-lg font-semibold">{counter.title}</h3>
+            <div className="flex space-x-1">
+              <button
+                onClick={() => startEditCounter(counter)}
+                className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                title="Edit counter"
+              >
+                ✏️
+              </button>
+              <button
+                onClick={() => deleteCounter(counter.id)}
+                className="text-red-500 hover:text-red-700 text-sm"
+                title="Delete counter"
+              >
+                ×
+              </button>
+            </div>
+          </div>
+          
+          {counter.description && (
+            <p className="text-sm opacity-80 mb-4">{counter.description}</p>
+          )}
+
+          <div className="mb-4">
+            <div className="flex justify-between items-center mb-2">
+              <span className="text-2xl font-bold">
+                {counter.current_value}
+              </span>
+              <span className="text-sm">
+                / {counter.goal_value} {counter.unit}
+              </span>
+            </div>
+            
+            <div className="w-full bg-white bg-opacity-50 rounded-full h-2">
+              <div
+                className="bg-current h-2 rounded-full transition-all duration-300"
+                style={{
+                  width: `${getProgressPercentage(counter.current_value, counter.goal_value)}%`
+                }}
+              ></div>
+            </div>
+            
+            <div className="text-right text-xs mt-1">
+              {getProgressPercentage(counter.current_value, counter.goal_value).toFixed(1)}%
+            </div>
+          </div>
+
+          <div className="flex space-x-2">
+            <button
+              onClick={() => decrementCounter(counter.id)}
+              disabled={counter.current_value <= 0}
+              className="flex-1 bg-white bg-opacity-50 hover:bg-opacity-70 disabled:opacity-30 disabled:cursor-not-allowed px-3 py-2 rounded-md font-medium transition-all"
+            >
+              -
+            </button>
+            <button
+              onClick={() => incrementCounter(counter.id)}
+              className="flex-1 bg-white bg-opacity-50 hover:bg-opacity-70 px-3 py-2 rounded-md font-medium transition-all"
+            >
+              +
+            </button>
+          </div>
+
+          {counter.current_value >= (counter.goal_value*2) && (
+            <div className="mt-3 text-center">
+              <span className="inline-block bg-white bg-opacity-70 px-3 py-1 rounded-full text-sm font-medium">
+                🎉 Goal Achieved!
+              </span>
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  ))}
+</div>
 
         {counters.length === 0 && (
           <div className="text-center py-12">

@@ -2,7 +2,7 @@
 // import { cookies } from "next/headers";
 // import { notFound } from "next/navigation";
 // import { clientConfig, serverConfig } from "../config/config";
-import HomePage from "./HomePage";
+import HomePage from "./stats/page";
 
 export default async function Home() {
   // const cookieStore = await cookies();

@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import supabase from '@/config/supabase';
-import Model from './3d/sin/page'
+import Model from '../3d/sin/page'
 interface Counter {
   id: number;
   title: string;
