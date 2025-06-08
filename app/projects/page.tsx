@@ -40,16 +40,21 @@ export default function ProjectsPage() {
     console.log('ProjectsPage mounted, fetching projects...');
     
     async function fetchProjects() {
-      try {
-        console.log('Making API request to GitHub...');
-        const response = await fetch('https://api.github.com/users/arjundubeyg/repos', {
-          headers: {
-            'Accept': 'application/vnd.github.v3+json',
-            'User-Agent': 'Portfolio-Website',
-            // Add your GitHub token here (create one at https://github.com/settings/tokens)
-            'Authorization': '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' ? `token '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'` : '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'
-          }
-        });
+
+try {
+  console.log('Making API request to GitHub...');
+  
+  const token = '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';
+  
+  const response = await fetch('https://api.github.com/users/arjundubeyg/repos', {
+    headers: {
+      'Accept': 'application/vnd.github.v3+json',
+      'User-Agent': 'Portfolio-Website',
+      // Use the token if it exists, otherwise omit the Authorization header
+      ...(token && { 'Authorization': `token ${token}` })
+    }
+  });
+}
 
         console.log('Response status:', response.status);
 
