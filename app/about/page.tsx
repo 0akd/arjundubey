@@ -1,8 +1,8 @@
 "use client";
 import React, { useTransition, useState } from "react";
-
+import Image from 'next/image'
 import TabButton from "./tabbutton";
-import Image from '../3d/gallery/page'
+import Images from '../3d/gallery/page'
 import Skill from '../skills/page'
 
 interface Tab {
@@ -53,7 +53,20 @@ const AboutSection: React.FC = () => {
           <p className="text-base px-4 lg:text-lg">
      I am a software developer specializing in building high-performance, user-focused web applications. Skilled in ReactJS, NextJS, SolidJS, and an expert in JavaScript, HTML and CSS
           </p>
-              <Image/>
+          <div       className="mr-0 mt-8 flex items-center justify-center gap-4 lg:mr-8 lg:justify-end">
+           <div className="relative flex w-12 gap-4 overflow-hidden rounded-md">
+              <Image
+                className="-z-10 h-full w-full bg-cover bg-no-repeat"
+                alt="Indian flag"
+                src="https://flagcdn.com/in.svg"
+                width={15}
+                height={15}
+              />
+            </div>
+            <span className="text-lg font-medium text-foreground">
+              Delhi, India
+            </span></div>
+              <Images/>
           <div className="flex flex-row justify-start mt-8">
             {TAB_DATA.map((tabItem) => (
               <TabButton

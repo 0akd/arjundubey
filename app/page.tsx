@@ -5,6 +5,7 @@ import Nav from './nav/page'
 import Hero from './Hero/page'
 import About from './about/page'
 import Expedu from './education/page'
+import Projects from './projects/page'
 
 export default function Home(){
 return(
@@ -13,6 +14,7 @@ return(
    <Hero/>
    <About/>
    <Expedu/>
+   <Projects/>
     <Stats/>
   </div>
 );

@@ -15,6 +15,7 @@
     "@supabase/supabase-js": "^2.50.0",
     "@types/three": "^0.177.0",
     "antd": "^5.25.4",
+    "axios": "^1.9.0",
     "clsx": "^2.1.1",
     "firebase": "^11.9.0",
     "framer-motion": "^12.16.0",
