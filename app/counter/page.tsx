@@ -194,13 +194,13 @@ const toggleDescription = (counterId: number) => {
 
   const getCounterColor = (current: number, goal: number) => {
     if (current >= (goal*2)) {
-      return 'bg-green-100 border-green-500 text-green-800';
+      return ' border-green-500 text-green-800';
     }
     const progress = current / goal;
     if (progress >= goal) {
-      return 'bg-yellow-100 border-yellow-500 text-yellow-800';
+      return ' border-yellow-500 text-yellow-800';
     }
-    return 'bg-blue-100 border-blue-500 text-blue-800';
+    return ' border-blue-500 text-blue-800';
   };
 
   const getProgressPercentage = (current: number, goal: number) => {
@@ -209,7 +209,7 @@ const toggleDescription = (counterId: number) => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen  flex items-center justify-center">
         <div className="text-xl text-gray-600">Loading counters...</div>
       </div>
     );
@@ -275,25 +275,24 @@ async function handleLogout() {
   }
   return (
      <PP onUnlock={() => console.log('Access granted!')}>
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen  py-8">
       <div className="max-w-4xl mx-auto px-4">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-4">Counter Dashboard</h1>
             <button
         onClick={handleLogout}
-        className="text-white bg-gray-600 hover:bg-gray-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-gray-600 dark:hover:bg-gray-700 dark:focus:ring-primary-800"
-      ></button>
+        className="text-white   focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center "      ></button>
           <div className="flex space-x-3">
             <button
               onClick={() => setShowAddForm(true)}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium transition-colors"
+              className=" px-6 py-2 rounded-lg font-medium transition-colors"
             >
               Add New Counter
             </button>
             {counters.length > 0 && (
               <button
                 onClick={resetAllCounters}
-                className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg font-medium transition-colors"
+                className="bg-red-600 h  px-6 py-2 rounded-lg font-medium transition-colors"
               >
                 Reset All Counters
               </button>
@@ -302,7 +301,7 @@ async function handleLogout() {
         </div>
 
         {showAddForm && (
-          <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+          <div className=" rounded-lg shadow-md p-6 mb-6">
             <h2 className="text-xl font-semibold mb-4">Add New Counter</h2>
             <form onSubmit={addCounter} className="space-y-4">
               <div>
@@ -365,14 +364,14 @@ async function handleLogout() {
               <div className="flex space-x-3">
                 <button
                   type="submit"
-                  className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md font-medium transition-colors"
+                  className="bg-green-600 hover:bg-green-700  px-4 py-2 rounded-md font-medium transition-colors"
                 >
                   Add Counter
                 </button>
                 <button
                   type="button"
                   onClick={() => setShowAddForm(false)}
-                  className="bg-gray-300 hover:bg-gray-400 text-gray-700 px-4 py-2 rounded-md font-medium transition-colors"
+                  className=" px-4 py-2 rounded-md font-medium transition-colors"
                 >
                   Cancel
                 </button>
@@ -441,14 +440,14 @@ async function handleLogout() {
     <div className="flex space-x-2">
       <button
         type="submit"
-        className="flex-1 bg-white bg-opacity-70 hover:bg-opacity-90 px-3 py-1 rounded text-sm font-medium transition-all"
+        className="flex-1   px-3 py-1 rounded text-sm font-medium transition-all"
       >
         Save
       </button>
       <button
         type="button"
         onClick={cancelEdit}
-        className="flex-1 bg-white bg-opacity-50 hover:bg-opacity-70 px-3 py-1 rounded text-sm font-medium transition-all"
+        className="flex-1   px-3 py-1 rounded text-sm font-medium transition-all"
       >
         Cancel
       </button>
@@ -502,7 +501,7 @@ async function handleLogout() {
         </span>
         
         <div className="flex-1 min-w-0">
-          <div className="w-full bg-white bg-opacity-50 rounded-full h-2">
+          <div className="w-full  rounded-full h-2">
             <div
               className="bg-current h-2 rounded-full transition-all duration-300"
               style={{
@@ -522,19 +521,19 @@ async function handleLogout() {
       <button
         onClick={() => decrementCounter(counter.id)}
         disabled={counter.current_value <= 0}
-        className="bg-white bg-opacity-50 hover:bg-opacity-70 disabled:opacity-30 disabled:cursor-not-allowed px-4 py-2 rounded-md font-medium transition-all"
+        className="disabled:opacity-30 disabled:cursor-not-allowed px-4 py-2 rounded-md font-medium transition-all"
       >
         -
       </button>
       <button
         onClick={() => incrementCounter(counter.id)}
-        className="bg-white bg-opacity-50 hover:bg-opacity-70 px-4 py-2 rounded-md font-medium transition-all"
+        className=" px-4 py-2 rounded-md font-medium transition-all"
       >
         +
       </button>
       
       {counter.current_value >= (counter.goal_value*2) && (
-        <span className="bg-white bg-opacity-70 px-3 py-1 rounded-full text-sm font-medium whitespace-nowrap">
+        <span className=" px-3 py-1 rounded-full text-sm font-medium whitespace-nowrap">
           🎉 Goal Achieved!
         </span>
       )}
