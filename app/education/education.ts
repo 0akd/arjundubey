@@ -7,7 +7,7 @@ export const EDUCATION: ExperienceShowcaseListItemProps[] = [
       name: "Delhi Technological University DTU (formerly - Delhi College of Engineering DCE)",
       href: "https://dtu.ac.in/",
     },
-    date: "2024-Current",
+    date: "2024-Present",
     location: "New Delhi, Delhi",
     description:
       "Relevant courses included Power Electronics , ELctricalCAD, Programmable Logic Controllers (PLCs) and ELectrical Wiring+Safety.",

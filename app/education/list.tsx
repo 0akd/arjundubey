@@ -22,7 +22,7 @@ export default function ExperienceShowcaseList(
   });
   return (
     <div className="mx-auto max-w-7xl px-6 sm:px-14 ">
-      <h2 className="md:mb-30 mb-16 w-full bg-gradient-to-r from-accent/70 to-accent bg-clip-text text-center text-3xl font-bold text-transparent xs:text-4xl sm:text-6xl md:text-8xl">
+      <h2 className="md:mb-20 mb-16 w-full bg-gradient-to-r from-accent/70 to-accent bg-clip-text text-center text-3xl font-bold text-transparent xs:text-2xl sm:text-3xl md:text-4xl">
         {props.title}
       </h2>
       <div ref={ref} className="relative w-full md:mx-auto md:w-[80%]">
