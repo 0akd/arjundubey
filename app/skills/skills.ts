@@ -40,7 +40,7 @@ export const skills: Skill[] = [
   },
   {
     title: "NextJS",
-    icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nextjs/nextjs-original-wordmark.svg",
+    icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/nextjs/nextjs-original.svg",
     category: "Framework and Libraries",
     style: { filter: "invert(1)" },
   },

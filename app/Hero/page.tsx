@@ -7,8 +7,8 @@ import Link from "next/link";
 
 const HeroSection = () => {
   return (
-    <section className="lg:py-16">
-      <div className="grid grid-cols-1 sm:grid-cols-12">
+    <section className="flex items-center justify-center">
+      <div className=" sm:grid-cols-12">
         <motion.div
           initial={{ opacity: 0, scale: 0.5 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -26,7 +26,7 @@ const HeroSection = () => {
                 2000,
                 "Arjun Kumar Dubey",
                 1000,
-                "Web Developer",
+                "Software Developer",
                 1000,
                 "UI/UX Designer",
                 1000,

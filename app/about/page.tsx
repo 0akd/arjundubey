@@ -42,7 +42,7 @@ const TAB_DATA: Tab[] = [
 ];
 
 const AboutSection: React.FC = () => {
-  const [tab, setTab] = useState<string>("skills");
+  const [tab, setTab] = useState<string>("certifications");
   const [isPending, startTransition] = useTransition();
 
   const handleTabChange = (id: string) => {
@@ -59,13 +59,8 @@ const AboutSection: React.FC = () => {
     <Image/>
         <div className="py-8 lg:px-32 sm:px-3 sm:py-16  mt-4 px-4 md:mt-0 text-left flex flex-col h-full">
           <h2 className="text-4xl font-bold  mb-4">About Me</h2>
-          <p className="text-base lg:text-lg">
-            I am a full stack web developer with a passion for creating
-            interactive and responsive web applications. I have experience
-            working with JavaScript, React, Redux, Node.js, Express, PostgreSQL,
-            Sequelize, HTML, CSS, and Git. I am a quick learner and I am always
-            looking to expand my knowledge and skill set. I am a team player and
-            I am excited to work with others to create amazing applications.
+          <p className="text-base px-4 lg:text-lg">
+     I am a software developer specializing in building high-performance, user-focused web applications. Skilled in ReactJS, NextJS, SolidJS, and an expert in JavaScript, HTML and CSS
           </p>
           <div className="flex flex-row justify-start mt-8">
             {TAB_DATA.map((tabItem) => (
