@@ -40,8 +40,7 @@ export default function ProjectsPage() {
     console.log('ProjectsPage mounted, fetching projects...');
     
     async function fetchProjects() {
-
-try {
+    try {
   console.log('Making API request to GitHub...');
   
   const token = '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';
@@ -54,45 +53,7 @@ try {
       ...(token && { 'Authorization': `token ${token}` })
     }
   });
-}
-
-        console.log('Response status:', response.status);
-
-        if (response.ok) {
-          const data = await response.json();
-          console.log('Fetched repos:', data.length);
-          setProjects(data);
-          setError(null);
-          // Cache the data in localStorage for future visits
-          localStorage.setItem('github-repos', JSON.stringify(data));
-          localStorage.setItem('github-repos-timestamp', Date.now().toString());
-        } else {
-          const errorData = await response.json();
-          console.error('Failed to fetch repos:', response.status, errorData);
-          
-          // If rate limited, try to use cached data
-          if (response.status === 403 && errorData.message?.includes('rate limit')) {
-            const cachedData = localStorage.getItem('github-repos');
-            const cachedTimestamp = localStorage.getItem('github-repos-timestamp');
-            
-            if (cachedData && cachedTimestamp) {
-              const data = JSON.parse(cachedData);
-              const age = Date.now() - parseInt(cachedTimestamp);
-              const ageHours = age / (1000 * 60 * 60);
-              
-              console.log('Using cached data (age:', ageHours.toFixed(1), 'hours)');
-              setProjects(data);
-              setError(`Using cached data due to rate limit. Data is ${ageHours.toFixed(1)} hours old.`);
-            } else {
-              setError('GitHub API rate limit exceeded. Using fallback data.');
-              setProjects(fallbackProjects);
-            }
-          } else {
-            setError(`Failed to fetch repositories: ${response.status}`);
-            setProjects([]);
-          }
-        }
-      } catch (error) {
+} catch (error) {
         console.error('Error fetching repos:', error);
         
         // Try cached data on network error too
