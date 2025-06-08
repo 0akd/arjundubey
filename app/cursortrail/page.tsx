@@ -15,7 +15,7 @@ export default function CursorTrailCanvas(props: CursorTrailCanvasProps) {
   useEffect(() => {
     const { cleanUp, renderTrailCursor } = cursorTrail({
       ref: refCanvas,
-      color: props.color,
+      color: '#0080FF' ,
     });
     renderTrailCursor();
 
