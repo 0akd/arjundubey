@@ -68,6 +68,7 @@ export default function ExperienceShowcaseListItem(
           {props.title}{" "}
           <Link
             href={props.organisation.href}
+             style={{ textDecoration: "underline" }}
             className="cursor-pointer text-accent"
             target="_blank"
             rel="nofollow"

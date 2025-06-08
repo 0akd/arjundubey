@@ -19,30 +19,21 @@ const TAB_DATA: Tab[] = [
 <Skill/>
     ),
   },
-  {
-    title: "Education",
-    id: "education",
-    content: (
-      <ul className="list-disc pl-2">
-        <li>Fullstack Academy of Code</li>
-        <li>University of California, Santa Cruz</li>
-      </ul>
-    ),
-  },
+ 
   {
     title: "Certifications",
     id: "certifications",
     content: (
       <ul className="list-disc pl-2">
-        <li>AWS Cloud Practitioner</li>
-        <li>Google Professional Cloud Developer</li>
+        <li>ToDo</li>
+        <li>Every skills showcased per certificate uwu</li>
       </ul>
     ),
   },
 ];
 
 const AboutSection: React.FC = () => {
-  const [tab, setTab] = useState<string>("certifications");
+  const [tab, setTab] = useState<string>("skills");
   const [isPending, startTransition] = useTransition();
 
   const handleTabChange = (id: string) => {
