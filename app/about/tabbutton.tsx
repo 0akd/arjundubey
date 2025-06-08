@@ -31,7 +31,7 @@ const TabButton: React.FC<TabButtonProps> = ({ active, selectTab, children }) =>
       
       {/* Tab Button */}
       <button onClick={selectTab}>
-        <p className={`border-1 px-3 py-1 font-bold border-blue-500  ${active ? 'text-blue-600' : 'text-gray-600'}`}>
+        <p className={`border-1 px-2 py-1 font-bold border-blue-500  ${active ? 'text-blue-600' : 'text-gray-600'}`}>
           {children}
         </p>
         <motion.div
