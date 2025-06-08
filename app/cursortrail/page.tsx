@@ -9,7 +9,7 @@ export interface CursorTrailCanvasProps {
   style?: CSSProperties;
 }
 
-export default function CursorTrailCanvas(props: CursorTrailCanvasProps) {
+function CursorTrailCanvas(props: CursorTrailCanvasProps) {
   const refCanvas = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -30,5 +30,17 @@ export default function CursorTrailCanvas(props: CursorTrailCanvasProps) {
       className={props.className}
       style={props.style}
     ></canvas>
+  );
+}
+
+// Default export for Next.js page
+export default function CursorTrailPage() {
+  return (
+    <div className="w-full h-screen">
+      <CursorTrailCanvas 
+        className="w-full h-full"
+        style={{ position: 'fixed', top: 0, left: 0, pointerEvents: 'none', zIndex: 9999 }}
+      />
+    </div>
   );
 }
