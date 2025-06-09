@@ -97,20 +97,18 @@ const BlogList: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen py-12">
+    <div className="">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold mb-4">
-            Our Blog
+          Blog
           </h1>
-          <p className="text-xl max-w-2xl mx-auto">
-            Discover insights, tutorials, and stories from our team
-          </p>
+         
           
           {/* Debug info - remove this in production */}
           <div className="mt-4 text-sm">
-            Found {posts.length} published posts
+            {posts.length} published blog(s)
           </div>
         </div>
 
