@@ -286,31 +286,29 @@ const PopupChatAI = () => {
           </div>
 
           {/* Input Area */}
-          <div className="p-4 border-t border-gray-200 rounded-b-lg">
-            <div className="flex gap-2">
-              <input
-                type="text"
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                onKeyPress={handleKeyPress}
-                placeholder="Type your message..."
-                className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                disabled={isLoading}
-              />
-              <button
-                onClick={handleSendMessage}
-                disabled={!inputValue.trim() || isLoading}
-                className="rounded-lg p-2 transition-colors disabled:cursor-not-allowed"
-              >
-                {isLoading ? (
-                  <Loader2 size={16} className="animate-spin" />
-                ) : (
-                  <Send size={16} />
-                )}
-              </button>
-            </div>
-          </div>
-        </div>
+         <div className="flex flex-wrap items-center gap-2 p-2 sm:gap-3 sm:p-3  rounded-xl shadow-sm border ">
+  <input
+    type="text"
+    value={inputValue}
+    onChange={(e) => setInputValue(e.target.value)}
+    onKeyPress={handleKeyPress}
+    placeholder="Type your message..."
+    className="flex-1 min-w-[60%] sm:min-w-[300px] rounded-lg border  px-3 py-2 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ease-in-out"
+    disabled={isLoading}
+  />
+  <button
+    onClick={handleSendMessage}
+    disabled={!inputValue.trim() || isLoading}
+    className="  p-2 rounded-lg transition-all duration-200 ease-in-out disabled:cursor-not-allowed"
+  >
+    {isLoading ? (
+      <Loader2 size={16} className="animate-spin" />
+    ) : (
+      <Send size={16} />
+    )}
+  </button>
+</div></div>
+
       )}
 </div></>
   );
