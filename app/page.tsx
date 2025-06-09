@@ -6,6 +6,7 @@ import Hero from './Hero/page'
 import About from './about/page'
 import Expedu from './education/page'
 import Projects from './projects/page'
+import Blog from './blog/page'
 
 export default function Home(){
 return(
@@ -15,6 +16,7 @@ return(
    <About/>
    <Expedu/>
    <Projects/>
+   <Blog/>
     <Stats/>
   </div>
 );
