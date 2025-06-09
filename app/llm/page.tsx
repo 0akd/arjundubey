@@ -1,5 +1,5 @@
 "use client"
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { MessageCircle, X, Send, Bot, User, Loader2 } from 'lucide-react';
 
 const AWANLLM_API_KEY = "0fb30cc8-f5d7-407b-ab38-279a8be29658"; // Replace with your actual API key
@@ -23,27 +23,73 @@ const PopupChatAI = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [streamingText, setStreamingText] = useState('');
+  const [isInitialized, setIsInitialized] = useState(false);
+  
+  // Refs - only created when needed
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
+  const streamingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages, streamingText]);
-
-  // Stream premade message when chat opens
-  useEffect(() => {
-    if (isOpen && messages.length === 0) {
-      const randomMessage = premadeMessages[Math.floor(Math.random() * premadeMessages.length)];
-      streamText(randomMessage, true);
+  // Memoized scroll function to prevent unnecessary re-renders
+  const scrollToBottom = useCallback(() => {
+    if (isOpen && messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   }, [isOpen]);
 
-  const streamText = async (text: string, isPremade = false) => {
+  // Only scroll when chat is open and messages change
+  useEffect(() => {
+    if (isOpen) {
+      scrollToBottom();
+    }
+  }, [messages, isOpen, scrollToBottom]);
+
+  // Only initialize and run effects when chat is open
+  useEffect(() => {
+    if (!isOpen) return; // Do nothing when closed
+    
+    if (!isInitialized) {
+      setIsInitialized(true);
+      const randomMessage = premadeMessages[Math.floor(Math.random() * premadeMessages.length)];
+      streamText(randomMessage, true);
+    }
+  }, [isOpen, isInitialized]);
+
+  // Cleanup function for streaming
+  const cleanupStreaming = useCallback(() => {
+    if (streamingTimeoutRef.current) {
+      clearTimeout(streamingTimeoutRef.current);
+      streamingTimeoutRef.current = null;
+    }
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+      abortControllerRef.current = null;
+    }
+  }, []);
+
+  // Only cleanup when component unmounts
+  useEffect(() => {
+    return () => {
+      cleanupStreaming();
+    };
+  }, [cleanupStreaming]);
+
+  // Reset everything when chat closes
+  useEffect(() => {
+    if (!isOpen) {
+      cleanupStreaming();
+      setIsLoading(false);
+      setInputValue('');
+      // Reset all state to initial values
+      setMessages([]);
+      setIsInitialized(false);
+    }
+  }, [isOpen, cleanupStreaming]);
+
+  const streamText = useCallback(async (text: string, isPremade = false) => {
+    if (!isOpen) return; // Don't stream if chat is closed
+    
     const messageId = Date.now().toString();
     
     if (isPremade) {
@@ -53,29 +99,34 @@ const PopupChatAI = () => {
     }
 
     let currentText = '';
-    for (let i = 0; i < text.length; i++) {
-      currentText += text[i];
-      setStreamingText(currentText);
-      
-      setMessages(prev => prev.map(msg => 
-        msg.id === messageId 
-          ? { ...msg, content: currentText }
-          : msg
-      ));
-      
-      await new Promise(resolve => setTimeout(resolve, 30)); // Typing speed
-    }
-    
-    setMessages(prev => prev.map(msg => 
-      msg.id === messageId 
-        ? { ...msg, streaming: false }
-        : msg
-    ));
-    setStreamingText('');
-  };
+    let index = 0;
 
-  const handleSendMessage = async () => {
-    if (!inputValue.trim() || isLoading) return;
+    const typeNextChar = () => {
+      if (index < text.length && isOpen) {
+        currentText += text[index];
+        index++;
+        
+        setMessages(prev => prev.map(msg => 
+          msg.id === messageId 
+            ? { ...msg, content: currentText }
+            : msg
+        ));
+        
+        streamingTimeoutRef.current = setTimeout(typeNextChar, 30);
+      } else if (isOpen) {
+        setMessages(prev => prev.map(msg => 
+          msg.id === messageId 
+            ? { ...msg, streaming: false }
+            : msg
+        ));
+      }
+    };
+
+    typeNextChar();
+  }, [isOpen]);
+
+  const handleSendMessage = useCallback(async () => {
+    if (!inputValue.trim() || isLoading || !isOpen) return;
 
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -86,6 +137,9 @@ const PopupChatAI = () => {
     setMessages(prev => [...prev, userMessage]);
     setInputValue('');
     setIsLoading(true);
+
+    // Create abort controller for this request
+    abortControllerRef.current = new AbortController();
 
     try {
       const response = await fetch("https://api.awanllm.com/v1/chat/completions", {
@@ -110,7 +164,8 @@ const PopupChatAI = () => {
           "top_k": 40,
           "max_tokens": 1024,
           "stream": true
-        })
+        }),
+        signal: abortControllerRef.current.signal
       });
 
       if (!response.body) {
@@ -130,7 +185,7 @@ const PopupChatAI = () => {
 
       let accumulatedContent = '';
 
-      while (true) {
+      while (true && isOpen) {
         const { done, value } = await reader.read();
         if (done) break;
 
@@ -169,6 +224,11 @@ const PopupChatAI = () => {
       ));
 
     } catch (error) {
+      if (error.name === 'AbortError') {
+        // Request was cancelled, don't show error
+        return;
+      }
+      
       console.error('Error:', error);
       const errorMessage: Message = {
         id: Date.now().toString(),
@@ -176,118 +236,116 @@ const PopupChatAI = () => {
         content: 'Sorry, I encountered an error. Please try again.'
       };
       setMessages(prev => [...prev, errorMessage]);
+    } finally {
+      setIsLoading(false);
+      abortControllerRef.current = null;
     }
+  }, [inputValue, isLoading, isOpen, messages]);
 
-    setIsLoading(false);
-  };
-
-  const handleKeyPress = (e: React.KeyboardEvent) => {
+  const handleKeyPress = useCallback((e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSendMessage();
     }
-  };
+  }, [handleSendMessage]);
+
+  const handleOpen = useCallback(() => {
+    setIsOpen(true);
+  }, []);
+
+  const handleClose = useCallback(() => {
+    setIsOpen(false);
+  }, []);
 
   return (
     <>
-      {/* Backdrop overlay */}
+      {/* Only render anything when chat is open */}
       {isOpen && (
-        <div 
-          className="fixed inset-0 z-40"
-          onClick={() => setIsOpen(false)}
-        />
-      )}
-      
-      <div className="fixed bottom-6 right-6 z-50">
-        {/* Chat Button */}
-        {!isOpen && (
-          <button
-            onClick={() => setIsOpen(true)}
-            className="rounded-full p-4 shadow-lg transition-all duration-300 hover:scale-110"
-          >
-            <MessageCircle size={24} />
-          </button>
-        )}
-
-        {/* Chat Popup - Fixed positioning and overflow */}
-        {isOpen && (
-          <div className="bg-black  fixed bottom-20 right-6 rounded-lg shadow-2xl border border-gray-200 w-96 h-[500px] flex flex-col animate-in slide-in-from-bottom-5 duration-300 max-w-[calc(100vw-3rem)]">
-          {/* Header */}
-          <div className="p-4 rounded-t-lg flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Bot size={20} />
-              <h3 className="font-semibold">Dubey's SoulAI</h3>
-            </div>
-            <button
-              onClick={() => setIsOpen(false)}
-              className="rounded p-1 transition-colors"
-            >
-              <X size={18} />
-            </button>
-          </div>
-
-          {/* Messages Container */}
-          <div
-            ref={chatContainerRef}
-            className="flex-1 overflow-y-auto p-4 space-y-4"
-          >
-            {messages.map((message) => (
-              <div
-                key={message.id}
-                className={`flex gap-3 ${
-                  message.role === 'user' ? 'justify-end' : 'justify-start'
-                }`}
+        <>
+          {/* Backdrop overlay */}
+          <div 
+            className="fixed inset-0 z-40"
+            onClick={handleClose}
+          />
+          
+          {/* Chat Popup */}
+          <div className="fixed bottom-20 right-6 rounded-lg shadow-2xl border w-96 h-[500px] flex flex-col animate-in slide-in-from-bottom-5 duration-300 max-w-[calc(100vw-3rem)] z-50">
+            {/* Header */}
+            <div className="p-4 rounded-t-lg flex items-center justify-between border-b">
+              <div className="flex items-center gap-2">
+                <Bot size={20} />
+                <h3 className="font-semibold">Dubey's SoulAI</h3>
+              </div>
+              <button
+                onClick={handleClose}
+                className="rounded p-1 transition-colors"
+                aria-label="Close chat"
               >
-                {message.role === 'assistant' && (
+                <X size={18} />
+              </button>
+            </div>
+
+            {/* Messages Container */}
+            <div
+              ref={chatContainerRef}
+              className="flex-1 overflow-y-auto p-4 space-y-4"
+            >
+              {messages.map((message) => (
+                <div
+                  key={message.id}
+                  className={`flex gap-3 ${
+                    message.role === 'user' ? 'justify-end' : 'justify-start'
+                  }`}
+                >
+                  {message.role === 'assistant' && (
+                    <div className="rounded-full p-2 h-8 w-8 flex items-center justify-center flex-shrink-0">
+                      <Bot size={16} />
+                    </div>
+                  )}
+                  
+                  <div
+                    className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
+                      message.role === 'user'
+                        ? 'ml-auto'
+                        : 'border shadow-sm'
+                    }`}
+                  >
+                    <p className="text-sm whitespace-pre-wrap">
+                      {message.content}
+                      {message.streaming && (
+                        <span className="inline-block w-2 h-4 ml-1 animate-pulse">|</span>
+                      )}
+                    </p>
+                  </div>
+
+                  {message.role === 'user' && (
+                    <div className="rounded-full p-2 h-8 w-8 flex items-center justify-center flex-shrink-0">
+                      <User size={16} />
+                    </div>
+                  )}
+                </div>
+              ))}
+              
+              {/* Loading indicator */}
+              {isLoading && (
+                <div className="flex gap-3 justify-start">
                   <div className="rounded-full p-2 h-8 w-8 flex items-center justify-center flex-shrink-0">
                     <Bot size={16} />
                   </div>
-                )}
-                
-                <div
-                  className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
-                    message.role === 'user'
-                      ? 'ml-auto'
-                      : 'border shadow-sm'
-                  }`}
-                >
-                  <p className="text-sm whitespace-pre-wrap">
-                    {message.content}
-                    {message.streaming && (
-                      <span className="inline-block w-2 h-4 bg-current ml-1 animate-pulse">|</span>
-                    )}
-                  </p>
-                </div>
-
-                {message.role === 'user' && (
-                  <div className="rounded-full p-2 h-8 w-8 flex items-center justify-center flex-shrink-0">
-                    <User size={16} />
-                  </div>
-                )}
-              </div>
-            ))}
-            
-            {/* Loading indicator when waiting for API response */}
-            {isLoading && (
-              <div className="flex gap-3 justify-start">
-                <div className="rounded-full p-2 h-8 w-8 flex items-center justify-center flex-shrink-0">
-                  <Bot size={16} />
-                </div>
-                <div className="border shadow-sm px-4 py-2 rounded-lg max-w-xs">
-                  <div className="flex items-center gap-2">
-                    <Loader2 size={16} className="animate-spin" />
-                    <span className="text-sm">Thinking...</span>
+                  <div className="border shadow-sm px-4 py-2 rounded-lg max-w-xs">
+                    <div className="flex items-center gap-2">
+                      <Loader2 size={16} className="animate-spin" />
+                      <span className="text-sm">Thinking...</span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            )}
-            
-            <div ref={messagesEndRef} />
-          </div>
+              )}
+              
+              <div ref={messagesEndRef} />
+            </div>
 
-          {/* Input Area */}
-          <div className="p-4 border-t border-gray-200 rounded-b-lg">
-         <div className="p-4 border-t rounded-b-lg">
+            {/* Input Area */}
+            <div className="p-4 border-t rounded-b-lg">
               <div className="flex gap-2">
                 <input
                   type="text"
@@ -313,9 +371,22 @@ const PopupChatAI = () => {
               </div>
             </div>
           </div>
+        </>
+      )}
+      
+      {/* Chat Button - only visible when closed */}
+      {!isOpen && (
+        <div className="fixed bottom-6 right-6 z-50">
+          <button
+            onClick={handleOpen}
+            className="rounded-full p-4 shadow-lg transition-all duration-300 hover:scale-110"
+            aria-label="Open chat"
+          >
+            <MessageCircle size={24} />
+          </button>
         </div>
       )}
-</div></>
+    </>
   );
 };
 
