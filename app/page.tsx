@@ -7,6 +7,7 @@ import About from './about/page'
 import Expedu from './education/page'
 import Projects from './projects/page'
 import Blog from './blog/page'
+import LLm from './llm/page'
 
 export default function Home(){
 return(
@@ -17,6 +18,7 @@ return(
    <Expedu/>
    <Projects/>
    <Blog/>
+   <LLm/>
     <Stats/>
   </div>
 );
