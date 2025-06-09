@@ -4,7 +4,41 @@ import Image from 'next/image'
 import TabButton from "./tabbutton";
 import Images from '../3d/gallery/page'
 import Skill from '../skills/page'
+interface CircularPfpProps {
+  src: string;
+  alt?: string;
+  size?: 'sm' | 'md' | 'lg' | 'xl';
+  className?: string;
+  brightness?: number; 
+}
 
+const CircularPfp: React.FC<CircularPfpProps> = ({ 
+  src, 
+  alt = "Profile picture", 
+  size = 'md',
+  className = '',
+   brightness = 100
+}) => {
+  const sizeClasses = {
+    sm: 'w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28',
+    md: 'w-28 h-28 sm:w-32 sm:h-32 md:w-40 md:h-40 lg:w-48 lg:h-48', 
+    lg: 'w-40 h-40 sm:w-48 sm:h-48 md:w-56 md:h-56 lg:w-64 lg:h-64 xl:w-80 xl:h-80',
+    xl: 'w-48 h-48 sm:w-56 sm:h-56 md:w-64 md:h-64 lg:w-80 lg:h-80 xl:w-96 xl:h-96'
+  };
+
+  return (
+    <div className={`bg-transparent ${className}`}>
+      <div className={`${sizeClasses[size]} rounded-full border-2 border-blue-500 sm:border-4 overflow-hidden bg-transparent`}>
+        <img 
+          src={src}
+          alt={alt}
+          className="w-full h-full object-cover"
+            style={{ filter: `brightness(${brightness}%)` }}
+        />
+      </div>
+    </div>
+  );
+};
 interface Tab {
   title: string;
   id: string;
@@ -47,8 +81,15 @@ const AboutSection: React.FC = () => {
   return (
     <section className="" id="about">
       <div className="items-center ">
-
-        <div className="py-8 lg:px-32 sm:px-3 sm:py-16  mt-4 px-4 md:mt-0 text-left flex flex-col h-full">
+<div className="flex  justify-center ">
+      <CircularPfp 
+        src="/images/arjun.png"
+        alt="User profile"
+        size="lg"
+         brightness={85}
+      />
+    </div>
+        <div className=" lg:px-32 sm:px-3 sm:py-16  mt-4 px-4 md:mt-0 text-left flex flex-col h-full">
           <h2 className="text-4xl font-bold  mb-4">About Me</h2>
           <p className="text-base px-4 lg:text-lg">
      I am a software developer specializing in building high-performance, user-focused web applications. Skilled in ReactJS, NextJS, SolidJS, and an expert in JavaScript, HTML and CSS

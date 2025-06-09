@@ -7,7 +7,7 @@ import Link from "next/link";
 
 const HeroSection = () => {
   return (
-    <section className="flex items-center justify-center">
+    <section className="py-4 flex items-center justify-center">
       <div className="sm:grid-cols-12">
         <motion.div
           initial={{ opacity: 0, scale: 0.5 }}
