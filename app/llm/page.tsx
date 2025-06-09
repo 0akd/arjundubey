@@ -216,7 +216,7 @@ const PopupChatAI = () => {
           <div className="p-4 rounded-t-lg flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Bot size={20} />
-              <h3 className="font-semibold">DubeyAI</h3>
+              <h3 className="font-semibold">Dubey's SoulAI</h3>
             </div>
             <button
               onClick={() => setIsOpen(false)}
