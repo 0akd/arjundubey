@@ -18,12 +18,26 @@ interface ProjectsProps {
 export default function Projects({ data }: ProjectsProps): JSX.Element {
   const [showAll, setShowAll] = useState(false);
   
+  // Array of repository names to exclude from display
+  const excludedRepos = [
+    "ai-customer",
+    "repo-name-2", 
+    "private-project",
+    "test-repo",
+    "old-project"
+    // Add more repository names here that you want to hide
+  ];
+  
   // Handle undefined data
   const safeData = data || [];
-  const filteredRepos = safeData.filter((repo) => !repo.fork);
+  
+  // Filter out forks AND excluded repositories
+  const filteredRepos = safeData.filter((repo) => 
+    !repo.fork && !excludedRepos.includes(repo.name)
+  );
   
   // Limit to 6 cards initially
-  const displayedRepos = showAll ? filteredRepos : filteredRepos.slice(0, 6);
+  const displayedRepos = showAll ? filteredRepos : filteredRepos.slice(0, 3);
   
   // Project configuration array for images and live links
   const projectConfig: { [key: string]: { imagePath?: string; liveLink?: string } } = {

@@ -108,7 +108,7 @@ const AboutSection: React.FC = () => {
               Delhi, India
             </span></div>
               <Images/>
-          <div className="flex flex-row justify-start mt-8">
+          <div className="flex px-4 flex-row justify-start mt-8">
             {TAB_DATA.map((tabItem) => (
               <TabButton
                 key={tabItem.id}
