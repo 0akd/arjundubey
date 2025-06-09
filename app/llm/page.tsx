@@ -224,7 +224,7 @@ const PopupChatAI = () => {
       ));
 
     } catch (error) {
-      if (error.name === 'AbortError') {
+      if (error=== 'AbortError') {
         // Request was cancelled, don't show error
         return;
       }
