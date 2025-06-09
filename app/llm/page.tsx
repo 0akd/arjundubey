@@ -269,7 +269,7 @@ const PopupChatAI = () => {
           />
           
           {/* Chat Popup */}
-          <div className="fixed bottom-20 right-6 rounded-lg shadow-2xl border w-96 h-[500px] flex flex-col animate-in slide-in-from-bottom-5 duration-300 max-w-[calc(100vw-3rem)] z-50">
+          <div className="bg-black fixed bottom-20 right-6 rounded-lg shadow-2xl border w-96 h-[500px] flex flex-col animate-in slide-in-from-bottom-5 duration-300 max-w-[calc(100vw-3rem)] z-50">
             {/* Header */}
             <div className="p-4 rounded-t-lg flex items-center justify-between border-b">
               <div className="flex items-center gap-2">
