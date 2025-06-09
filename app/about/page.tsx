@@ -89,8 +89,8 @@ const AboutSection: React.FC = () => {
          brightness={85}
       />
     </div>
-        <div className=" lg:px-32 sm:px-3 sm:py-16  mt-4 px-4 md:mt-0 text-left flex flex-col h-full">
-          <h2 className="text-4xl font-bold  mb-4">About Me</h2>
+        <div className=" lg:px-32 sm:px-3 sm:py-16  mt-4  md:mt-0 text-left flex flex-col h-full">
+          <h2 className="text-4xl font-bold px-4 mb-4">About Me</h2>
           <p className="text-base px-4 lg:text-lg">
      I am a software developer specializing in building high-performance, user-focused web applications. Skilled in ReactJS, NextJS, SolidJS, and an expert in JavaScript, HTML and CSS
           </p>
