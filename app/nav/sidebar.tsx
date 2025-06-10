@@ -13,6 +13,7 @@ interface SidebarProps {
 
 const navigationItems: NavigationItem[] = [
   //{name:'',path:''},
+  {name:'HOME',path:'/'},
   {name:'ABOUT&SKILLS&CERTI.',path:'/about'},
   {name:'EXP & EDU',path:'/education'},
   {name:'PROJECTS',path:'/projects'},
