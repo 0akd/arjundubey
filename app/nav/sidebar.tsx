@@ -31,7 +31,7 @@ const navigationItems: NavigationItem[] = [
   { name: 'Webhooks', path: '/webhooks' },
   { name: 'Logs', path: '/logs' },
   { name: 'Security', path: '/security' },
-  { name: 'Backup', path: '/backup' },
+  { name: 'logout', path: '/logout' },
 ];
 
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
