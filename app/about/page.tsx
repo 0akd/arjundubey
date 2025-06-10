@@ -118,7 +118,7 @@ const AboutSection: React.FC = () => {
   return (
     <section className="" id="about">
       <div className="items-center">
-        <div className="flex justify-center">
+        <div className="flex justify-center pt-1">
           <CircularPfp 
             src="/images/arjun.png"
             alt="User profile"

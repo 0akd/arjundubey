@@ -12,6 +12,8 @@ interface SidebarProps {
 }
 
 const navigationItems: NavigationItem[] = [
+  //{name:'',path:''},
+  {name:'ABOUT',path:'/about'},
   { name: 'LOGIN', path: '/login' },
 
   { name: 'LOGOUT', path: '/logout' },
