@@ -103,7 +103,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                 <li key={index}>
                   <Link
                     href={item.path}
-                    className="block px-4 py-3 rounded-md hover:opacity-80 transition-all duration-200 border border-blue-500"
+                    className="block px-4 py-3 rounded-md  transition-all duration-200 "
                     onClick={onClose}
                   >
                     {item.name}
