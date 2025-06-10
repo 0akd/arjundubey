@@ -96,7 +96,7 @@ export default function Shiba() {
           <PerspectiveCamera
             makeDefault
             position={[5, 20, 50]}
-            fov={1.3}
+            fov={1.45}
           />
           
           {/* OrbitControls with optimized settings */}
