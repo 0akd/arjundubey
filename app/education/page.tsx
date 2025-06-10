@@ -10,7 +10,7 @@ import { EDUCATION } from "./education";
 export default function About() {
   return (
     <>
-      
+
 
       <ExperienceShowcaseList title="Experience" details={EXPERIENCE} />
       <ExperienceShowcaseList title="Education" details={EDUCATION} />

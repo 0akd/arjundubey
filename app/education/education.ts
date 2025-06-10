@@ -13,4 +13,5 @@ export const EDUCATION: ExperienceShowcaseListItemProps[] = [
       "Relevant courses included Power Electronics , ELctricalCAD, Programmable Logic Controllers (PLCs) and ELectrical Wiring+Safety.",
   },
   
+  
 ];

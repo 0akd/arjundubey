@@ -2,6 +2,7 @@ import './globals.css'  // Import your global CSS file
 import { ThemeProvider } from 'next-themes'
 import { cn } from "@/lib/utils";
 import CursorTrailCanvas from "@/cursortrail/page";
+import Llm from './llm/page'
 import Nav from './nav/page'
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -11,7 +12,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             "bg-transparent  bg-[radial-gradient(#2f7df4_1px,transparent_1px)] [background-size:16px_16px]",
            
           )}>
-        <ThemeProvider> <CursorTrailCanvas className="pointer-events-none inset-0 -z-10 " /><Nav/>{children}</ThemeProvider></main>
+        <ThemeProvider> <CursorTrailCanvas className="pointer-events-none inset-0 -z-10 " /><Nav/>{children}<Llm/></ThemeProvider></main>
       </body>
     </html>
   )

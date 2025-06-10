@@ -10,7 +10,7 @@ const About = lazy(() => import('./about/page'))
 const Expedu = lazy(() => import('./education/page'))
 const Projects = lazy(() => import('./projects/page'))
 const Blog = lazy(() => import('./blog/page'))
-const LLm = lazy(() => import('./llm/page'))
+
 
 // Wrapper component for lazy loading with intersection observer
 function LazySection({ 
@@ -46,9 +46,7 @@ export default function Home() {
       {/* Nav is always loaded as it's typically needed immediately */}
       
     
-          <LazySection>
-        <LLm />
-      </LazySection>
+     
    
      <LazySection>
         <Hero />

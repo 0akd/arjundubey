@@ -13,7 +13,11 @@ interface SidebarProps {
 
 const navigationItems: NavigationItem[] = [
   //{name:'',path:''},
-  {name:'ABOUT',path:'/about'},
+  {name:'ABOUT&SKILLS&CERTI.',path:'/about'},
+  {name:'EXP & EDU',path:'/education'},
+  {name:'PROJECTS',path:'/projects'},
+  {name:'BLOGS',path:'/blog'},
+  {name:'DAILY GOAL STATUS',path:'/stats'},
   { name: 'LOGIN', path: '/login' },
 
   { name: 'LOGOUT', path: '/logout' },
@@ -62,7 +66,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
       {/* Sidebar */}
       <div
         ref={sidebarRef}
-        className={`fixed top-0 left-0 h-screen w-50 z-50 shadow-xl backdrop-blur-md   transform transition-transform duration-300 ease-in-out flex flex-col ${
+        className={`fixed top-0 left-0 h-screen w-60 z-50 shadow-xl backdrop-blur-md   transform transition-transform duration-300 ease-in-out flex flex-col ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
