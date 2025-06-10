@@ -4,7 +4,7 @@ import { clientConfig, serverConfig } from "./config/config";
 
 const PUBLIC_PATHS = ['/register', '/login', '/stats', '/'];
 const AUTH_REQUIRED_PATHS = ['/adminblog', '/counter']; // Add your protected routes here
-const PASSWORD_PROTECTED_PATHS = ['/counte']; // Routes that need password protection
+const PASSWORD_PROTECTED_PATHS = ['/stats']; // Routes that need password protection
 const PASSWORD_AUTH_PATH = '/password-auth';
 
 // Password protection logic
