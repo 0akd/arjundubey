@@ -96,9 +96,10 @@ export default function NavBar() {
           </div>
           
           {/* Sidebar */}
-          <Sidebar isOpen={isSidebarOpen} onClose={closeSidebar} />
+         
         </div>
       </nav>
+       <Sidebar isOpen={isSidebarOpen} onClose={closeSidebar} />
     </>
   )
 }

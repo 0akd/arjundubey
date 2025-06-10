@@ -67,28 +67,26 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
 
   return (
     <>
-      {/* Overlay */}
+      {/* Overlay with backdrop blur */}
       <div
-        className={`fixed inset-0 z-40 transition-opacity duration-300 ${
-          isOpen ? 'opacity-50' : 'opacity-0 pointer-events-none'
+        className={`fixed inset-0 z-40 transition-all duration-300 ${
+          isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
         }`}
-        style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
       />
 
       {/* Sidebar */}
       <div
         ref={sidebarRef}
-        className={`fixed top-0 left-0 h-screen w-80 z-50 border-r shadow-lg transform transition-transform duration-300 ease-in-out flex flex-col ${
+        className={`fixed top-0 left-0 h-screen w-80 z-50 shadow-xl backdrop-blur-md   transform transition-transform duration-300 ease-in-out flex flex-col ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
-        style={{ backgroundColor: 'var(--sidebar-bg, white)' }}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b flex-shrink-0">
+        <div className="flex items-center justify-between p-4 flex-shrink-0  ">
           <h2 className="text-xl font-semibold">Navigation</h2>
           <button
             onClick={onClose}
-            className="p-2 rounded-md hover:opacity-70 transition-opacity duration-200"
+            className="p-2 rounded-md hover:opacity-80 transition-all duration-200"
             aria-label="Close sidebar"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -98,14 +96,14 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
         </div>
 
         {/* Scrollable Content */}
-        <div className="flex-1 overflow-y-auto min-h-0">
+        <div className="flex-1 overflow-y-auto min-h-0 ">
           <nav className="p-4">
             <ul className="space-y-2">
               {navigationItems.map((item, index) => (
                 <li key={index}>
                   <Link
                     href={item.path}
-                    className="block px-4 py-3 rounded-md hover:opacity-80 transition-opacity duration-200 border border-transparent hover:border-gray-200"
+                    className="block px-4 py-3 rounded-md hover:opacity-80 transition-all duration-200 border border-blue-500"
                     onClick={onClose}
                   >
                     {item.name}
@@ -117,7 +115,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
         </div>
 
         {/* Footer */}
-        <div className="p-4 border-t flex-shrink-0">
+        <div className="p-4 flex-shrink-0  ">
           <div className="text-sm opacity-60">
             Version 1.0.0
           </div>
