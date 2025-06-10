@@ -335,8 +335,8 @@ const getProgressColor = (current: number, goal: number) => {
          
           className="inline-block cursor-pointer select-none"
         >
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold">Goal's Status</h1>
-          <p>solo leveling</p>
+          <h1 className="text-2xl pt-4 sm:text-3xl lg:text-4xl font-bold">Mental Stats</h1>
+          <p>give the animalistic characteristics to an entity so its behavior depends on its I.Q and E.Q</p>
         </div>
         {isAdmin && (
           <div className="mt-4 text-sm text-blue-600">
