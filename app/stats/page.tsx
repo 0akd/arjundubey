@@ -347,7 +347,7 @@ const getProgressColor = (current: number, goal: number) => {
           onClick={handleSecretClick}
           className="inline-block cursor-pointer select-none"
         >
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold">Goal's Status</h1>
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold">Physical Stats</h1>
           <p>solo leveling</p>
         </div>
         {isAdmin && (
