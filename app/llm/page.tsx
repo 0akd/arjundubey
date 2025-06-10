@@ -211,7 +211,7 @@ const PopupChatAI = () => {
 
         {/* Chat Popup - Fixed positioning and overflow */}
         {isOpen && (
-          <div className="bg-black/40 backdrop-blur-sm   fixed bottom-20 right-6 rounded-lg shadow-2xl border border-gray-200 w-96 h-[500px] flex flex-col animate-in slide-in-from-bottom-5 duration-300 max-w-[calc(100vw-3rem)]">
+          <div className="bg-opacity-10 backdrop-blur-sm   fixed bottom-20 right-6 rounded-lg shadow-2xl border border-gray-200 w-96 h-[500px] flex flex-col animate-in slide-in-from-bottom-5 duration-300 max-w-[calc(100vw-3rem)]">
           {/* Header */}
           <div className="p-4 rounded-t-lg flex items-center justify-between">
             <div className="flex items-center gap-2">
