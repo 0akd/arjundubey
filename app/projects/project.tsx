@@ -112,26 +112,26 @@ export default function Projects({ data }: ProjectsProps): JSX.Element {
         )}
         
         {/* Fun Stats Section */}
-        {filteredRepos.length > 0 && (
-          <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="rounded-xl p-6 text-center shadow-lg">
-              <div className="text-3xl font-bold mb-2">{filteredRepos.length}</div>
-              <div className="">Total Projects</div>
-            </div>
-            <div className="rounded-xl p-6 text-center shadow-lg">
-              <div className="text-3xl font-bold mb-2">
-                {filteredRepos.filter(repo => repo.description).length}
-              </div>
-              <div className="">Documented</div>
-            </div>
-            <div className="rounded-xl p-6 text-center shadow-lg">
-              <div className="text-3xl font-bold mb-2">
-                {new Date().getFullYear() - Math.min(...filteredRepos.map(repo => new Date(repo.updated_at).getFullYear()))}+
-              </div>
-              <div className="">Years Active</div>
-            </div>
-          </div>
-        )}
+       {filteredRepos.length > 0 && (
+  <div className="mt-16 grid grid-cols-3 gap-6">
+    <div className="rounded-xl p-6 text-center shadow-lg">
+      <div className="text-3xl font-bold mb-2">{filteredRepos.length}</div>
+      <div>Total Projects</div>
+    </div>
+    <div className="rounded-xl p-6 text-center shadow-lg">
+      <div className="text-3xl font-bold mb-2">
+        {filteredRepos.filter(repo => repo.description).length}
+      </div>
+      <div>Documented</div>
+    </div>
+    <div className="rounded-xl p-6 text-center shadow-lg">
+      <div className="text-3xl font-bold mb-2">
+        {new Date().getFullYear() - Math.min(...filteredRepos.map(repo => new Date(repo.updated_at).getFullYear()))}+
+      </div>
+      <div>Years Active</div>
+    </div>
+  </div>
+)}
       </div>
     </section>
   );
