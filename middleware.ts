@@ -6,7 +6,7 @@ const PUBLIC_PATHS = ['/register', '/login', '/stats', '/blog','/about','/projec
 const AUTH_REQUIRED_PATHS = ['/adminblog', '/counter']; // Add your protected routes here
 const PASSWORD_PROTECTED_PATHS = ['']; // Routes that need password protection
 const PASSWORD_AUTH_PATH = '/password-auth';
-const EXCLUDED_PATHS = ['/stats/mental'];
+const EXCLUDED_PATHS = ['/stats/mental','/stats/spirit'];
 // Password protection logic
 function checkPasswordAuth(request: NextRequest): NextResponse | null {
   const pathname = request.nextUrl.pathname;
