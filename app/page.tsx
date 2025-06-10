@@ -16,7 +16,7 @@ const LLm = lazy(() => import('./llm/page'))
 // Wrapper component for lazy loading with intersection observer
 function LazySection({ 
   children, 
-  fallback = <div className="min-h-[200px] flex items-center justify-center">Loading...</div>,
+  fallback = <div className="min-h-screen flex items-center justify-center">Loading...</div>,
   rootMargin = "100px"
 }: {
   children: React.ReactNode
@@ -45,8 +45,10 @@ export default function Home() {
   return (
     <div>
       {/* Nav is always loaded as it's typically needed immediately */}
-      <Nav />
       
+      <LazySection>
+          <Nav />
+      </LazySection>
      <LazySection>
         <Hero />
       </LazySection>
