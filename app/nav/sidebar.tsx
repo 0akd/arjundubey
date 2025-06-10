@@ -82,19 +82,21 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
         }`}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-4 flex-shrink-0  ">
-          <h2 className="text-xl font-semibold">Teleport to anywhere you want</h2>
-          <p>and scroll up to get more options</p>
-          <button
-            onClick={onClose}
-            className="p-2 rounded-md hover:opacity-80 transition-all duration-200"
-            aria-label="Close sidebar"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        </div>
+     <div className="flex items-center justify-between p-4 flex-shrink-0">
+  <div className="flex flex-col">
+    <h2 className="text-xl font-semibold">Teleport to anywhere you want</h2>
+    <p>and scroll up to get more options</p>
+  </div>
+  <button
+    onClick={onClose}
+    className="p-2 rounded-md hover:opacity-80 transition-all duration-200"
+    aria-label="Close sidebar"
+  >
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+    </svg>
+  </button>
+</div>
 
         {/* Scrollable Content */}
         <div className="flex-1 overflow-y-auto min-h-0 ">
