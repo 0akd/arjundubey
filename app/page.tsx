@@ -46,7 +46,9 @@ export default function Home() {
       {/* Nav is always loaded as it's typically needed immediately */}
       
     
-       
+          <LazySection>
+        <LLm />
+      </LazySection>
    
      <LazySection>
         <Hero />
@@ -68,9 +70,7 @@ export default function Home() {
         <Blog />
       </LazySection>
       
-      <LazySection>
-        <LLm />
-      </LazySection>
+   
       
       <LazySection>
         <Stats />
