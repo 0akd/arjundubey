@@ -1,25 +1,79 @@
 "use client"
 import { useTheme } from 'next-themes'
-import Stats from './stats/page'
+import { lazy, Suspense } from 'react'
+import { useInView } from 'react-intersection-observer'
 import Nav from './nav/page'
-import Hero from './Hero/page'
-import About from './about/page'
-import Expedu from './education/page'
-import Projects from './projects/page'
-import Blog from './blog/page'
-import LLm from './llm/page'
 
-export default function Home(){
-return(
-  <div>
-   <Nav/>
-   <Hero/>
-   <About/>
-   <Expedu/>
-   <Projects/>
-   <Blog/>
-   <LLm/>
-    <Stats/>
-  </div>
-);
+// Lazy load components
+const Stats = lazy(() => import('./stats/page'))
+const Hero = lazy(() => import('./Hero/page'))
+const About = lazy(() => import('./about/page'))
+const Expedu = lazy(() => import('./education/page'))
+const Projects = lazy(() => import('./projects/page'))
+const Blog = lazy(() => import('./blog/page'))
+const LLm = lazy(() => import('./llm/page'))
+
+// Wrapper component for lazy loading with intersection observer
+function LazySection({ 
+  children, 
+  fallback = <div className="min-h-[200px] flex items-center justify-center">Loading...</div>,
+  rootMargin = "100px"
+}: {
+  children: React.ReactNode
+  fallback?: React.ReactNode
+  rootMargin?: string
+}) {
+  const { ref, inView } = useInView({
+    triggerOnce: true,
+    rootMargin
+  })
+
+  return (
+    <div ref={ref}>
+      {inView ? (
+        <Suspense fallback={fallback}>
+          {children}
+        </Suspense>
+      ) : (
+        <div className="min-h-[200px]" /> // Placeholder to maintain layout
+      )}
+    </div>
+  )
+}
+
+export default function Home() {
+  return (
+    <div>
+      {/* Nav is always loaded as it's typically needed immediately */}
+      <Nav />
+      
+     <LazySection>
+        <Hero />
+      </LazySection>
+      
+      <LazySection>
+        <About />
+      </LazySection>
+      
+      <LazySection>
+        <Expedu />
+      </LazySection>
+      
+      <LazySection>
+        <Projects />
+      </LazySection>
+      
+      <LazySection>
+        <Blog />
+      </LazySection>
+      
+      <LazySection>
+        <LLm />
+      </LazySection>
+      
+      <LazySection>
+        <Stats />
+      </LazySection>
+    </div>
+  )
 }

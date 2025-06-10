@@ -20,23 +20,34 @@ const RADIUS_INCREMENT = 8; // Distance between orbital rings
 function MeshComponent({ 
   modelPath, 
   modelIndex, 
-  totalModels 
+  totalModels,
+  onModelLoaded
 }: { 
   modelPath: string; 
   modelIndex: number; 
-  totalModels: number; 
+  totalModels: number;
+  onModelLoaded: () => void;
 }) {
   const mesh = useRef<Mesh>(null!);
   const modelRef = useRef<Mesh>(null!);
+  const [modelLoaded, setModelLoaded] = useState(false);
   const gltf = useGLTF(modelPath);
   
   // Calculate unique orbital parameters for each model
   const orbitRadius = BASE_RADIUS + (modelIndex * RADIUS_INCREMENT);
   const initialAngle = (modelIndex / totalModels) * Math.PI * 2; // Evenly distribute around circle
   
+  // Notify parent when model is loaded
+  useEffect(() => {
+    if (gltf.scene && !modelLoaded) {
+      setModelLoaded(true);
+      onModelLoaded();
+    }
+  }, [gltf.scene, modelLoaded, onModelLoaded]);
+  
   // Revolution animation using useFrame
   useFrame((state) => {
-    if (mesh.current) {
+    if (mesh.current && modelLoaded) {
       const time = state.clock.getElapsedTime();
       
       // Calculate revolution position with unique starting angle for each model
@@ -48,6 +59,9 @@ function MeshComponent({
       mesh.current.position.set(x, 0, z);
     }
   });
+
+  // Only render if model is loaded
+  if (!modelLoaded) return null;
 
   return (
     <mesh ref={mesh}>
@@ -61,11 +75,41 @@ function MeshComponent({
   );
 }
 
+function LoadingSpinner() {
+  return (
+    <div className="absolute inset-0 flex items-center justify-center  z-10">
+      <div className="flex flex-col items-center space-y-4">
+        <div className="relative">
+          <div className="w-12 h-12 border-4 rounded-full animate-spin"></div>
+          <div className="absolute top-0 left-0 w-12 h-12 border-4rounded-full animate-spin border-t-transparent"></div>
+        </div>
+        <div className=" text-sm font-medium">Loading 3D Models...</div>
+        <div className=" text-xs">This may take a moment</div>
+      </div>
+    </div>
+  );
+}
+
 export default function Shiba() {
-  // No need for model switching state anymore since all models are shown
+  const [loadedModelsCount, setLoadedModelsCount] = useState(0);
+  const [showContent, setShowContent] = useState(false);
+
+  const handleModelLoaded = () => {
+    setLoadedModelsCount(prev => {
+      const newCount = prev + 1;
+      // Show content as soon as first model loads
+      if (newCount === 1) {
+        setShowContent(true);
+      }
+      return newCount;
+    });
+  };
 
   return (
     <div className='w-full h-48 sm:h-56 md:h-64 rounded-lg overflow-hidden shadow-sm relative'>
+      {/* Loading indicator - shows until at least one model is loaded */}
+      {!showContent && <LoadingSpinner />}
+      
       <Canvas>
         {/* Camera with custom position - adjusted for multiple orbiting models */}
         <PerspectiveCamera
@@ -97,13 +141,7 @@ export default function Shiba() {
           castShadow={false}
         />
         
-        <pointLight 
-          position={[5, 20, 40]} 
-          intensity={1.2} 
-          color="#ffffff"
-          distance={200}
-          decay={1}
-        />
+   
         
         <pointLight 
           position={[30, 10, 20]} 
@@ -134,11 +172,10 @@ export default function Shiba() {
             modelPath={modelPath} 
             modelIndex={index}
             totalModels={modelPaths.length}
+            onModelLoaded={handleModelLoaded}
           />
         ))}
       </Canvas>
-      
- 
     </div>
   );
 }
