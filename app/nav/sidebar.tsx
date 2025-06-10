@@ -12,26 +12,9 @@ interface SidebarProps {
 }
 
 const navigationItems: NavigationItem[] = [
-  { name: 'Login', path: '/login' },
-  { name: 'Profile', path: '/profile' },
-  { name: 'Settings', path: '/settings' },
-  { name: 'Analytics', path: '/analytics' },
-  { name: 'Reports', path: '/reports' },
-  { name: 'Messages', path: '/messages' },
-  { name: 'Notifications', path: '/notifications' },
-  { name: 'Calendar', path: '/calendar' },
-  { name: 'Tasks', path: '/tasks' },
-  { name: 'Projects', path: '/projects' },
-  { name: 'Team', path: '/team' },
-  { name: 'Documentation', path: '/docs' },
-  { name: 'Support', path: '/support' },
-  { name: 'Billing', path: '/billing' },
-  { name: 'Integration', path: '/integration' },
-  { name: 'API Keys', path: '/api-keys' },
-  { name: 'Webhooks', path: '/webhooks' },
-  { name: 'Logs', path: '/logs' },
-  { name: 'Security', path: '/security' },
-  { name: 'logout', path: '/logout' },
+  { name: 'LOGIN', path: '/login' },
+
+  { name: 'LOGOUT', path: '/logout' },
 ];
 
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
@@ -111,12 +94,10 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                  shadow-lg 
                  relative overflow-hidden
                  before:absolute before:inset-0 before:border-t before:border-l 
-                 before:border-white/20 before:rounded-md
-                 
-               "
+                 before:border-white/20 before:rounded-md"
       onClick={onClose}
     >
-      <span className="relative z-10">{item.name}</span>
+      <span className="relative z-10 font-bold">{item.name}</span>
     </Link>
   </li>
 ))}
