@@ -10,6 +10,7 @@ const About = lazy(() => import('./about/page'))
 const Expedu = lazy(() => import('./education/page'))
 const Projects = lazy(() => import('./projects/page'))
 const Blog = lazy(() => import('./blog/page'))
+const Mentalstas = lazy(()=>import('./stats/mental/page'))
 
 
 // Wrapper component for lazy loading with intersection observer
@@ -72,6 +73,9 @@ export default function Home() {
       
       <LazySection>
         <Stats />
+      </LazySection>
+          <LazySection>
+        <Mentalstas />
       </LazySection>
     </div>
   )

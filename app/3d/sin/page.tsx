@@ -43,9 +43,9 @@ function LoadingSpinner() {
       <div className="flex flex-col items-center ">
         <div className="relative">
           {/* Outer ring */}
-          <div className="w-16 h-16 border-4  rounded-full animate-spin"></div>
+          <div className="w-16 h-16   rounded-full animate-spin"></div>
           {/* Inner ring */}
-          <div className="absolute top-0 left-0 w-16 h-16 border-4  rounded-full animate-spin border-t-transparent"></div>
+          <div className="absolute top-0 left-0 w-16 h-16  rounded-full animate-spin "></div>
           {/* Center dot */}
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-3 h-3  rounded-full animate-pulse"></div>
         </div>
@@ -61,7 +61,7 @@ function CanvasFallback() {
     <div className="w-full h-full flex items-center justify-center">
       <div className="text-center">
         <div className="text-lg mb-2">Loading Scene...</div>
-        <div className="w-8 h-8 border-2 border-t-transparent rounded-full animate-spin mx-auto"></div>
+        <div className="w-8 h-8  rounded-full animate-spin mx-auto"></div>
       </div>
     </div>
   );

@@ -290,11 +290,7 @@ const CounterPage: React.FC = () => {
     }
   };
 
-  const handleLogout = async () => {
-    await signOut(getAuth(app));
-    await fetch("/api/logout");
-    router.push("/login");
-  };
+
 
  const getCounterColor = (current: number, goal: number) => {
   if (current >= goal) {
@@ -369,12 +365,7 @@ const getProgressColor = (current: number, goal: number) => {
           <div className=" border border-blue-200 rounded-lg p-4">
             <div className="flex flex-wrap gap-3 items-center justify-between mb-4">
               <h2 className="text-lg font-semibold">Admin Controls</h2>
-              <button
-                onClick={handleLogout}
-                className=" text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
-              >
-                Logout
-              </button>
+       
             </div>
             
             <div className="flex flex-wrap space-x-3">

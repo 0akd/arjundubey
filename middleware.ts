@@ -2,11 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { authMiddleware, redirectToHome, redirectToLogin } from "next-firebase-auth-edge";
 import { clientConfig, serverConfig } from "./config/config";
 
-const PUBLIC_PATHS = ['/register', '/login', '/stats', '/blog','/about','/projects','/','/education'];
+const PUBLIC_PATHS = ['/register', '/login', '/stats', '/blog','/about','/projects','/','/education',];
 const AUTH_REQUIRED_PATHS = ['/adminblog', '/counter']; // Add your protected routes here
-const PASSWORD_PROTECTED_PATHS = ['/stats']; // Routes that need password protection
+const PASSWORD_PROTECTED_PATHS = ['']; // Routes that need password protection
 const PASSWORD_AUTH_PATH = '/password-auth';
-
+const EXCLUDED_PATHS = ['/stats/mental'];
 // Password protection logic
 function checkPasswordAuth(request: NextRequest): NextResponse | null {
   const pathname = request.nextUrl.pathname;
@@ -19,7 +19,9 @@ function checkPasswordAuth(request: NextRequest): NextResponse | null {
   }
   
   // Check if this path requires password protection
-  const requiresPassword = PASSWORD_PROTECTED_PATHS.some(path => pathname.startsWith(path));
+  const requiresPassword = PASSWORD_PROTECTED_PATHS.some((path) =>
+  pathname.startsWith(path)
+) && !EXCLUDED_PATHS.includes(pathname);
   
   if (requiresPassword) {
     // Check for password auth cookie
