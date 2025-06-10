@@ -296,24 +296,41 @@ const CounterPage: React.FC = () => {
     router.push("/login");
   };
 
-  const getCounterColor = (current: number, goal: number) => {
-    if (current >= goal) {
-      return ' border-green-400 ';
-    }
-    const progress = current / goal;
-    if (progress >= 0.8) {
-      return ' border-yellow-400 ';
-    }
+ const getCounterColor = (current: number, goal: number) => {
+  if (current >= goal) {
+    return ' border-purple-400 ';
+  }
+  
+  const progress = current / goal;
+  
+  if (progress >= 0.8) {
+    return ' border-green-400 ';
+  }
+  if (progress >= 0.6) {
+    return ' border-yellow-400 ';
+  }
+  if (progress >= 0.4) {
     return ' border-blue-400 ';
-  };
+  }
+  if (progress >= 0.2) {
+    return ' border-orange-400 ';
+  }
+  
+  return ' border-red-400 ';
+};
 
-  const getProgressColor = (current: number, goal: number) => {
-    if (current >= goal) return 'bg-green-500';
-    const progress = current / goal;
-    if (progress >= 0.8) return 'bg-yellow-500';
-    return 'bg-blue-500';
-  };
-
+const getProgressColor = (current: number, goal: number) => {
+  if (current >= goal) return 'bg-purple-500';
+  
+  const progress = current / goal;
+  
+  if (progress >= 0.8) return 'bg-green-500';
+  if (progress >= 0.6) return 'bg-yellow-500';
+  if (progress >= 0.4) return 'bg-blue-500';
+  if (progress >= 0.2) return 'bg-orange-500';
+  
+  return 'bg-red-500';
+};
   const getProgressPercentage = (current: number, goal: number) => {
     return Math.min((current / goal) * 100, 100);
   };
