@@ -344,7 +344,7 @@ const getProgressColor = (current: number, goal: number) => {
   }
 
   return (
-    <div className="min-h-screen py-4 sm:py-6 lg:py-8">
+    <div className="lg:py-8">
       {/* Secret clickable header */}
       <div className="text-center mb-6 sm:mb-8 px-4">
         <div 

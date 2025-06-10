@@ -78,7 +78,7 @@ export default function Shiba() {
   };
 
   return (
-    <div className='w-full h-40 sm:h-50 md:h-60 rounded-lg overflow-hidden shadow-lg relative '>
+    <div className='w-full h-40 sm:h-50 md:h-60 rounded-lg overflow-hidden  relative '>
       {/* Loading indicator */}
       {!sceneReady && <LoadingSpinner />}
       

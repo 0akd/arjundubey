@@ -1,8 +1,7 @@
 "use client"
-import { useTheme } from 'next-themes'
+
 import { lazy, Suspense } from 'react'
 import { useInView } from 'react-intersection-observer'
-import Nav from './nav/page'
 
 // Lazy load components
 const Stats = lazy(() => import('./stats/page'))
@@ -47,7 +46,7 @@ export default function Home() {
       {/* Nav is always loaded as it's typically needed immediately */}
       
       <LazySection>
-          <Nav />
+       
       </LazySection>
      <LazySection>
         <Hero />
