@@ -118,33 +118,43 @@ const AboutSection: React.FC = () => {
   return (
     <section className="" id="about">
       <div className="items-center">
-        <div className="flex justify-center pt-1">
-          <CircularPfp 
-            src="/images/arjun.png"
-            alt="User profile"
-            size="lg"
-            brightness={85}
-          />
-        </div>
-        <div className="lg:px-32 sm:px-3 sm:py-16 mt-4 md:mt-0 text-left flex flex-col h-full">
-          <h2 className="text-4xl font-bold px-4 mb-4">About Me</h2>
-          <p className="text-base px-4 lg:text-lg">
-            I am a software developer specializing in building high-performance, user-focused web applications. Skilled in ReactJS, NextJS, SolidJS, and an expert in JavaScript, HTML and CSS
-          </p>
-          <div className="mr-0 mt-8 flex items-center justify-center gap-4 lg:mr-8 lg:justify-end">
-            <div className="relative flex w-12 gap-4 overflow-hidden rounded-md">
-              <Image
-                className="-z-10 h-full w-full bg-cover bg-no-repeat"
-                alt="Indian flag"
-                src="https://flagcdn.com/in.svg"
-                width={15}
-                height={15}
-              />
-            </div>
-            <span className="text-lg font-medium text-foreground">
-              Delhi, India
-            </span>
-          </div>
+       <div className=" px-10 flex flex-col lg:flex-row items-center lg:items-start justify-center lg:justify-between lg:px-32  gap-8">
+  {/* Profile Picture */}
+  <div className="flex justify-center lg:justify-start">
+    <CircularPfp 
+      src="/images/arjun.png"
+      alt="User profile"
+      size="lg"
+      brightness={85}
+    />
+  </div>
+
+  {/* About Me Section */}
+  <div className="flex flex-col text-left py-8">
+    <h2 className="text-4xl font-bold mb-4">About Me</h2>
+    <p className="text-base lg:text-lg max-w-xl">
+      I am a software developer specializing in building high-performance, user-focused web applications. Skilled in ReactJS, NextJS, SolidJS, and an expert in JavaScript, HTML and CSS.
+    </p>
+
+    {/* Location */}
+    <div className="mt-8 flex items-center gap-4">
+      <div className="relative flex w-6 h-6 overflow-hidden rounded-md">
+        <Image
+          className="object-cover"
+          alt="Indian flag"
+          src="https://flagcdn.com/in.svg"
+          width={24}
+          height={24}
+        />
+      </div>
+      <span className="text-lg font-medium text-foreground">Delhi, India</span>
+    </div>
+  </div>
+</div>
+
+        <div className="">
+         
+         
           
           {/* 3D Gallery with error boundary */}
           <div className="mt-8">
@@ -160,7 +170,7 @@ const AboutSection: React.FC = () => {
             </React.Suspense>
           </div>
           
-          <div className="flex px-4 flex-row justify-start mt-8">
+          <div className="flex px-10 flex-row justify-start mb-9">
             {TAB_DATA.map((tabItem) => (
               <TabButton
                 key={tabItem.id}
@@ -171,7 +181,7 @@ const AboutSection: React.FC = () => {
               </TabButton>
             ))}
           </div>
-          <div className="mt-8">{currentTabContent}</div>
+          <div className=" px-15">{currentTabContent}</div>
         </div>
       </div>
     </section>

@@ -2,14 +2,27 @@ import { NextRequest, NextResponse } from "next/server";
 import { authMiddleware, redirectToHome, redirectToLogin } from "next-firebase-auth-edge";
 import { clientConfig, serverConfig } from "./config/config";
 
-const PUBLIC_PATHS = ['/register', '/login', '/stats', '/blog','/about','/projects','/','/education','/stats/mental','/stats/spirit'];
+const PUBLIC_PATHS = ['/register', '/login', '/stats', '/blog','/about','/projects','/','/education','/stats/mental','/stats/spirit','/logout'];
 const AUTH_REQUIRED_PATHS = ['/adminblog', '/counter']; // Add your protected routes here
 const PASSWORD_PROTECTED_PATHS = ['']; // Routes that need password protection
 const PASSWORD_AUTH_PATH = '/password-auth';
-const EXCLUDED_PATHS = ['/stats/mental','/stats/spirit'];
+
+// Define path prefixes that should be completely excluded from any protection
+const EXCLUDED_PATH_PREFIXES = ['/stats/', '/blog/',];
+
+// Helper function to check if a path should be excluded
+function isExcludedPath(pathname: string): boolean {
+  return EXCLUDED_PATH_PREFIXES.some(prefix => pathname.startsWith(prefix));
+}
+
 // Password protection logic
 function checkPasswordAuth(request: NextRequest): NextResponse | null {
   const pathname = request.nextUrl.pathname;
+  
+  // Skip password check for excluded paths
+  if (isExcludedPath(pathname)) {
+    return null;
+  }
   
   // Skip password check for public paths, auth endpoints, and password auth page itself
   if (PUBLIC_PATHS.includes(pathname) || 
@@ -20,8 +33,8 @@ function checkPasswordAuth(request: NextRequest): NextResponse | null {
   
   // Check if this path requires password protection
   const requiresPassword = PASSWORD_PROTECTED_PATHS.some((path) =>
-  pathname.startsWith(path)
-) && !EXCLUDED_PATHS.includes(pathname);
+    pathname.startsWith(path)
+  );
   
   if (requiresPassword) {
     // Check for password auth cookie
@@ -60,6 +73,13 @@ function checkPasswordAuth(request: NextRequest): NextResponse | null {
 }
 
 export async function middleware(request: NextRequest) {
+  const pathname = request.nextUrl.pathname;
+  
+  // Skip all middleware for excluded paths
+  if (isExcludedPath(pathname)) {
+    return NextResponse.next();
+  }
+  
   // First check password protection
   const passwordAuthResponse = checkPasswordAuth(request);
   if (passwordAuthResponse) {
@@ -67,7 +87,7 @@ export async function middleware(request: NextRequest) {
   }
   
   // Handle password auth endpoint separately (bypass Firebase auth)
-  if (request.nextUrl.pathname === PASSWORD_AUTH_PATH) {
+  if (pathname === PASSWORD_AUTH_PATH) {
     return NextResponse.next();
   }
   
@@ -82,7 +102,7 @@ export async function middleware(request: NextRequest) {
     serviceAccount: serverConfig.serviceAccount,
     handleValidToken: async ({token, decodedToken}, headers) => {
       // Redirect authenticated users away from auth pages only
-      if (['/login', '/register'].includes(request.nextUrl.pathname)) {
+      if (['/login', '/register'].includes(pathname)) {
         return redirectToHome(request);
       }
 

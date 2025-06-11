@@ -20,6 +20,7 @@ const navigationItems: NavigationItem[] = [
   {name:'BLOGS',path:'/blog'},
   {name:'PHYSICAL STATS',path:'/stats'},
     {name:'MENTAL STATS',path:'/stats/mental'},
+     {name:'SPIRITUAL STATS',path:'/stats/spirit'},
   { name: 'LOGIN', path: '/login' },
 
   { name: 'LOGOUT', path: '/logout' },

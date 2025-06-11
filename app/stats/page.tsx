@@ -356,8 +356,8 @@ const getProgressColor = (current: number, goal: number) => {
           </div>
         )}
       </div>
-      
-      <Model/>
+      <div className="flex flex-col lg:flex-row items-center lg:items-start justify-center lg:justify-between px-4 lg:px-32 py-8 gap-8">
+      <div className='w-full lg:w-[30%]'><Model/></div>
 
       {/* Admin Controls */}
       {isAdmin && (
@@ -470,7 +470,7 @@ const getProgressColor = (current: number, goal: number) => {
       )}
      
       {/* Counters Display */}
-      <div className="max-w-6xl mx-auto px-3 sm:px-4 lg:px-6">
+      <div className="w-full lg:w-[70%] max-w-6xl mx-auto px-3 sm:px-4 lg:px-6">
         {counters.length === 0 ? (
           <div className="text-center py-12">
             <p className="text-base sm:text-lg">No counters found</p>
@@ -684,7 +684,7 @@ const getProgressColor = (current: number, goal: number) => {
             ))}
           </div>
         )}
-      </div>
+      </div></div>
     </div>
   );
 };
