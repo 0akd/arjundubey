@@ -165,8 +165,12 @@ const AboutSection: React.FC = () => {
                   <p className="text-sm">Loading 3D Gallery...</p>
                 </div>
               </div>
-            }>
-              <Images />
+            }><div className="">      {/* Left overlay */}
+        <div className="absolute top-0 left-0 h-full w-[25%] z-50" />
+
+      {/* Right overlay: blocks interaction */}
+      <div className="absolute top-0 right-0 h-full w-[25%] z-50" />
+              <Images /></div>
             </React.Suspense>
           </div>
           
