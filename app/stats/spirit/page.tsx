@@ -346,7 +346,16 @@ const getProgressColor = (current: number, goal: number) => {
       </div>
       
         <div className="flex flex-col lg:flex-row items-center lg:items-start justify-center lg:justify-between px-4 lg:px-32 py-8 gap-8">
-            <div className='w-full lg:w-[30%]'><Model/></div>
+                  <div className="relative w-full lg:w-[30%]">
+               {/* Left overlay: blocks touch on small screens only */}
+               <div className="absolute top-0 left-0 h-full w-[25%] z-50 block lg:hidden" />
+         
+               {/* Right overlay: blocks touch on small screens only */}
+               <div className="absolute top-0 right-0 h-full w-[25%] z-50 block lg:hidden" />
+         
+               {/* Main Model content */}
+               <Model />
+             </div>
       
             {/* Admin Controls */}
             {isAdmin && (

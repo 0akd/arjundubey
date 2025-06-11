@@ -16,7 +16,7 @@ const PasswordProtection: React.FC<PasswordProtectionProps> = ({
   const [timeRemaining, setTimeRemaining] = useState(0);
   const [error, setError] = useState('');
 
-  const CORRECT_PASSWORD = '000';
+  const CORRECT_PASSWORD = '2123';
   const MAX_ATTEMPTS = 5;
   const BLOCK_DURATION = 30; // seconds
 
@@ -107,12 +107,12 @@ const PasswordProtection: React.FC<PasswordProtectionProps> = ({
 const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
   const value = e.target.value;
   // Only allow digits and limit to 3 characters
-  if (/^\d{0,3}$/.test(value)) {
+  if (/^\d{0,4}$/.test(value)) {
     setPassword(value);
     setError('');
     
     // Auto-check password when 3 digits are entered
-    if (value.length === 3) {
+    if (value.length === 4) {
       setTimeout(() => checkPassword(value), 100); // Small delay for better UX
     }
   }
@@ -166,18 +166,24 @@ const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
       Password
     </label>
-    <input
-      id="password"
-      type="password"
-      value={password}
-      onChange={handleInputChange}
-      disabled={isBlocked}
-      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-center text-2xl tracking-widest disabled:bg-gray-100 disabled:cursor-not-allowed"
-      placeholder="•••"
-      maxLength={3}
-      autoComplete="off"
-      autoFocus
-    />
+   <input
+  id="password"
+  type="password"
+  value={password}
+  onChange={handleInputChange}
+  disabled={isBlocked }
+  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-center text-2xl tracking-widest disabled:bg-gray-100 disabled:cursor-not-allowed"
+  placeholder="••••"
+  maxLength={4}
+  autoComplete="off"
+  autoFocus={!isBlocked} // Only autofocus if not blocked
+  ref={(input) => {
+    if (input && !isBlocked ) {
+      // Small delay to ensure DOM is ready
+      setTimeout(() => input.focus(), 100);
+    }
+  }}
+/>
   </div>
 
   {error && (

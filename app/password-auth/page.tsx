@@ -59,80 +59,73 @@ function PasswordAuthContent() {
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  e.preventDefault();
+  // Form submission is now handled automatically in handleInputChange
+};
+const handleInputChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const value = e.target.value;
+  if (/^\d{0,3}$/.test(value)) {
+    setPassword(value);
+    setError('');
     
-    if (isBlocked) {
-      setError(`Please wait ${timeRemaining} seconds before trying again.`);
-      return;
-    }
+    // Auto-unlock when 3 digits are entered
+    if (value.length === 3 && !isBlocked && !isLoading) {
+      setIsLoading(true);
+      
+      try {
+        const response = await fetch('/api/password-auth', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ password: value }),
+        });
 
-    if (!/^\d{3}$/.test(password)) {
-      setError('Password must be exactly 3 digits.');
-      return;
-    }
+        const data = await response.json();
 
-    setIsLoading(true);
-
-    try {
-      const response = await fetch('/api/password-auth', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ password }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok && data.success) {
-        // Clear attempts and redirect
-        localStorage.removeItem('pw_failed_attempts');
-        localStorage.removeItem('pw_block_end');
-        router.push(redirectPath);
-      } else {
-        const newAttempts = attempts + 1;
-        setAttempts(newAttempts);
-        localStorage.setItem('pw_failed_attempts', newAttempts.toString());
-        
-        if (newAttempts >= MAX_ATTEMPTS) {
-          const blockEndTime = Date.now() + (BLOCK_DURATION * 1000);
-          localStorage.setItem('pw_block_end', blockEndTime.toString());
-          setIsBlocked(true);
-          setTimeRemaining(BLOCK_DURATION);
-          setError(`Too many failed attempts. Access blocked for ${BLOCK_DURATION} seconds.`);
-          
-          const interval = setInterval(() => {
-            const remaining = Math.ceil((blockEndTime - Date.now()) / 1000);
-            if (remaining <= 0) {
-              setIsBlocked(false);
-              setTimeRemaining(0);
-              setAttempts(0);
-              localStorage.removeItem('pw_block_end');
-              localStorage.removeItem('pw_failed_attempts');
-              clearInterval(interval);
-            } else {
-              setTimeRemaining(remaining);
-            }
-          }, 1000);
+        if (response.ok && data.success) {
+          // Clear attempts and redirect
+          localStorage.removeItem('pw_failed_attempts');
+          localStorage.removeItem('pw_block_end');
+          router.push(redirectPath);
         } else {
-          setError(`Incorrect password. ${MAX_ATTEMPTS - newAttempts} attempts remaining.`);
+          const newAttempts = attempts + 1;
+          setAttempts(newAttempts);
+          localStorage.setItem('pw_failed_attempts', newAttempts.toString());
+          
+          if (newAttempts >= MAX_ATTEMPTS) {
+            const blockEndTime = Date.now() + (BLOCK_DURATION * 1000);
+            localStorage.setItem('pw_block_end', blockEndTime.toString());
+            setIsBlocked(true);
+            setTimeRemaining(BLOCK_DURATION);
+            setError(`Too many failed attempts. Access blocked for ${BLOCK_DURATION} seconds.`);
+            
+            const interval = setInterval(() => {
+              const remaining = Math.ceil((blockEndTime - Date.now()) / 1000);
+              if (remaining <= 0) {
+                setIsBlocked(false);
+                setTimeRemaining(0);
+                setAttempts(0);
+                localStorage.removeItem('pw_block_end');
+                localStorage.removeItem('pw_failed_attempts');
+                clearInterval(interval);
+              } else {
+                setTimeRemaining(remaining);
+              }
+            }, 1000);
+          } else {
+            setError(`Incorrect password. ${MAX_ATTEMPTS - newAttempts} attempts remaining.`);
+          }
         }
+      } catch (error) {
+        setError('An error occurred. Please try again.');
+      } finally {
+        setIsLoading(false);
+        setPassword('');
       }
-    } catch (error) {
-      setError('An error occurred. Please try again.');
-    } finally {
-      setIsLoading(false);
-      setPassword('');
     }
-  };
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    if (/^\d{0,3}$/.test(value)) {
-      setPassword(value);
-      setError('');
-    }
-  };
+  }
+};
 
   // Prevent common bypass attempts
   useEffect(() => {
@@ -176,18 +169,24 @@ function PasswordAuthContent() {
             <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
               Password
             </label>
-            <input
-              id="password"
-              type="password"
-              value={password}
-              onChange={handleInputChange}
-              disabled={isBlocked || isLoading}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-center text-2xl tracking-widest disabled:bg-gray-100 disabled:cursor-not-allowed"
-              placeholder="•••"
-              maxLength={3}
-              autoComplete="off"
-              autoFocus
-            />
+      <input
+  id="password"
+  type="password"
+  value={password}
+  onChange={handleInputChange}
+  disabled={isBlocked || isLoading}
+  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-center text-2xl tracking-widest disabled:bg-gray-100 disabled:cursor-not-allowed"
+  placeholder="•••"
+  maxLength={3}
+  autoComplete="off"
+  autoFocus={!isBlocked} // Only autofocus if not blocked
+  ref={(input) => {
+    if (input && !isBlocked && !isLoading) {
+      // Small delay to ensure DOM is ready
+      setTimeout(() => input.focus(), 100);
+    }
+  }}
+/>
           </div>
 
           {error && (
@@ -209,7 +208,7 @@ function PasswordAuthContent() {
             disabled={isBlocked || password.length !== 3 || isLoading}
             className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 font-medium"
           >
-            {isLoading ? 'Verifying...' : isBlocked ? `Blocked (${timeRemaining}s)` : 'Unlock'}
+       {isLoading ? 'Verifying...' : isBlocked ? `Blocked (${timeRemaining}s)` : 'Auto-unlock enabled'}
           </button>
         </form>
 
