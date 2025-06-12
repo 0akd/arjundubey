@@ -2,7 +2,7 @@
 import { useTheme } from 'next-themes'
 import { Sun, Moon } from 'lucide-react'
 import { useEffect, useState } from 'react'
-
+import Eye from '../views/page'
 import Sidebar from './sidebar';
 
 const ThemeChanger = () => {
@@ -70,7 +70,7 @@ export default function NavBar() {
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           {/* Theme toggle on the left */}
           <div className="flex-shrink-0">
-            <ThemeChanger />
+            <ThemeChanger /><Eye/>
           </div>
           
           {/* Brand name in the center */}

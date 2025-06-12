@@ -231,73 +231,25 @@ const DeviceCounter: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center p-8 bg-gradient-to-br from-blue-50 to-indigo-100 rounded-xl shadow-lg">
-        <div className="flex items-center space-x-3">
-          <RefreshCw className="w-6 h-6 animate-spin text-blue-600" />
-          <span className="text-lg font-medium text-gray-700">Loading counter...</span>
-        </div>
+      <div >
+ 
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="p-6 bg-red-50 border border-red-200 rounded-xl shadow-lg">
-        <div className="flex items-center space-x-3 mb-4">
-          <AlertCircle className="w-8 h-8 text-red-600" />
-          <h2 className="text-xl font-bold text-red-800">Error</h2>
-        </div>
-        <p className="text-red-700 mb-4">{error}</p>
-        <button
-          onClick={handleRefresh}
-          className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200"
-        >
-          Try Again
-        </button>
+      <div >
+   
       </div>
     );
   }
 
   return (
-    <div className="max-w-md mx-auto p-8 bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100 rounded-2xl shadow-xl border border-white/20">
-      <div className="text-center">
-        <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-purple-500 to-blue-600 rounded-full mb-6 shadow-lg">
-          <Eye className="w-8 h-8 text-white" />
-        </div>
-        
-        <h1 className="text-3xl font-bold text-gray-800 mb-2">Device Counter</h1>
-        <p className="text-gray-600 mb-6">Unique device views tracked</p>
-        
-        <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-inner border border-white/40">
-          <div className="text-6xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent mb-2">
-            {counter?.count || 0}
-          </div>
-          <div className="text-sm text-gray-500">
-            {counter?.last_updated && (
-              <>Last updated: {new Date(counter.last_updated).toLocaleString()}</>
-            )}
-          </div>
-        </div>
-
-        <button
-          onClick={handleRefresh}
-          className="mt-6 inline-flex items-center space-x-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-xl hover:from-purple-700 hover:to-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-        >
-          <RefreshCw className="w-4 h-4" />
-          <span>Refresh</span>
-        </button>
-
-        <div className="mt-6 p-4 bg-white/60 rounded-lg border border-white/40">
-          <p className="text-xs text-gray-500 leading-relaxed">
-            This counter increments only once per unique device. 
-            Your device fingerprint: <br />
-            <code className="text-xs bg-gray-100 px-2 py-1 rounded mt-1 inline-block">
-              {deviceFingerprint.slice(0, 20)}...
-            </code>
-          </p>
-        </div>
-      </div>
-    </div>
+        <button className="inline-flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
+      <Eye className="w-4 h-4" />
+      <span className="font-medium">{counter?.count || 0}</span>
+    </button>
   );
 };
 
