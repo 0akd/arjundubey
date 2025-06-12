@@ -157,7 +157,29 @@ const DeviceCounter: React.FC = () => {
       setError('Failed to load counter data');
     }
   };
+ // Set up real-time subscription
+  useEffect(() => {
+    const subscription = supabase
+      .channel('view_counter_changes')
+      .on('postgres_changes', 
+        { 
+          event: 'UPDATE', 
+          schema: 'public', 
+          table: 'view_counters', 
+          filter: 'id=eq.main_view_counter' 
+        },
+        (payload: any) => {
+          if (payload.new) {
+            setCounter(payload.new as ViewCounterData);
+          }
+        }
+      )
+      .subscribe();
 
+    return () => {
+      supabase.removeChannel(subscription);
+    };
+  }, []);
   // Initialize component
   useEffect(() => {
     const initialize = async () => {
