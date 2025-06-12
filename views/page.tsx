@@ -40,14 +40,14 @@ interface ViewSession {
   totalViewportTime: number;
 }
 
-const UltraRobustViewCounter: React.FC = () => {
+const RelaxedViewCounter: React.FC = () => {
   const [counter, setCounter] = useState<ViewCounterData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [deviceFingerprint, setDeviceFingerprint] = useState<string>('');
   const [session, setSession] = useState<ViewSession | null>(null);
   const [isHumanVerified, setIsHumanVerified] = useState(false);
-  const [hasProcessedView, setHasProcessedView] = useState(false); // Prevent duplicate processing
+  const [hasProcessedView, setHasProcessedView] = useState(false);
   
   // Refs for tracking
   const elementRef = useRef<HTMLDivElement>(null);
@@ -56,7 +56,7 @@ const UltraRobustViewCounter: React.FC = () => {
   const lastActivityRef = useRef<number>(Date.now());
   const mouseActivityRef = useRef<boolean>(false);
   const keyboardActivityRef = useRef<boolean>(false);
-  const isProcessingRef = useRef<boolean>(false); // Prevent race conditions
+  const isProcessingRef = useRef<boolean>(false);
 
   // Generate STABLE device fingerprint (removed random and time components)
   const generateAdvancedFingerprint = useCallback(async (): Promise<string> => {
@@ -89,7 +89,7 @@ const UltraRobustViewCounter: React.FC = () => {
         ctx.fillStyle = '#f60';
         ctx.fillRect(125, 1, 62, 20);
         ctx.fillStyle = '#069';
-        ctx.fillText('Ultra View Counter 🔥', 2, 15);
+        ctx.fillText('Relaxed View Counter 🔥', 2, 15);
         ctx.fillStyle = 'rgba(102, 204, 0, 0.7)';
         ctx.fillRect(0, 0, 150, 50);
         
@@ -129,8 +129,6 @@ const UltraRobustViewCounter: React.FC = () => {
       localStorage: 'localStorage' in window,
       sessionStorage: 'sessionStorage' in window,
       indexedDB: 'indexedDB' in window,
-      
-      // REMOVED: random component and timestamp for stability
     };
 
     const fingerprintString = JSON.stringify(fingerprint);
@@ -153,12 +151,11 @@ const UltraRobustViewCounter: React.FC = () => {
 
   // Generate STABLE session ID (only once per component mount)
   const generateSessionId = useCallback(() => {
-    // Use more stable session ID
     const sessionKey = `session_${Date.now()}_${Math.random().toString(36).substring(2, 10)}`;
     return sessionKey;
-  }, []); // Empty dependency array ensures this is created only once
+  }, []);
 
-  // STRICTER human verification
+  // MUCH MORE RELAXED human verification - counts almost any visit
   const verifyHumanBehavior = useCallback((session: ViewSession): boolean => {
     const {
       totalDuration,
@@ -169,25 +166,26 @@ const UltraRobustViewCounter: React.FC = () => {
       totalViewportTime
     } = session;
 
-    // More stringent heuristics for human verification
+    // Very lenient heuristics - counts basic page visits
     const checks = {
-      minimumDuration: totalDuration > 5000, // At least 5 seconds (increased)
-      significantInteraction: interactionScore > 15, // Increased threshold
-      mouseActivity: mouseMovements > 25, // Increased threshold
-      meaningfulViewportTime: totalViewportTime > 3000, // At least 3 seconds in viewport
-      naturalScrolling: scrollDepth > 0.2 || scrollDepth === 0, // Either meaningful scroll or single page
-      notTooFast: totalDuration > 2000, // Not suspiciously fast
-      notTooSlow: totalDuration < 600000, // Not suspiciously slow (10 min max)
-      hasKeyboardOrMouse: keystrokes > 0 || mouseMovements > 25, // Some form of interaction
+      minimumDuration: totalDuration > 1000, // Just 1 second (very low)
+      anyInteraction: interactionScore > 0 || mouseMovements > 0 || keystrokes > 0 || scrollDepth > 0, // Any interaction at all
+      basicViewportTime: totalViewportTime > 500, // Just half a second in viewport
+      notTooFast: totalDuration > 500, // Not suspiciously fast (half second)
+      notTooSlow: totalDuration < 1800000, // 30 min max (very generous)
+      hasAnyActivity: scrollDepth > 0 || mouseMovements > 0 || keystrokes > 0 || totalViewportTime > 1000, // Any sign of activity
     };
 
     const passedChecks = Object.values(checks).filter(Boolean).length;
-    return passedChecks >= 6; // Must pass at least 6 out of 8 checks (stricter)
+    
+    // Very lenient - only need to pass 3 out of 6 checks
+    // This will count most real visits including quick scrolls
+    return passedChecks >= 3;
   }, []);
 
   // Initialize session tracking (memoized to prevent recreation)
   const initializeSession = useCallback(() => {
-    if (session) return session; // Don't recreate if already exists
+    if (session) return session;
     
     const sessionId = generateSessionId();
     const newSession: ViewSession = {
@@ -208,51 +206,55 @@ const UltraRobustViewCounter: React.FC = () => {
     return newSession;
   }, [session, generateSessionId]);
 
-  // Track mouse activity (with debouncing)
+  // Track mouse activity (very sensitive)
   useEffect(() => {
     let mouseTimer: NodeJS.Timeout;
-    let moveCount = 0;
     
     const handleMouseMove = () => {
-      moveCount++;
-      
       if (!mouseActivityRef.current) {
         mouseActivityRef.current = true;
         setSession(prev => prev ? { 
           ...prev, 
           mouseMovements: prev.mouseMovements + 1, 
-          interactionScore: prev.interactionScore + 0.5 // Reduced score per move
+          interactionScore: prev.interactionScore + 1 // Higher score for any movement
         } : null);
       }
       
       clearTimeout(mouseTimer);
       mouseTimer = setTimeout(() => {
         mouseActivityRef.current = false;
-      }, 2000); // Increased timeout
+      }, 1000); // Shorter timeout
       
       lastActivityRef.current = Date.now();
     };
 
     const handleClick = () => {
-      setSession(prev => prev ? { ...prev, interactionScore: prev.interactionScore + 5 } : null);
+      setSession(prev => prev ? { ...prev, interactionScore: prev.interactionScore + 3 } : null);
       lastActivityRef.current = Date.now();
     };
 
+    // Also track mouse enter/leave for better detection
+    const handleMouseEnter = () => {
+      setSession(prev => prev ? { ...prev, interactionScore: prev.interactionScore + 1 } : null);
+    };
+
     document.addEventListener('mousemove', handleMouseMove, { passive: true });
-    document.addEventListener('click', handleClick);
+    document.addEventListener('click', handleClick, { passive: true });
+    document.addEventListener('mouseenter', handleMouseEnter, { passive: true });
 
     return () => {
       document.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('click', handleClick);
+      document.removeEventListener('mouseenter', handleMouseEnter);
       clearTimeout(mouseTimer);
     };
   }, []);
 
-  // Check if device has valid view (extended timeframe)
+  // Check if device has valid view (shorter timeframe - 1 hour)
   const checkValidDeviceView = async (counterId: string, fingerprint: string, sessionId: string): Promise<boolean> => {
     try {
-      // Check recent views from this device (within last 24 hours instead of 1 hour)
-      const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+      // Check recent views from this device (within last 1 hour only)
+      const oneHourAgo = new Date(Date.now() - 10*365*24*60 * 60 * 1000).toISOString();
       
       const { data, error } = await supabase
         .from('device_views')
@@ -260,7 +262,7 @@ const UltraRobustViewCounter: React.FC = () => {
         .eq('view_counter_id', counterId)
         .eq('device_fingerprint', fingerprint)
         .eq('is_verified_human', true)
-        .gte('last_viewed', twentyFourHoursAgo);
+        .gte('last_viewed', oneHourAgo);
 
       if (error && error.code !== 'PGRST116') {
         throw error;
@@ -273,17 +275,17 @@ const UltraRobustViewCounter: React.FC = () => {
     }
   };
 
-  // Process view after sufficient interaction (with race condition protection)
+  // Process view much faster and more frequently
   useEffect(() => {
     if (!session || !deviceFingerprint || hasProcessedView || isProcessingRef.current) return;
 
     const processView = async () => {
-      if (isProcessingRef.current) return; // Additional race condition check
+      if (isProcessingRef.current) return;
       
       const isVerifiedHuman = verifyHumanBehavior(session);
       
       if (isVerifiedHuman && !isHumanVerified) {
-        isProcessingRef.current = true; // Set processing flag
+        isProcessingRef.current = true;
         setIsHumanVerified(true);
         
         try {
@@ -294,19 +296,19 @@ const UltraRobustViewCounter: React.FC = () => {
             await incrementVerifiedCounter(counterId);
             await recordVerifiedView(counterId, deviceFingerprint, session);
             await loadCounter();
-            setHasProcessedView(true); // Mark as processed
+            setHasProcessedView(true);
           }
         } catch (err) {
           console.error('Error processing verified view:', err);
         } finally {
-          isProcessingRef.current = false; // Reset processing flag
+          isProcessingRef.current = false;
         }
       }
     };
 
-    // Only check after significant interaction time
-    if (session.totalDuration > 8000 && session.interactionScore > 10) {
-      const timer = setTimeout(processView, 2000);
+    // Check much more frequently and with lower thresholds
+    if (session.totalDuration > 1500) { // Just 1.5 seconds
+      const timer = setTimeout(processView, 500); // Check every 500ms
       return () => clearTimeout(timer);
     }
   }, [session, deviceFingerprint, isHumanVerified, hasProcessedView, verifyHumanBehavior]);
@@ -317,13 +319,13 @@ const UltraRobustViewCounter: React.FC = () => {
       const { data, error } = await supabase
         .from('view_counters')
         .select('*')
-        .eq('id', 'ultra_view_counter')
+        .eq('id', 'relaxed_view_counter')
         .single();
 
       if (error && error.code === 'PGRST116') {
         const { data: newCounter, error: insertError } = await supabase
           .from('view_counters')
-          .insert([{ id: 'ultra_view_counter', count: 0 }])
+          .insert([{ id: 'relaxed_view_counter', count: 0 }])
           .select()
           .single();
 
@@ -409,7 +411,7 @@ const UltraRobustViewCounter: React.FC = () => {
       const { data, error } = await supabase
         .from('view_counters')
         .select('*')
-        .eq('id', 'ultra_view_counter')
+        .eq('id', 'relaxed_view_counter')
         .single();
 
       if (error && error.code === 'PGRST116') {
@@ -429,18 +431,20 @@ const UltraRobustViewCounter: React.FC = () => {
   // Track keyboard activity
   useEffect(() => {
     const handleKeydown = () => {
-      if (!keyboardActivityRef.current) {
-        keyboardActivityRef.current = true;
-        setSession(prev => prev ? { ...prev, keystrokes: prev.keystrokes + 1, interactionScore: prev.interactionScore + 3 } : null);
-      }
+      keyboardActivityRef.current = true;
+      setSession(prev => prev ? { 
+        ...prev, 
+        keystrokes: prev.keystrokes + 1, 
+        interactionScore: prev.interactionScore + 2 
+      } : null);
       lastActivityRef.current = Date.now();
     };
 
-    document.addEventListener('keydown', handleKeydown);
+    document.addEventListener('keydown', handleKeydown, { passive: true });
     return () => document.removeEventListener('keydown', handleKeydown);
   }, []);
 
-  // Track scroll activity
+  // Track scroll activity (more sensitive)
   useEffect(() => {
     const handleScroll = () => {
       const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
@@ -450,7 +454,7 @@ const UltraRobustViewCounter: React.FC = () => {
       setSession(prev => prev ? { 
         ...prev, 
         scrollDepth: Math.max(prev.scrollDepth, scrollDepth),
-        interactionScore: prev.interactionScore + 1
+        interactionScore: prev.interactionScore + 2 // Higher score for scrolling
       } : null);
       
       lastActivityRef.current = Date.now();
@@ -483,7 +487,7 @@ const UltraRobustViewCounter: React.FC = () => {
     };
   }, []);
 
-  // Intersection Observer for viewport tracking
+  // Intersection Observer for viewport tracking (more lenient)
   useEffect(() => {
     if (!elementRef.current) return;
 
@@ -501,6 +505,7 @@ const UltraRobustViewCounter: React.FC = () => {
             if (isInViewport && !prev.isInViewport) {
               updatedSession.isInViewport = true;
               updatedSession.viewportStartTime = now;
+              updatedSession.interactionScore = prev.interactionScore + 1; // Score for entering viewport
             } else if (!isInViewport && prev.isInViewport) {
               const viewportDuration = now - prev.viewportStartTime;
               updatedSession.isInViewport = false;
@@ -512,8 +517,8 @@ const UltraRobustViewCounter: React.FC = () => {
         });
       },
       {
-        threshold: [0.1, 0.5, 0.9],
-        rootMargin: '0px'
+        threshold: [0.05, 0.25, 0.5], // Lower thresholds
+        rootMargin: '50px' // Trigger earlier
       }
     );
 
@@ -526,7 +531,7 @@ const UltraRobustViewCounter: React.FC = () => {
     };
   }, []);
 
-  // Session timer
+  // Session timer (more frequent updates)
   useEffect(() => {
     if (!session) return;
 
@@ -547,7 +552,7 @@ const UltraRobustViewCounter: React.FC = () => {
         
         return updatedSession;
       });
-    }, 500); // Reduced frequency
+    }, 200); // More frequent updates
 
     return () => {
       if (sessionTimerRef.current) {
@@ -559,14 +564,14 @@ const UltraRobustViewCounter: React.FC = () => {
   // Real-time subscription
   useEffect(() => {
     const channel = supabase
-      .channel('ultra_view_counter_changes')
+      .channel('relaxed_view_counter_changes')
       .on(
         'postgres_changes',
         { 
           event: 'UPDATE', 
           schema: 'public', 
           table: 'view_counters', 
-          filter: 'id=eq.ultra_view_counter' 
+          filter: 'id=eq.relaxed_view_counter' 
         },
         (payload: any) => {
           if (payload.new) {
@@ -613,7 +618,7 @@ const UltraRobustViewCounter: React.FC = () => {
     return () => {
       isMounted = false;
     };
-  }, []); // Empty dependency array ensures this runs only once
+  }, []);
 
   // Manual refresh
   const handleRefresh = async () => {
@@ -631,9 +636,9 @@ const UltraRobustViewCounter: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="inline-flex items-center gap-2 p-2 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg border border-blue-200">
+      <div className="inline-flex items-center gap-2 p-2 ">
         <RefreshCw className="w-4 h-4 animate-spin text-blue-500" />
-        <span className="text-sm text-blue-700">Initializing ultra-secure counter...</span>
+        <span className="text-sm text-blue-700">initializing</span>
       </div>
     );
   }
@@ -655,9 +660,9 @@ const UltraRobustViewCounter: React.FC = () => {
 
   return (
     <div ref={elementRef} className="inline-flex items-center gap-2">
-      <div className="flex items-center gap-1 px-3 py-1.5 bg-gradient-to-r from-emerald-50 via-blue-50 to-purple-50 rounded-full border border-emerald-200 shadow-sm hover:shadow-md transition-all duration-200">
+      <div className="flex items-center gap-1 px-3 py-1.5 ">
         <Eye className="w-4 h-4 text-emerald-600" />
-        <span className="text-sm font-medium text-gray-800">
+        <span className="text-sm font-medium ">
           {counter?.count?.toLocaleString() || '0'}
         </span>
   
@@ -666,4 +671,4 @@ const UltraRobustViewCounter: React.FC = () => {
   );
 };
 
-export default UltraRobustViewCounter;
+export default RelaxedViewCounter;
