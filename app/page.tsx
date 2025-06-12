@@ -12,6 +12,7 @@ const Projects = lazy(() => import('./projects/page'))
 const Blog = lazy(() => import('./blog/page'))
 const Mentalstas = lazy(()=>import('./stats/mental/page'))
 const Spirit = lazy(()=>import('./stats/spirit/page'))
+const Footr = lazy(()=>import('./footr/page'))
 
 
 // Wrapper component for lazy loading with intersection observer
@@ -80,6 +81,9 @@ export default function Home() {
       </LazySection>
              <LazySection>
         <Spirit/>
+      </LazySection>
+            <LazySection>
+        <Footr/>
       </LazySection>
     </div>
   )
