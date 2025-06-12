@@ -115,7 +115,7 @@ function Footer() {
               href="mailto:contact@braydentw.io"
               className="text-fun-gray-light font-medium"
             >
-              Brayden Wright
+         ar
             </a>
             . All rights reserved.
           </div>

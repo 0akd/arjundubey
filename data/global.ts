@@ -74,31 +74,31 @@ export const footer: Footer = {
       links: [
         {
           name: "GitHub",
-          link: "https://github.com/braydentw",
+          link: "httpentw",
           icon: "/static/icons/github-f.svg",
           leavesWebsite: true,
         },
         {
           name: "LinkedIn",
-          link: "https://www.linkedin.com/in/braydentw/",
+          link: "https:entw/",
           icon: "/static/icons/linkedin-f.svg",
           leavesWebsite: true,
         },
         {
           name: "Dribbble",
-          link: "https://dribbble.com/braydentw",
+          link: "https://eentw",
           icon: "/static/icons/dribbble-f.svg",
           leavesWebsite: true,
         },
         {
           name: "IndieHackers",
-          link: "https://indiehackers.com/braydentw",
+          link: "httpsentw",
           icon: "/static/icons/indiehackers-f.svg",
           leavesWebsite: true,
         },
         {
           name: "Email",
-          link: "mailto:contact@braydentw.io",
+          link: "mailto:f",
           icon: "/static/icons/mail-f.svg",
           leavesWebsite: true,
         },
@@ -106,8 +106,8 @@ export const footer: Footer = {
     },
   ],
   support: {
-    buymeacoffee: "braydenw",
-    paypal: "braydentw",
+    buymeacoffee: "",
+    paypal: "",
     message: "I appreciate your support very much! 💙",
   },
 };
