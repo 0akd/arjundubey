@@ -246,10 +246,10 @@ const DeviceCounter: React.FC = () => {
   }
 
   return (
-        <button className="inline-flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
-      <Eye className="w-4 h-4" />
-      <span className="font-medium">{counter?.count || 0}</span>
-    </button>
+      <button className="inline-flex items-center gap-1 p-1">
+  <Eye className="w-4 h-4" />
+  <span className="text-sm">{counter?.count || 0}</span>
+</button>
   );
 };
 
