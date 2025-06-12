@@ -157,11 +157,12 @@ const DeviceCounter: React.FC = () => {
       setError('Failed to load counter data');
     }
   };
- // Set up real-time subscription
+// Set up real-time subscription
   useEffect(() => {
-    const subscription = supabase
+    const channel = supabase
       .channel('view_counter_changes')
-      .on('postgres_changes', 
+      .on(
+        'postgres_changes',
         { 
           event: 'UPDATE', 
           schema: 'public', 
@@ -177,7 +178,7 @@ const DeviceCounter: React.FC = () => {
       .subscribe();
 
     return () => {
-      supabase.removeChannel(subscription);
+      supabase.removeChannel(channel);
     };
   }, []);
   // Initialize component
