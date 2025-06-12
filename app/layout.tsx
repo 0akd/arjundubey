@@ -2,7 +2,7 @@ import './globals.css'  // Import your global CSS file
 import { ThemeProvider } from 'next-themes'
 import { cn } from "@/lib/utils";
 import CursorTrailCanvas from "@/cursortrail/page";
-import Llm from './llm/page'
+
 
 import { lazy, Suspense } from 'react'
   const Nav = lazy(()=>import('./nav/page'))
