@@ -220,24 +220,7 @@ const DeviceCounter: React.FC = () => {
     initialize();
   }, [generateDeviceFingerprint]);
 
-  // Set up real-time subscription
-  useEffect(() => {
-    const subscription = supabase
-      .channel('view_counter_changes')
-      .on('postgres_changes', 
-        { event: 'UPDATE', schema: 'public', table: 'view_counters', filter: 'id=eq.main_view_counter' },
-        (payload: RealtimePayload) => {
-          if (payload.new) {
-            setCounter(payload.new);
-          }
-        }
-      )
-      .subscribe();
 
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, []);
 
   // Manual refresh function
   const handleRefresh = async () => {
