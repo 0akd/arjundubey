@@ -77,9 +77,12 @@ export default function NavBar() {
        {/* Brand name in the center */}
 <div className="absolute left-1/2 transform -translate-x-1/2 flex items-center gap-2">
   <Eye />
+  <a href="/webby" target="_blank" rel="noopener noreferrer">
   <h1 className="text-xl font-bold tracking-tight">
     arjundubey.com
   </h1>
+</a>
+
 </div>
           
           {/* Sidebar toggle on the right */}
