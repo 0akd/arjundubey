@@ -4,14 +4,13 @@ import { lazy, Suspense } from 'react'
 import { useInView } from 'react-intersection-observer'
 
 // Lazy load components
-const Stats = lazy(() => import('./stats/page'))
+
 const Hero = lazy(() => import('./Hero/page'))
 const About = lazy(() => import('./about/page'))
 const Expedu = lazy(() => import('./education/page'))
 const Projects = lazy(() => import('./projects/page'))
 const Blog = lazy(() => import('./blog/page'))
-const Mentalstas = lazy(()=>import('./stats/mental/page'))
-const Spirit = lazy(()=>import('./stats/spirit/page'))
+
 
 
 
@@ -72,16 +71,7 @@ export default function Home() {
       </LazySection>
       
    
-      
-      <LazySection>
-        <Stats />
-      </LazySection>
-          <LazySection>
-        <Mentalstas />
-      </LazySection>
-             <LazySection>
-        <Spirit/>
-      </LazySection>
+    
   
     </div>
   )
