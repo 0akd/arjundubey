@@ -12,16 +12,13 @@ interface Counter {
   title: string;
   description: string;
   current_value: number;
-  goal_value: number;
-  unit: string;
+  position: number;
   created_at: string;
 }
 
 interface NewCounter {
   title: string;
   description: string;
-  goal_value: number;
-  unit: string;
 }
 
 const CounterPage: React.FC = () => {
@@ -31,6 +28,7 @@ const CounterPage: React.FC = () => {
   const [expandedCounters, setExpandedCounters] = useState<Set<number>>(new Set());
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [adminMode, setAdminMode] = useState(false);
   const router = useRouter();
 
   // Admin form states
@@ -38,16 +36,12 @@ const CounterPage: React.FC = () => {
   const [expandedDescriptions, setExpandedDescriptions] = useState<Set<number>>(new Set());
   const [newCounter, setNewCounter] = useState<NewCounter>({
     title: '',
-    description: '',
-    goal_value: 0,
-    unit: ''
+    description: ''
   });
   const [editingCounter, setEditingCounter] = useState<Counter | null>(null);
   const [editForm, setEditForm] = useState<NewCounter>({
     title: '',
-    description: '',
-    goal_value: 0,
-    unit: ''
+    description: ''
   });
 
   // Check authentication and admin status
@@ -56,10 +50,15 @@ const CounterPage: React.FC = () => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         setUserEmail(user.email);
-        setIsAdmin(user.email === 'reboostify@gmail.com');
+        const isUserAdmin = user.email === 'reboostify@gmail.com';
+        setIsAdmin(isUserAdmin);
+        if (isUserAdmin) {
+          setAdminMode(true); // Default to admin mode for admins
+        }
       } else {
         setUserEmail(null);
         setIsAdmin(false);
+        setAdminMode(false);
       }
     });
 
@@ -76,7 +75,7 @@ const CounterPage: React.FC = () => {
       const { data, error } = await supabase
         .from('counters')
         .select('*')
-        .order('created_at', { ascending: false });
+        .order('position', { ascending: true });
 
       if (error) {
         console.error('Error fetching counters:', error);
@@ -126,16 +125,74 @@ const CounterPage: React.FC = () => {
     });
   };
 
+  // Get counter color based on click count (1-5 clicks)
+  const getCounterColor = (clickCount: number) => {
+    const clampedCount = Math.max(0, Math.min(5, clickCount));
+    
+    switch (clampedCount) {
+      case 0:
+        return 'border-gray-300';
+      case 1:
+        return 'border-red-400';
+      case 2:
+        return 'border-orange-400';
+      case 3:
+        return 'border-yellow-400';
+      case 4:
+        return 'border-green-400';
+      case 5:
+        return 'border-purple-400';
+      default:
+        return 'border-gray-300';
+    }
+  };
+
+  // Handle counter click (increment with max 5) - with left/right split for admins
+  const handleCounterClick = (id: number, event?: React.MouseEvent) => {
+    const counter = counters.find(c => c.id === id);
+    if (!counter) return;
+
+    // For admins in non-admin mode, handle left/right click
+    if (isAdmin && !adminMode && event) {
+      const rect = event.currentTarget.getBoundingClientRect();
+      const clickX = event.clientX - rect.left;
+      const elementWidth = rect.width;
+      const isRightHalf = clickX > elementWidth / 2;
+
+      if (isRightHalf) {
+        // Right half - increment (max 5)
+        if (counter.current_value < 5) {
+          updateCounter(id, counter.current_value + 1);
+        }
+      } else {
+        // Left half - decrement (min 0)
+        if (counter.current_value > 0) {
+          updateCounter(id, counter.current_value - 1);
+        }
+      }
+    } else if (!adminMode) {
+      // Normal user behavior - click to increment, reset at 5
+      if (counter.current_value < 5) {
+        updateCounter(id, counter.current_value + 1);
+      } else {
+        updateCounter(id, 0);
+      }
+    }
+  };
+
   // Admin functions
   const addCounter = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!newCounter.title.trim() || newCounter.goal_value <= 0) {
-      alert('Please fill in all required fields');
+    if (!newCounter.title.trim()) {
+      alert('Please fill in the title');
       return;
     }
 
     try {
+      // Get the next position
+      const maxPosition = counters.length > 0 ? Math.max(...counters.map(c => c.position)) : 0;
+      
       const { data, error } = await supabase
         .from('counters')
         .insert([
@@ -143,8 +200,7 @@ const CounterPage: React.FC = () => {
             title: newCounter.title,
             description: newCounter.description,
             current_value: 0,
-            goal_value: newCounter.goal_value,
-            unit: newCounter.unit
+            position: maxPosition + 1
           }
         ])
         .select();
@@ -153,8 +209,8 @@ const CounterPage: React.FC = () => {
         console.error('Error adding counter:', error);
         alert('Error adding counter');
       } else {
-        setCounters([...data, ...counters]);
-        setNewCounter({ title: '', description: '', goal_value: 0, unit: '' });
+        setCounters([...counters, ...data]);
+        setNewCounter({ title: '', description: '' });
         setShowAddForm(false);
       }
     } catch (error) {
@@ -184,7 +240,7 @@ const CounterPage: React.FC = () => {
 
   const incrementCounter = (id: number) => {
     const counter = counters.find(c => c.id === id);
-    if (counter) {
+    if (counter && counter.current_value < 5) {
       updateCounter(id, counter.current_value + 1);
     }
   };
@@ -239,26 +295,84 @@ const CounterPage: React.FC = () => {
     }
   };
 
+  const moveCounterUp = async (id: number) => {
+    const sortedCounters = [...counters].sort((a, b) => a.position - b.position);
+    const currentIndex = sortedCounters.findIndex(c => c.id === id);
+    
+    if (currentIndex > 0) {
+      const currentCounter = sortedCounters[currentIndex];
+      const upperCounter = sortedCounters[currentIndex - 1];
+      
+      try {
+        const { error } = await supabase
+          .from('counters')
+          .update({ position: upperCounter.position })
+          .eq('id', currentCounter.id);
+
+        const { error: error2 } = await supabase
+          .from('counters')
+          .update({ position: currentCounter.position })
+          .eq('id', upperCounter.id);
+
+        if (error || error2) {
+          console.error('Error moving counter:', error || error2);
+        } else {
+          fetchCounters(); // Refresh the list
+        }
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    }
+  };
+
+  const moveCounterDown = async (id: number) => {
+    const sortedCounters = [...counters].sort((a, b) => a.position - b.position);
+    const currentIndex = sortedCounters.findIndex(c => c.id === id);
+    
+    if (currentIndex < sortedCounters.length - 1) {
+      const currentCounter = sortedCounters[currentIndex];
+      const lowerCounter = sortedCounters[currentIndex + 1];
+      
+      try {
+        const { error } = await supabase
+          .from('counters')
+          .update({ position: lowerCounter.position })
+          .eq('id', currentCounter.id);
+
+        const { error: error2 } = await supabase
+          .from('counters')
+          .update({ position: currentCounter.position })
+          .eq('id', lowerCounter.id);
+
+        if (error || error2) {
+          console.error('Error moving counter:', error || error2);
+        } else {
+          fetchCounters(); // Refresh the list
+        }
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    }
+  };
+
   const startEditCounter = (counter: Counter) => {
     setEditingCounter(counter);
     setEditForm({
       title: counter.title,
-      description: counter.description,
-      goal_value: counter.goal_value,
-      unit: counter.unit
+      description: counter.description
     });
   };
 
   const cancelEdit = () => {
     setEditingCounter(null);
-    setEditForm({ title: '', description: '', goal_value: 0, unit: '' });
+    setEditForm({ title: '', description: '' });
   };
 
   const updateCounterDetails = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!editForm.title.trim() || editForm.goal_value <= 0 || !editingCounter) {
-      alert('Please fill in all required fields');
+    if (!editForm.title.trim() || !editingCounter) {
+      alert('Please fill in the title');
       return;
     }
 
@@ -267,9 +381,7 @@ const CounterPage: React.FC = () => {
         .from('counters')
         .update({
           title: editForm.title,
-          description: editForm.description,
-          goal_value: editForm.goal_value,
-          unit: editForm.unit
+          description: editForm.description
         })
         .eq('id', editingCounter.id);
 
@@ -288,47 +400,6 @@ const CounterPage: React.FC = () => {
       console.error('Error:', error);
       alert('Error updating counter');
     }
-  };
-
-
-
- const getCounterColor = (current: number, goal: number) => {
-  if (current >= goal) {
-    return ' border-purple-400 ';
-  }
-  
-  const progress = current / goal;
-  
-  if (progress >= 0.8) {
-    return ' border-green-400 ';
-  }
-  if (progress >= 0.6) {
-    return ' border-yellow-400 ';
-  }
-  if (progress >= 0.4) {
-    return ' border-blue-400 ';
-  }
-  if (progress >= 0.2) {
-    return ' border-orange-400 ';
-  }
-  
-  return ' border-red-400 ';
-};
-
-const getProgressColor = (current: number, goal: number) => {
-  if (current >= goal) return 'bg-purple-500';
-  
-  const progress = current / goal;
-  
-  if (progress >= 0.8) return 'bg-green-500';
-  if (progress >= 0.6) return 'bg-yellow-500';
-  if (progress >= 0.4) return 'bg-blue-500';
-  if (progress >= 0.2) return 'bg-orange-500';
-  
-  return 'bg-red-500';
-};
-  const getProgressPercentage = (current: number, goal: number) => {
-    return Math.min((current / goal) * 100, 100);
   };
 
   if (loading) {
@@ -351,8 +422,28 @@ const getProgressColor = (current: number, goal: number) => {
           <p>solo leveling</p>
         </div>
         {isAdmin && (
-          <div className="mt-4 text-sm text-blue-600">
-            Admin Mode - {userEmail}
+          <div className="mt-4 flex flex-col items-center gap-2">
+            <div className="text-sm text-blue-600">
+              Admin User - {userEmail}
+            </div>
+            <div className="flex items-center gap-3">
+              <span className="text-sm font-medium">Admin Mode</span>
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={adminMode}
+                  onChange={(e) => setAdminMode(e.target.checked)}
+                  className="sr-only peer"
+                />
+                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+              </label>
+              <span className="text-sm font-medium">User View</span>
+            </div>
+            {!adminMode && (
+              <div className="text-xs text-gray-600 max-w-md text-center">
+                In User View: Click left half of counter to decrease, right half to increase
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -369,7 +460,7 @@ const getProgressColor = (current: number, goal: number) => {
     </div>
 
       {/* Admin Controls */}
-      {isAdmin && (
+      {isAdmin && adminMode && (
         <div className="max-w-6xl mx-auto px-3 sm:px-4 lg:px-6 mb-6">
           <div className=" border border-blue-200 rounded-lg p-4">
             <div className="flex flex-wrap gap-3 items-center justify-between mb-4">
@@ -426,36 +517,6 @@ const getProgressColor = (current: number, goal: number) => {
                     />
                   </div>
 
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-sm font-medium  mb-1">
-                        Goal Value *
-                      </label>
-                      <input
-                        type="number"
-                        value={newCounter.goal_value || ''}
-                        onChange={(e) => setNewCounter({ ...newCounter, goal_value: parseInt(e.target.value) || 0 })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        placeholder="100"
-                        min="1"
-                        required
-                      />
-                    </div>
-                    
-                    <div>
-                      <label className="block text-sm font-medium  mb-1">
-                        Unit
-                      </label>
-                      <input
-                        type="text"
-                        value={newCounter.unit}
-                        onChange={(e) => setNewCounter({ ...newCounter, unit: e.target.value })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        placeholder="e.g., steps, pages, minutes"
-                      />
-                    </div>
-                  </div>
-
                   <div className="flex space-x-3">
                     <button
                       type="submit"
@@ -483,7 +544,7 @@ const getProgressColor = (current: number, goal: number) => {
         {counters.length === 0 ? (
           <div className="text-center py-12">
             <p className="text-base sm:text-lg">No counters found</p>
-            {isAdmin && (
+            {isAdmin && adminMode && (
               <button
                 onClick={() => setShowAddForm(true)}
                 className=" px-6 py-2 rounded-lg font-medium transition-colors mt-4"
@@ -498,11 +559,23 @@ const getProgressColor = (current: number, goal: number) => {
               <div
                 key={counter.id}
                 className={`rounded-lg border-2 transition-all duration-200 ${
-                  isAdmin ? '' : 'cursor-pointer'
-                } ${getCounterColor(counter.current_value, counter.goal_value)}`}
-                onClick={!isAdmin ? () => toggleCounterExpansion(counter.id) : undefined}
+                  adminMode ? '' : 'cursor-pointer hover:shadow-md'
+                } ${getCounterColor(counter.current_value)} ${
+                  isAdmin && !adminMode ? 'relative overflow-hidden' : ''
+                }`}
+                onClick={!adminMode ? (e) => handleCounterClick(counter.id, e) : undefined}
               >
-                {isAdmin && editingCounter?.id === counter.id ? (
+                {/* Split overlay for admin in user mode */}
+                {isAdmin && !adminMode && (
+                  <>
+                    <div className="absolute inset-0 w-1/2 left-0 z-10 opacity-0 hover:bg-red-100 hover:opacity-20 transition-all" 
+                         title="Click to decrease" />
+                    <div className="absolute inset-0 w-1/2 right-0 z-10 opacity-0 hover:bg-green-100 hover:opacity-20 transition-all" 
+                         title="Click to increase" />
+                  </>
+                )}
+                
+                {isAdmin && adminMode && editingCounter?.id === counter.id ? (
                   // Admin Edit Form
                   <div className="p-3 sm:p-4">
                     <form onSubmit={updateCounterDetails} className="space-y-3">
@@ -525,30 +598,6 @@ const getProgressColor = (current: number, goal: number) => {
                           className="w-full px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
                           rows={2}
                         />
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-2">
-                        <div>
-                          <label className="block text-sm font-medium mb-1">Goal *</label>
-                          <input
-                            type="number"
-                            value={editForm.goal_value || ''}
-                            onChange={(e) => setEditForm({ ...editForm, goal_value: parseInt(e.target.value) || 0 })}
-                            className="w-full px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
-                            min="1"
-                            required
-                          />
-                        </div>
-                        
-                        <div>
-                          <label className="block text-sm font-medium mb-1">Unit</label>
-                          <input
-                            type="text"
-                            value={editForm.unit}
-                            onChange={(e) => setEditForm({ ...editForm, unit: e.target.value })}
-                            className="w-full px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
-                          />
-                        </div>
                       </div>
 
                       <div className="flex space-x-2">
@@ -583,40 +632,44 @@ const getProgressColor = (current: number, goal: number) => {
                               {counter.current_value}
                             </span>
                             <span className="text-xs sm:text-sm">
-                              /{counter.goal_value} {counter.unit}
+                              /5
                             </span>
                           </div>
                         </div>
 
-                        {/* Progress Bar */}
-                        <div className="flex-1 sm:flex-2 max-w-full sm:max-w-xs lg:max-w-sm">
-                          <div className="w-full bg-gray-200 rounded-full h-2 sm:h-3">
+                        {/* Click indicators */}
+                        <div className="flex items-center gap-1">
+                          {[1, 2, 3, 4, 5].map((clickLevel) => (
                             <div
-                              className={`h-2 sm:h-3 rounded-full transition-all duration-300 ${getProgressColor(
-                                counter.current_value,
-                                counter.goal_value
-                              )}`}
-                              style={{
-                                width: `${getProgressPercentage(counter.current_value, counter.goal_value)}%`
-                              }}
-                            ></div>
-                          </div>
+                              key={clickLevel}
+                              className={`w-3 h-3 rounded-full border ${
+                                counter.current_value >= clickLevel
+                                  ? getCounterColor(clickLevel).replace('border-', 'bg-').replace('-400', '-500')
+                                  : 'bg-gray-200'
+                              }`}
+                            />
+                          ))}
                         </div>
 
-                        {/* Percentage and Status */}
+                        {/* Controls */}
                         <div className="flex items-center justify-between sm:justify-end gap-2 sm:gap-3">
-                          <span className="text-xs sm:text-sm font-medium">
-                            {getProgressPercentage(counter.current_value, counter.goal_value).toFixed(1)}%
-                          </span>
-                          {counter.current_value >= counter.goal_value && (
-                            <span className="text-xs sm:text-sm px-2 py-1 rounded-full font-medium">
-                              🎉
-                            </span>
-                          )}
-                          
                           {/* Admin Controls */}
-                          {isAdmin && (
+                          {isAdmin && adminMode && (
                             <div className="flex items-center space-x-2">
+                              <button
+                                onClick={() => moveCounterUp(counter.id)}
+                                className="text-blue-500 hover:text-blue-700 text-sm font-medium"
+                                title="Move up"
+                              >
+                                ↑
+                              </button>
+                              <button
+                                onClick={() => moveCounterDown(counter.id)}
+                                className="text-blue-500 hover:text-blue-700 text-sm font-medium"
+                                title="Move down"
+                              >
+                                ↓
+                              </button>
                               <button
                                 onClick={() => decrementCounter(counter.id)}
                                 disabled={counter.current_value <= 0}
@@ -626,7 +679,8 @@ const getProgressColor = (current: number, goal: number) => {
                               </button>
                               <button
                                 onClick={() => incrementCounter(counter.id)}
-                                className="bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded text-sm font-medium transition-all"
+                                disabled={counter.current_value >= 5}
+                                className="disabled:opacity-30 disabled:cursor-not-allowed bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded text-sm font-medium transition-all"
                               >
                                 +
                               </button>
@@ -647,11 +701,17 @@ const getProgressColor = (current: number, goal: number) => {
                             </div>
                           )}
                           
-                          {/* Expand indicator for regular users */}
-                          {!isAdmin && counter.description && (
-                            <span className="text-xs transform transition-transform duration-200 ml-1">
+                          {/* Expand indicator for regular users or admin in user mode */}
+                          {!adminMode && counter.description && (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                toggleCounterExpansion(counter.id);
+                              }}
+                              className="text-xs transform transition-transform duration-200 ml-1"
+                            >
                               {expandedCounters.has(counter.id) ? '▲' : '▼'}
-                            </span>
+                            </button>
                           )}
                         </div>
                       </div>
