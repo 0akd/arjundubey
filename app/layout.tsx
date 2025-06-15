@@ -7,7 +7,9 @@ import { cn } from "@/lib/utils";
 import ClientCursorTrail from "@/components/ClientCursorTrail";
 
 import { siteConfig } from '@/lib/seo'
-
+export const dynamic = 'force-dynamic'
+export const dynamicParams = true
+export const revalidate = 0
 export const metadata: Metadata = {
   title: {
     default: siteConfig.name,
