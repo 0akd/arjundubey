@@ -3,7 +3,8 @@
 import { lazy, Suspense } from 'react'
 import { useInView } from 'react-intersection-observer'
 import { siteConfig } from '@/lib/seo'
-
+import { NextSeo } from 'next-seo'
+import SEOHead from '@/components/SEOHead'
 import type { Metadata } from 'next'
 // Lazy load components
 export const metadata: Metadata = {
