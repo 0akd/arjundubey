@@ -1,14 +1,12 @@
-
 import './globals.css'  // Import your global CSS file
 
 import type { Metadata, Viewport } from 'next'
 import Lazyw from './lazyshell'
 
 import { cn } from "@/lib/utils";
-import CursorTrailCanvas from "@/cursortrail/page";
+import ClientCursorTrail from "@/components/ClientCursorTrail";
 
 import { siteConfig } from '@/lib/seo'
-
 
 export const metadata: Metadata = {
   title: {
@@ -76,19 +74,18 @@ export const viewport: Viewport = {
   ],
 }
 
-
-
-
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-
   return (
-    <html suppressHydrationWarning>
-      <head />
-      <body><main    className={cn(
-            "bg-transparent  bg-[radial-gradient(#2f7df4_1px,transparent_1px)] [background-size:16px_16px]",
-           
-          )}>
-        <CursorTrailCanvas className="pointer-events-none inset-0 -z-10 " /><Lazyw> {children}</Lazyw></main>
+    <html lang="en" suppressHydrationWarning>
+      <body suppressHydrationWarning>
+        <main className={cn(
+          "bg-transparent bg-[radial-gradient(#2f7df4_1px,transparent_1px)] [background-size:16px_16px]",
+        )}>
+          <ClientCursorTrail className="pointer-events-none inset-0 -z-10 " />
+          <Lazyw>
+            {children}
+          </Lazyw>
+        </main>
       </body>
     </html>
   )
