@@ -125,30 +125,38 @@ const CounterPage: React.FC = () => {
     });
   };
 
-  // Get counter color based on click count (1-5 clicks)
+  // Get counter color based on click count (1-5 clicks) - only for admins
   const getCounterColor = (clickCount: number) => {
+    // Only show colors for admins
+    if (!isAdmin) {
+      return 'border-gray-300 text-gray-900';
+    }
+    
     const clampedCount = Math.max(0, Math.min(5, clickCount));
     
     switch (clampedCount) {
       case 0:
-        return 'border-gray-300';
+        return 'border-gray-300 text-gray-900';
       case 1:
-        return 'border-red-400';
+        return 'border-red-400 text-red-600';
       case 2:
-        return 'border-orange-400';
+        return 'border-orange-400 text-orange-600';
       case 3:
-        return 'border-yellow-400';
+        return 'border-yellow-400 text-yellow-600';
       case 4:
-        return 'border-green-400';
+        return 'border-green-400 text-green-600';
       case 5:
-        return 'border-purple-400';
+        return 'border-purple-400 text-purple-600';
       default:
-        return 'border-gray-300';
+        return 'border-gray-300 text-gray-900';
     }
   };
 
   // Handle counter click (increment with max 5) - with left/right split for admins
   const handleCounterClick = (id: number, event?: React.MouseEvent) => {
+    // Only allow counter changes for admins
+    if (!isAdmin) return;
+    
     const counter = counters.find(c => c.id === id);
     if (!counter) return;
 
@@ -418,8 +426,8 @@ const CounterPage: React.FC = () => {
           onClick={handleSecretClick}
           className="inline-block cursor-pointer select-none"
         >
-       <h1 className="text-2xl pt-4 sm:text-3xl lg:text-4xl font-bold">Spirit Stats</h1>
-          <p>spirit is referring the being formed by mind body connectivity so gives an organism different dimensional characteristics </p>
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold">Physical Stats</h1>
+          <p>solo leveling</p>
         </div>
         {isAdmin && (
           <div className="mt-4 flex flex-col items-center gap-2">
@@ -559,11 +567,11 @@ const CounterPage: React.FC = () => {
               <div
                 key={counter.id}
                 className={`rounded-lg border-2 transition-all duration-200 ${
-                  adminMode ? '' : 'cursor-pointer hover:shadow-md'
+                  adminMode ? '' : isAdmin ? 'cursor-pointer hover:shadow-md' : ''
                 } ${getCounterColor(counter.current_value)} ${
                   isAdmin && !adminMode ? 'relative overflow-hidden' : ''
                 }`}
-                onClick={!adminMode ? (e) => handleCounterClick(counter.id, e) : undefined}
+                onClick={!adminMode && isAdmin ? (e) => handleCounterClick(counter.id, e) : undefined}
               >
                 {/* Split overlay for admin in user mode */}
                 {isAdmin && !adminMode && (
@@ -621,40 +629,63 @@ const CounterPage: React.FC = () => {
                   // Counter Display
                   <>
                     <div className="p-3 sm:p-4">
-                      <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
-                        {/* Title and Value */}
-                        <div className="flex items-center justify-between sm:justify-start flex-1 min-w-0">
-                          <h3 className="text-sm sm:text-base lg:text-lg font-semibold truncate mr-2 sm:mr-4">
+                      {/* Compact user view - everything in one row */}
+                      {!isAdmin || !adminMode ? (
+                        <div className="flex items-center justify-between">
+                          <h3 className="text-sm sm:text-base font-semibold flex-1 min-w-0 truncate">
                             {counter.title}
                           </h3>
-                          <div className="flex items-center gap-1">
-                            <span className="text-lg sm:text-xl lg:text-2xl font-bold">
+                          <div className="flex items-center gap-2 ml-4">
+                            <span className="text-lg sm:text-xl font-bold">
                               {counter.current_value}
                             </span>
-                            <span className="text-xs sm:text-sm">
-                              /5
-                            </span>
+                            {counter.description && (
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  toggleCounterExpansion(counter.id);
+                                }}
+                                className="text-xs transform transition-transform duration-200"
+                              >
+                                {expandedCounters.has(counter.id) ? '▲' : '▼'}
+                              </button>
+                            )}
                           </div>
                         </div>
+                      ) : (
+                        // Admin view - original layout
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+                          {/* Title and Value */}
+                          <div className="flex items-center justify-between sm:justify-start flex-1 min-w-0">
+                            <h3 className="text-sm sm:text-base lg:text-lg font-semibold truncate mr-2 sm:mr-4">
+                              {counter.title}
+                            </h3>
+                            <div className="flex items-center gap-1">
+                              <span className="text-lg sm:text-xl lg:text-2xl font-bold">
+                                {counter.current_value}
+                              </span>
+                              <span className="text-xs sm:text-sm">
+                                /5
+                              </span>
+                            </div>
+                          </div>
 
-                        {/* Click indicators */}
-                        <div className="flex items-center gap-1">
-                          {[1, 2, 3, 4, 5].map((clickLevel) => (
-                            <div
-                              key={clickLevel}
-                              className={`w-3 h-3 rounded-full border ${
-                                counter.current_value >= clickLevel
-                                  ? getCounterColor(clickLevel).replace('border-', 'bg-').replace('-400', '-500')
-                                  : 'bg-gray-200'
-                              }`}
-                            />
-                          ))}
-                        </div>
+                          {/* Click indicators for admin */}
+                          <div className="flex items-center gap-1">
+                            {[1, 2, 3, 4, 5].map((clickLevel) => (
+                              <div
+                                key={clickLevel}
+                                className={`w-3 h-3 rounded-full border ${
+                                  counter.current_value >= clickLevel
+                                    ? getCounterColor(clickLevel).replace('border-', 'bg-').replace('-400', '-500').split(' ')[0]
+                                    : 'bg-gray-200'
+                                }`}
+                              />
+                            ))}
+                          </div>
 
-                        {/* Controls */}
-                        <div className="flex items-center justify-between sm:justify-end gap-2 sm:gap-3">
                           {/* Admin Controls */}
-                          {isAdmin && adminMode && (
+                          <div className="flex items-center justify-between sm:justify-end gap-2 sm:gap-3">
                             <div className="flex items-center space-x-2">
                               <button
                                 onClick={() => moveCounterUp(counter.id)}
@@ -699,26 +730,13 @@ const CounterPage: React.FC = () => {
                                 ×
                               </button>
                             </div>
-                          )}
-                          
-                          {/* Expand indicator for regular users or admin in user mode */}
-                          {!adminMode && counter.description && (
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                toggleCounterExpansion(counter.id);
-                              }}
-                              className="text-xs transform transition-transform duration-200 ml-1"
-                            >
-                              {expandedCounters.has(counter.id) ? '▲' : '▼'}
-                            </button>
-                          )}
+                          </div>
                         </div>
-                      </div>
+                      )}
                     </div>
 
-                    {/* Expandable description */}
-                    {counter.description && expandedCounters.has(counter.id) && !isAdmin && (
+                    {/* Expandable description for non-admin users */}
+                    {counter.description && expandedCounters.has(counter.id) && (!isAdmin || !adminMode) && (
                       <div className="px-3 sm:px-4 pb-3 sm:pb-4 pt-0">
                         <div className="border-t border-opacity-50 pt-2 sm:pt-3">
                           <p className="text-xs sm:text-sm leading-relaxed">
@@ -729,7 +747,7 @@ const CounterPage: React.FC = () => {
                     )}
                     
                     {/* Admin description display */}
-                    {isAdmin && counter.description && (
+                    {isAdmin && adminMode && counter.description && (
                       <div className="px-3 sm:px-4 pb-3 sm:pb-4 pt-0">
                         <div 
                           className="border-t border-opacity-50 pt-2 sm:pt-3 cursor-pointer hover:opacity-80 transition-opacity"
