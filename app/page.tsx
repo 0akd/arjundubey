@@ -5,11 +5,11 @@ import LazySection from '@/components/LazySection' // We'll create this as a sep
 import ClientSEOWrapper from '@/components/ClientSEOWrapper'
 // This stays as a server component - metadata export is allowed here
 export const metadata: Metadata = {
-  title: 'Home',
-  description: 'Welcome to our amazing Next.js application with TypeScript',
+  title: 'Arjun Dubey',
+  description: 'They dont know me son , so its my portfolio site Arjun Dubeys Portfolio',
   openGraph: {
-    title: 'Home',
-    description: 'Welcome to our amazing Next.js application with TypeScript',
+    title: 'Arjun Dubey',
+    description: 'They dont know me son , so its my portfolio site Arjun Dubeys Portfolio',
     url: `${siteConfig.url}`,
     siteName: siteConfig.name,
     images: [
@@ -25,8 +25,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Home',
-    description: 'Welcome to our amazing Next.js application with TypeScript',
+    title: 'Arjun Dubey',
+    description: 'They dont know me son , so its my portfolio site Arjun Dubeys Portfolio',
     images: [siteConfig.ogImage],
   },
   alternates: {
@@ -47,9 +47,9 @@ export default function Home() {
   return (  <>
       {/* Optional: Additional client-side SEO components */}
       <ClientSEOWrapper
-        title="Home Page"
-        description="This is the home page of my awesome Next.js app"
-        url="https://yoursite.com"
+        title="Arjun Dubey"
+        description="They dont know me son , so its my portfolio site Arjun Dubeys Portfolio"
+        url="https://www.arjundubey.com/"
         keywords={["nextjs", "react", "typescript", "seo"]}
       />
       
