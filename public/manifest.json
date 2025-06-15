@@ -1,0 +1,28 @@
+{
+  "theme_color": "#000000",
+  "background_color": "#000000",
+  "icons": [
+    {
+      "purpose": "maskable",
+      "sizes": "512x512",
+      "src": "icon512_maskable.png",
+      "type": "image/png"
+    },
+    {
+      "purpose": "any",
+      "sizes": "512x512",
+      "src": "icon512_rounded.png",
+      "type": "image/png"
+    }
+  ],
+  "orientation": "portrait",
+  "display": "fullscreen",
+  "dir": "auto",
+  "lang": "en-US",
+  "name": "Arjun Dubey",
+  "short_name": "arjun kumar dubey",
+  "start_url": "https://www.arjundubey.com/",
+  "scope": "https://www.arjundubey.com/",
+  "description": "they don't know me son",
+  "id": "https://www.arjundubey.com/"
+}

@@ -10,6 +10,7 @@ import { siteConfig } from '@/lib/seo'
 export const dynamic = 'force-dynamic'
 export const dynamicParams = true
 export const revalidate = 0
+
 export const metadata: Metadata = {
   title: {
     default: siteConfig.name,
@@ -49,10 +50,10 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: '/favicon.ico',
-    shortcut: '/favicon-16x16.png',
-    apple: '/apple-touch-icon.png',
+    shortcut: '/icon512_maskable.png',
+    apple: '/icon512_maskable.png',
   },
-  manifest: '/site.webmanifest',
+  manifest: '/manifest.json',
   robots: {
     index: true,
     follow: true,
@@ -64,12 +65,31 @@ export const metadata: Metadata = {
       'max-snippet': -1,
     },
   },
+  // PWA Meta Tags
+  applicationName: siteConfig.name,
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: siteConfig.name,
+    // startupImage: [], // Add if you have startup images
+  },
+  formatDetection: {
+    telephone: false,
+  },
+  other: {
+    'mobile-web-app-capable': 'yes',
+    'msapplication-TileColor': '#2B5797', // Update to match your theme
+    'msapplication-tap-highlight': 'no',
+  },
 }
 
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   maximumScale: 1,
+  minimumScale: 1,
+  userScalable: false,
+  viewportFit: 'cover',
   themeColor: [
     { media: '(prefers-color-scheme: light)', color: 'white' },
     { media: '(prefers-color-scheme: dark)', color: 'black' },
