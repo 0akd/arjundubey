@@ -602,8 +602,7 @@ const getCounterColor = (clickCount: number) => {
                   <>
                     <div className="p-3 sm:p-4">
                       {/* Compact user view - everything in one row */}
-                   // Location: Inside the Counter Display section, replace the compact user view section
-// Find this section around line 460-480 in your code:
+        
 
 {/* Compact user view - everything in one row */}
 {!isAdmin || !adminMode ? (
