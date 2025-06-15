@@ -1,3 +1,4 @@
+"use client";
 import BlogList from '@/components/bloglist';
 
 export default function BlogPage() {

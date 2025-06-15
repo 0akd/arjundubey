@@ -2,8 +2,39 @@
 
 import { lazy, Suspense } from 'react'
 import { useInView } from 'react-intersection-observer'
+import { siteConfig } from '@/lib/seo'
 
+import type { Metadata } from 'next'
 // Lazy load components
+export const metadata: Metadata = {
+  title: 'Home',
+  description: 'Welcome to our amazing Next.js application with TypeScript',
+  openGraph: {
+    title: 'Home',
+    description: 'Welcome to our amazing Next.js application with TypeScript',
+    url: `${siteConfig.url}`,
+    siteName: siteConfig.name,
+    images: [
+      {
+        url: siteConfig.ogImage,
+        width: 1200,
+        height: 630,
+        alt: 'Home Page',
+      },
+    ],
+    locale: 'en_US',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Home',
+    description: 'Welcome to our amazing Next.js application with TypeScript',
+    images: [siteConfig.ogImage],
+  },
+  alternates: {
+    canonical: `${siteConfig.url}`,
+  },
+}
 
 const Hero = lazy(() => import('./Hero/page'))
 const About = lazy(() => import('./about/page'))
@@ -44,6 +75,35 @@ function LazySection({
 
 export default function Home() {
   return (
+     <>
+      <SEOHead
+        title="Home Page"
+        description="This is the home page of my awesome Next.js app"
+        url="https://yoursite.com"
+        keywords={["nextjs", "react", "typescript", "seo"]}
+      />
+      
+      {/* Alternative using next-seo */}
+      <NextSeo
+        title="Home Page"
+        description="This is the home page of my awesome Next.js app"
+        canonical="https://yoursite.com"
+        openGraph={{
+          url: 'https://yoursite.com',
+          title: 'Home Page',
+          description: 'This is the home page of my awesome Next.js app',
+          images: [
+            {
+              url: 'https://yoursite.com/og-image.jpg',
+              width: 1200,
+              height: 630,
+              alt: 'Home Page',
+            },
+          ],
+        }}
+      />
+      
+      <main>
     <div>
       {/* Nav is always loaded as it's typically needed immediately */}
       
@@ -73,6 +133,6 @@ export default function Home() {
    
     
   
-    </div>
+    </div></main>  </>
   )
 }
