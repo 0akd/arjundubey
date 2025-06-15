@@ -126,31 +126,27 @@ const CounterPage: React.FC = () => {
   };
 
   // Get counter color based on click count (1-5 clicks) - only for admins
-  const getCounterColor = (clickCount: number) => {
-    // Only show colors for admins
-    if (!isAdmin) {
+  // Get counter color based on click count (1-5 clicks) - now for all users
+const getCounterColor = (clickCount: number) => {
+  const clampedCount = Math.max(0, Math.min(5, clickCount));
+  
+  switch (clampedCount) {
+    case 0:
       return 'border-gray-300 text-gray-900';
-    }
-    
-    const clampedCount = Math.max(0, Math.min(5, clickCount));
-    
-    switch (clampedCount) {
-      case 0:
-        return 'border-gray-300 text-gray-900';
-      case 1:
-        return 'border-red-400 text-red-600';
-      case 2:
-        return 'border-orange-400 text-orange-600';
-      case 3:
-        return 'border-yellow-400 text-yellow-600';
-      case 4:
-        return 'border-green-400 text-green-600';
-      case 5:
-        return 'border-purple-400 text-purple-600';
-      default:
-        return 'border-gray-300 text-gray-900';
-    }
-  };
+    case 1:
+      return 'border-red-400 text-red-600';
+    case 2:
+      return 'border-orange-400 text-orange-600';
+    case 3:
+      return 'border-yellow-400 text-yellow-600';
+    case 4:
+      return 'border-green-400 text-green-600';
+    case 5:
+      return 'border-purple-400 text-purple-600';
+    default:
+      return 'border-gray-300 text-gray-900';
+  }
+};
 
   // Handle counter click (increment with max 5) - with left/right split for admins
   const handleCounterClick = (id: number, event?: React.MouseEvent) => {
@@ -426,8 +422,8 @@ const CounterPage: React.FC = () => {
           onClick={handleSecretClick}
           className="inline-block cursor-pointer select-none"
         >
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold">Physical Stats</h1>
-          <p>solo leveling</p>
+           <h1 className="text-2xl pt-4 sm:text-3xl lg:text-4xl font-bold">Spirit Stats</h1>
+          <p>spirit is referring the being formed by mind body connectivity so gives an organism different dimensional characteristics </p>
         </div>
         {isAdmin && (
           <div className="mt-4 flex flex-col items-center gap-2">
