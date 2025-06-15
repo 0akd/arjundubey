@@ -1,6 +1,6 @@
 
 import './globals.css'  // Import your global CSS file
-import { ThemeProvider } from 'next-themes'
+
 import type { Metadata, Viewport } from 'next'
 import Lazyw from './lazyshell'
 
@@ -88,7 +88,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             "bg-transparent  bg-[radial-gradient(#2f7df4_1px,transparent_1px)] [background-size:16px_16px]",
            
           )}>
-        <ThemeProvider> <CursorTrailCanvas className="pointer-events-none inset-0 -z-10 " /><Lazyw> {children}</Lazyw></ThemeProvider></main>
+        <CursorTrailCanvas className="pointer-events-none inset-0 -z-10 " /><Lazyw> {children}</Lazyw></main>
       </body>
     </html>
   )
