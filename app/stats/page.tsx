@@ -53,7 +53,7 @@ const CounterPage: React.FC = () => {
         const isUserAdmin = user.email === 'reboostify@gmail.com';
         setIsAdmin(isUserAdmin);
         if (isUserAdmin) {
-          setAdminMode(true); // Default to admin mode for admins
+          setAdminMode(false); // Default to admin mode for admins
         }
       } else {
         setUserEmail(null);
@@ -425,31 +425,7 @@ const getCounterColor = (clickCount: number) => {
           <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold">Physical Stats</h1>
           <p>solo leveling</p>
         </div>
-        {isAdmin && (
-          <div className="mt-4 flex flex-col items-center gap-2">
-            <div className="text-sm text-blue-600">
-              Admin User - {userEmail}
-            </div>
-            <div className="flex items-center gap-3">
-              <span className="text-sm font-medium">Admin Mode</span>
-              <label className="relative inline-flex items-center cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={adminMode}
-                  onChange={(e) => setAdminMode(e.target.checked)}
-                  className="sr-only peer"
-                />
-                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-              </label>
-              <span className="text-sm font-medium">User View</span>
-            </div>
-            {!adminMode && (
-              <div className="text-xs text-gray-600 max-w-md text-center">
-                In User View: Click left half of counter to decrease, right half to increase
-              </div>
-            )}
-          </div>
-        )}
+    
       </div>
       <div className="flex flex-col items-center lg:items-start justify-center lg:justify-between px-4 lg:px-32 py-8 gap-8">
          <div className="relative w-full ">
@@ -767,7 +743,22 @@ const getCounterColor = (clickCount: number) => {
             ))}
           </div>
         )}
-      </div></div>
+      </div></div>    {isAdmin && (
+   
+            
+        
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={adminMode}
+                  onChange={(e) => setAdminMode(e.target.checked)}
+                  className="sr-only peer"
+                />
+                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+              </label>
+      
+
+        )}
     </div>
   );
 };
