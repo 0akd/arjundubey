@@ -422,8 +422,8 @@ const getCounterColor = (clickCount: number) => {
           onClick={handleSecretClick}
           className="inline-block cursor-pointer select-none"
         >
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold">Physical Stats</h1>
-          <p>solo leveling</p>
+           <h1 className="text-2xl pt-4 sm:text-3xl lg:text-4xl font-bold">Spirit Stats</h1>
+          <p>spirit is referring the being formed by mind body connectivity so gives an organism different dimensional characteristics </p>
         </div>
     
       </div>

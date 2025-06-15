@@ -422,8 +422,8 @@ const getCounterColor = (clickCount: number) => {
           onClick={handleSecretClick}
           className="inline-block cursor-pointer select-none"
         >
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold">Physical Stats</h1>
-          <p>solo leveling</p>
+   <h1 className="text-2xl pt-4 sm:text-3xl lg:text-4xl font-bold">Mental Stats</h1>
+          <p>give the animalistic characteristics to an entity so its behavior depends on its I.Q and E.Q</p>
         </div>
     
       </div>
