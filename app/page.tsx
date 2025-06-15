@@ -6,10 +6,10 @@ import ClientSEOWrapper from '@/components/ClientSEOWrapper'
 // This stays as a server component - metadata export is allowed here
 export const metadata: Metadata = {
   title: 'Arjun Dubey',
-  description: 'They dont know me son , so its my portfolio site Arjun Dubeys Portfolio',
+  description: "They don't know me son , so its my portfolio site Arjun Dubey's Portfolio",
   openGraph: {
     title: 'Arjun Dubey',
-    description: 'They dont know me son , so its my portfolio site Arjun Dubeys Portfolio',
+    description:"They don't know me son , so its my portfolio site Arjun Dubey's Portfolio",
     url: `${siteConfig.url}`,
     siteName: siteConfig.name,
     images: [
@@ -26,7 +26,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'Arjun Dubey',
-    description: 'They dont know me son , so its my portfolio site Arjun Dubeys Portfolio',
+    description: "They don't know me son , so its my portfolio site Arjun Dubey's Portfolio",
     images: [siteConfig.ogImage],
   },
   alternates: {
