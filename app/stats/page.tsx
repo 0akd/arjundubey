@@ -602,29 +602,40 @@ const getCounterColor = (clickCount: number) => {
                   <>
                     <div className="p-3 sm:p-4">
                       {/* Compact user view - everything in one row */}
-                      {!isAdmin || !adminMode ? (
-                        <div className="flex items-center justify-between">
-                          <h3 className="text-sm sm:text-base font-semibold flex-1 min-w-0 truncate">
-                            {counter.title}
-                          </h3>
-                          <div className="flex items-center gap-2 ml-4">
-                            <span className="text-lg sm:text-xl font-bold">
-                              {counter.current_value}
-                            </span>
-                            {counter.description && (
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  toggleCounterExpansion(counter.id);
-                                }}
-                                className="text-xs transform transition-transform duration-200"
-                              >
-                                {expandedCounters.has(counter.id) ? '▲' : '▼'}
-                              </button>
-                            )}
-                          </div>
-                        </div>
-                      ) : (
+                     {!isAdmin || !adminMode ? (
+  <div className="flex items-center justify-between">
+    <h3 className="text-sm sm:text-base font-semibold flex-1 min-w-0 truncate">
+      {counter.title}
+    </h3>
+    <div className="flex items-center gap-2 ml-4">
+      <span className="text-lg sm:text-xl font-bold">
+        {counter.current_value}
+      </span>
+      {/* Dropdown button at the end of the row */}
+      {counter.description && (
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            toggleCounterExpansion(counter.id);
+          }}
+          className="ml-2 p-1 rounded  transition-colors"
+          title="Show/hide description"
+        >
+          <svg 
+            className={`w-4 h-4 transform transition-transform duration-200 ${
+              expandedCounters.has(counter.id) ? 'rotate-180' : ''
+            }`} 
+            fill="none" 
+            stroke="currentColor" 
+            viewBox="0 0 24 24"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+      )}
+    </div>
+  </div>
+) : (
                         // Admin view - original layout
                         <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
                           {/* Title and Value */}
