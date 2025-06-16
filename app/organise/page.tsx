@@ -1,6 +1,6 @@
 "use client"
 import React, { useState, useEffect } from 'react';
-import { ChevronDown, ChevronRight, Plus, Minus, Edit2, Trash2, Save, X } from 'lucide-react';
+import { ChevronDown, ChevronRight, Plus, Minus, Edit2, Trash2, Save, X, RotateCcw } from 'lucide-react';
 import supabase from '@/config/supabase';
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { app } from "@/firebase";
@@ -193,6 +193,41 @@ const CounterManager: React.FC = () => {
     }
   };
 
+  const resetAllCounters = async () => {
+  const confirmReset = window.confirm(
+    'Are you sure you want to reset ALL counter values to 0? This will not affect the record values. This action cannot be undone.'
+  );
+  
+  if (!confirmReset) return;
+
+  try {
+    // Get all counter IDs first
+    const counterIds = counters.map(counter => counter.id);
+    
+    if (counterIds.length === 0) {
+      alert('No counters to reset.');
+      return;
+    }
+
+    // Update all counters by their IDs
+    const { error } = await supabase
+      .from('counters')
+      .update({ value: 0 })
+      .in('id', counterIds);
+
+    if (error) {
+      console.error('Supabase error:', error);
+      throw error;
+    }
+    
+    fetchCounters();
+    alert('All counter values have been reset to 0.');
+  } catch (error) {
+    console.error('Error resetting counters:', error);
+    alert(`Failed to reset counters: ${error.message || 'Unknown error'}. Please try again.`);
+  }
+};
+
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
@@ -204,7 +239,7 @@ const CounterManager: React.FC = () => {
   return (
     <div className="max-w-6xl mx-auto p-4 sm:p-6">
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-8">
-        <h1 className="text-2xl sm:text-3xl font-bold">Reflection of Daily actions</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold">Counter Dashboard</h1>
         {isAdmin && (
           <button
             onClick={() => setShowAddForm(true)}
@@ -456,6 +491,20 @@ const CounterManager: React.FC = () => {
       {counters.length === 0 && (
         <div className="text-center py-12">
           <p className="text-lg opacity-70">No counters found. {isAdmin ? 'Add your first counter!' : ''}</p>
+        </div>
+      )}
+
+      {/* Reset All Counters Button - Admin Only */}
+      {isAdmin && counters.length > 0 && (
+        <div className="mt-8 flex justify-center">
+          <button
+            onClick={resetAllCounters}
+            className="px-6 py-3 rounded-lg hover:opacity-80 transition-all duration-200 border border-current flex items-center gap-2 font-medium"
+          >
+            <RotateCcw size={18} />
+            <span className="hidden sm:inline">Reset All Counter Values</span>
+            <span className="sm:hidden">Reset All Values</span>
+          </button>
         </div>
       )}
 
