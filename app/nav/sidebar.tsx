@@ -18,9 +18,8 @@ const navigationItems: NavigationItem[] = [
   {name:'EXP & EDU',path:'/education'},
   {name:'PROJECTS',path:'/projects'},
   {name:'BLOGS',path:'/blog'},
-  {name:'PHYSICAL STATS',path:'/stats'},
-    {name:'MENTAL STATS',path:'/stats/mental'},
-     {name:'SPIRITUAL STATS',path:'/stats/spirit'},
+  {name:'STATS',path:'/organise'},
+ 
   { name: 'LOGIN', path: '/login' },
 
   { name: 'LOGOUT', path: '/logout' },
