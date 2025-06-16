@@ -224,7 +224,7 @@ const CounterManager: React.FC = () => {
     alert('All counter values have been reset to 0.');
   } catch (error) {
     console.error('Error resetting counters:', error);
-    alert(`Failed to reset counters: ${error.message || 'Unknown error'}. Please try again.`);
+    alert(`Failed to reset counters: ${error|| 'Unknown error'}. Please try again.`);
   }
 };
 
