@@ -1,6 +1,6 @@
 "use client"
 import React, { useState, useEffect } from 'react';
-import { Plus, Check, Trash2, Edit2, Target,BicepsFlexed,Flower, Brain,BrainCircuit, BookOpen, BarChart3, Loader2, Lock } from 'lucide-react';
+import { Plus, Check, Trash2, Edit2,RotateCcw, Target,BicepsFlexed,Flower, Brain,BrainCircuit, BookOpen, BarChart3, Loader2, Lock } from 'lucide-react';
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { app } from "@/firebase";
 import supabase from '@/config/supabase';
@@ -215,6 +215,43 @@ function TodoApp({ todos, onTodosChange, userEmail, isAdmin }: {
     }
   };
 
+const resetAllTodos = async () => {
+  if (!isAdmin) {
+    alert('Only the administrator can reset todos.');
+    return;
+  }
+
+  const completedTodos = todos.filter(todo => todo.completed);
+  if (completedTodos.length === 0) {
+    alert('No completed todos to reset.');
+    return;
+  }
+
+  if (!confirm(`Are you sure you want to mark all ${completedTodos.length} completed todos as incomplete?`)) {
+    return;
+  }
+
+  setLoading(true);
+  try {
+    const { error } = await supabase
+      .from('todos')
+      .update({ completed: false })
+      .eq('user_email', ADMIN_EMAIL)
+      .eq('completed', true);
+
+    if (error) throw error;
+
+    const updatedTodos = todos.map(todo => ({ ...todo, completed: false }));
+    onTodosChange(updatedTodos);
+    
+    alert(`Successfully reset ${completedTodos.length} todos to incomplete status.`);
+  } catch (error) {
+    console.error('Error resetting todos:', error);
+    alert('Error resetting todos. Please try again.');
+  } finally {
+    setLoading(false);
+  }
+};
   const deleteTodo = async (id: number) => {
     if (!isAdmin) {
       alert('Only the administrator can delete todos.');
@@ -252,31 +289,44 @@ function TodoApp({ todos, onTodosChange, userEmail, isAdmin }: {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <div className="flex items-center gap-3">
-          <h2 className="text-2xl font-bold">Todo Manager</h2>
-          {isAdmin && (
-            <span className="px-2 py-1 text-xs rounded-full font-medium">
-              Admin Access
-            </span>
-          )}
-          {!isAdmin && (
-            <span className="px-2 py-1 text-xs rounded-full font-medium">
-              Read Only
-            </span>
-          )}
-        </div>
-        
+
+ <div className="space-y-6">
+    <div className="flex justify-between items-center">
+      <div className="flex items-center gap-3">
+        <h2 className="text-2xl font-bold">Todo Manager</h2>
+        {isAdmin && (
+          <span className="px-2 py-1 text-xs rounded-full font-medium">
+            Admin Access
+          </span>
+        )}
+        {!isAdmin && (
+          <span className="px-2 py-1 text-xs rounded-full font-medium">
+            Read Only
+          </span>
+        )}
+      </div>
+      
+      <div className="flex gap-3">
         {isAdmin ? (
-          <button
-            onClick={() => setShowForm(!showForm)}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-opacity-80 transition-colors"
-            disabled={loading}
-          >
-            <Plus size={20} />
-            Add Todo
-          </button>
+          <>
+            <button
+              onClick={resetAllTodos}
+              className="flex items-center gap-2 px-4 py-2 border border-red-300 text-red-700 rounded-lg hover:bg-red-50 transition-colors"
+              disabled={loading || todos.filter(todo => todo.completed).length === 0}
+              title={todos.filter(todo => todo.completed).length === 0 ? 'No completed todos to reset' : 'Reset all completed todos'}
+            >
+              <RotateCcw size={20} />
+              Reset All ({todos.filter(todo => todo.completed).length})
+            </button>
+            <button
+              onClick={() => setShowForm(!showForm)}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-opacity-80 transition-colors"
+              disabled={loading}
+            >
+              <Plus size={20} />
+              Add Todo
+            </button>
+          </>
         ) : (
           <div className="flex items-center gap-2 px-4 py-2 rounded-lg cursor-not-allowed">
             <Lock size={20} />
@@ -284,17 +334,18 @@ function TodoApp({ todos, onTodosChange, userEmail, isAdmin }: {
           </div>
         )}
       </div>
+    </div>
 
-      {!isAdmin && (
-        <div className="border rounded-lg p-4">
-          <div className="flex items-center gap-2">
-            <Lock size={16} />
-            <p className="text-sm">
-              <strong>Read-only mode:</strong> Only reboostify@gmail.com can add, edit, or delete todos. You can view all todos and progress.
-            </p>
-          </div>
+    {!isAdmin && (
+      <div className="border rounded-lg p-4">
+        <div className="flex items-center gap-2">
+          <Lock size={16} />
+          <p className="text-sm">
+            <strong>Read-only mode:</strong> Only reboostify@gmail.com can add, edit, or delete todos. You can view all todos and progress.
+          </p>
         </div>
-      )}
+      </div>
+    )}
 
       {showForm && isAdmin && (
         <div className="border rounded-lg p-6 shadow-sm">
