@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { authMiddleware, redirectToHome, redirectToLogin } from "next-firebase-auth-edge";
 import { clientConfig, serverConfig } from "./config/config";
 
-const PUBLIC_PATHS = ['/register', '/login','/views', '/organise', '/blog','/about','/projects','/','/education','/stats/mental','/stats/spirit','/logout','/rout','/footr','/webby'];
+const PUBLIC_PATHS = ['/register', '/login','/views', '/organise','/progress', '/blog','/about','/projects','/','/education','/stats/mental','/stats/spirit','/logout','/rout','/footr','/webby'];
 const AUTH_REQUIRED_PATHS = ['/adminblog', '/counter']; // Add your protected routes here
 const PASSWORD_PROTECTED_PATHS = ['']; // Routes that need password protection
 const PASSWORD_AUTH_PATH = '/password-auth';
