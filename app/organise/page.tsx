@@ -292,20 +292,7 @@ const resetAllTodos = async () => {
 
  <div className="space-y-6">
     <div className="flex justify-between items-center">
-      <div className="flex items-center gap-3">
-        <h2 className="text-2xl font-bold">Todo Manager</h2>
-        {isAdmin && (
-          <span className="px-2 py-1 text-xs rounded-full font-medium">
-            Admin Access
-          </span>
-        )}
-        {!isAdmin && (
-          <span className="px-2 py-1 text-xs rounded-full font-medium">
-            Read Only
-          </span>
-        )}
-      </div>
-      
+    
       <div className="flex gap-3">
         {isAdmin ? (
           <>
