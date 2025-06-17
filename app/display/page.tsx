@@ -1,6 +1,6 @@
 "use client"
 import React, { useState, useEffect } from 'react';
-import { Brain, BrainCircuit, BicepsFlexed, Flower, Target, BarChart3, TrendingUp, Trophy, Loader2 } from 'lucide-react';
+import { Brain, BrainCircuit,AppWindowMac, BicepsFlexed, Flower, Target, BarChart3, TrendingUp, Trophy, Loader2 } from 'lucide-react';
 import supabase from '@/config/supabase';
 
 interface Todo {
@@ -27,6 +27,7 @@ const categories = [
   'ProblemSolving',
   'Strength',
   'Spiritual',
+  'Websites',
 ];
 
 const categoryConfig = {
@@ -35,6 +36,12 @@ const categoryConfig = {
     color: 'from-blue-500 to-blue-600',
 
     textColor: 'text-blue-600'
+  },
+    Websites: { 
+    icon: <AppWindowMac size={24} />, 
+    color: 'from-yellow-500 to-yellow-600',
+
+    textColor: 'text-yellow-600'
   },
   ProblemSolving: { 
     icon: <BrainCircuit size={24} />, 
