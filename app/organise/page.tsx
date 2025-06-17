@@ -760,9 +760,9 @@ export default function CombinedTodoApp() {
         {/* Header with navigation */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
           <div>
-            <h1 className="text-3xl font-bold">Todo App with Progress Tracking</h1>
+            <h1 className="text-3xl font-bold">Path to death and ultimate peace</h1>
             <p className="text-sm mt-1">
-              Logged in as: <span className="font-medium">{currentUserEmail}</span>
+         take yout time , spend time with it find the limit and break it to reach death in each todo tablet hold the hardest grip over it go back again untill the inner bitch is dead after that move to the other todo
             </p>
           </div>
           
