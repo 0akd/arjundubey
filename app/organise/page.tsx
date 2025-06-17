@@ -681,9 +681,11 @@ function ProgressCircles({ todos }: { todos: Todo[] }) {
 
 // Main Combined App Component
 export default function CombinedTodoApp() {
-      const [content, setContent] = useState('');
-      const [isLoading, setIsLoading] = useState(true);
-      const [saveStatus, setSaveStatus] = useState('saved');
+     const [content, setContent] = useState('');
+     const [isLoading, setIsLoading] = useState(true);
+     const [saveStatus, setSaveStatus] = useState('saved');
+     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+     const editorRef = useRef(null);
  
  
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -691,12 +693,75 @@ export default function CombinedTodoApp() {
   const [loading, setLoading] = useState(true);
   const [currentUserEmail, setCurrentUserEmail] = useState<string>('');
   const [authLoading, setAuthLoading] = useState(true);
-       const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-      const editorRef = useRef(null);
+   const isAdmin = currentUserEmail === ADMIN_EMAIL;
+
 
   // Check if current user is admin
-  const isAdmin = currentUserEmail === ADMIN_EMAIL;
-   
+ 
+  const text: string =" we all have two people, we all have two people, and i'm not saying you're crazy, we have the easy voice, that's that voice that we all love, that's that very comfortable voice, that's that mommy holding you, saying it's going to be okay, it doesn't care how good you are, just loves you, just loves you, no matter how messed up you are in life, so that's that one voice, this other voice that we walk very far away from is a boy saying, hey man, you ain't doing shit, so we try to get this voice out of our head completely, and we live over here in this lane, so what you have to do first is turn up this voice over here, the voice saying things to you that aren't nice, that it's in our heads saying, you know what man, dude, you're not, you're not doing it, i'm not saying to put yourself down, i'm saying listen to the truth, and the truth isn't in the 20 percent, the truth is in this other part of your brain saying, look man, you're wasting a bunch of percentage here, we have 80 more percent that we're not tapping into, because in this other 80 is suffering, pain, failure, failure, failure, self-doubt, darkness, and then a whole bunch of light, but to get to this light, you gotta go through all of this journey, which is not fun, so a lot of us know that i can get over here, but over here man, this is much better, because i gotta go through this journey that is not fun, this, this from 20 to 100 percent, this [ __ ] in between is not fun, so we decided to live over here, so everybody goes, how do you do that, you know exactly how to do that, you know exactly, it's not a magic trick, there's nothing i talk about that's a magic trick, it's all back down to a very primitive mindset of, we just have to do, it's like breathing, breathing becomes normal, like we don't know that, that, that we're doing, that's how you have to live your life, when that alarm clock goes off at four or five in the morning, your mind says no, you just say, this is what we do, it's what we do now, because to get to where you want to go, the amount of pain involved, i'm not saying physical, i'm not saying you gotta break yourself off, the amount of mental pain, of how many times you're gonna have to do something that you don't want to do to get to where you want to go, when i was 297 pounds and i was fat as hell, trying to be a navy seal, the scariest thing in the world to me, even to this day, was that, that could have been the rest of my life, i thought then i was trying hard, that's the scariest thing in the world, i thought then, 297 pounds, working for eco labs, spraying for cockroaches, making a thousand dollars a month, i thought that was me at my 100 percent potential, coming to find out a few years later, i wasn't anywhere near that, 106 pounds less, graduate navy seal training, we're going to do all these other things, looking back on that, that was me trying hard, that's why people gotta understand, what is in us, we have no idea until we start trying hard, and i mean really trying hard, when you're obsessed with, hey, this is my new norm, my new norm is that, wow, this isn't always fun, it's not always meant to be fun, and that's when you know you're trying hard, is that, and so people listening to us, that maybe are at 20 or 30, you know, about yeah, i'm going hard, i'm going max, and yet they're not seeing the results, like how do they actually shape themselves out of that, we're all in a battle with our own brains, that's like, that's all life is, it's the most proper thing in the world, is your own brain, it could work for you or against you, and as opposed to focusing on all those bad things that happened, all the things you didn't have, the people that called you names, all the stuff you're doing again, and you started thinking, wait a second, i just visualized this, and now i can take it to the next level, next level, because the visualization got you through, it did, and i was able to visualize the end, so before, so when i was 297, i was all fat and out of shape, i couldn't run a quarter mile, and i was drinking milkshakes and eating boxes of donuts, i visualized, man, how would it feel, for a brief moment, i was so, there was 22 guys that graduated, i watched this segment on tv about these guys going to navy seal training, and i couldn't even, i, i wasn't a great swimmer, i was afraid of the water, all this crap, man, but at the very end it says, 22 guys, there's command officers up there, and it gives this great speech, i was like, man, i wonder, so i started visualizing me being the 23rd guy, in these dress whites, sitting there with these guys, getting that navy seal, you know, graduating this navy seal training, i was like, god, so i put myself there, i was like, man, that's an amazing feeling, i put myself there at 297, not even able to do anything that these great men were doing, [Music] you get that certificate, you walk across the stage, and what's next, but i didn't know that then, my mind was that, i thought i lived in that moment forever, so i said, wow man, if i could just feel like that, i could feel like these guys feel, and what was that feeling you wanted so bad, no, victory, i wanted to win, not like beat somebody else, it wasn't about that, i, i just wanted to go the distance, everything in my life, when something got hard, i quit, if it was reading, that's why, you know, i wasn't great at reading, i wasn't great at writing, so i just quit, i couldn't catch on as fast as you, i didn't work harder than you, so i quit, you know, i wasn't great at things, so i quit, you know, i'm, i'm not good at this, like man, if i could just go that distance, that extra mile, to just go, just to finish, i want to finish, i want to feel victory, and victory for me wasn't winning, it was just finishing, so i said, you know what, if i could feel like these guys feel, it would change my life, but what i realized, the best feeling i had was when i was by myself, trying to lose this weight, i had to lose it in literally less than three months, 106 pounds, less than three months, and literally, i started feeling victory just by putting myself in the battle, it wasn't about going to navy seal training, it wasn't about being the 23rd guy in that chair, i started realizing, man, just by going to war with myself every day, and putting these challenges, and these goals, and these obstacles, these insurmountable obstacles, so it went about losing 106 pounds, me losing five pounds was an accomplishment, me losing 10 pounds, and then 50 pounds, and the more i just, the more i gained confidence, and then the more i gained confidence, the more i realized, these guys can't do what i'm doing right now, i had no coach, had no trainer, had no money, i didn't know how to lose weight, i had no knowledge of what i was doing, i was just working, i was just sacrificing, and then through that, all these different tools started coming up, but i would have never found these tools if i didn't put myself in a very uncomfortable place, we all look for toughness, we all want it, but we look for it in a comfortable environment, you will not find toughness in a comfortable environment, those of you who are listening to this, whoever hear this, you will not find it,trijya choubey dumped you worthless jobless berozgar and she went to tarun kaushik, may be she deserses but you punk get start to work your ass off,how your father did the dirty things ,how yout friend pulled your hair while doing pushups"
+;
+ const saveContent = async () => {
+    try {
+      const { error } = await supabase
+        .from('text_content')
+        .upsert({ 
+          id: 1, 
+          content: content,
+          updated_at: new Date().toISOString()
+        });
+
+      if (error) {
+        console.error('Error saving content:', error);
+        setSaveStatus('error');
+      } else {
+        setSaveStatus('saved');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      setSaveStatus('error');
+    }
+  };
+
+  
+
+
+    const loadContent = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('text_content')
+        .select('content')
+        .eq('id', 1)
+        .single();
+
+      if (error && error.code !== 'PGRST116') {
+        console.error('Error loading content:', error);
+      } else if (data) {
+        setContent(data.content || '');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+    const loadTodos = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('todos')
+        .select('*')
+        .eq('user_email', ADMIN_EMAIL)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      setTodos(data || []);
+    } catch (error) {
+      console.error('Error loading todos:', error);
+      alert('Error loading todos. Please refresh the page.');
+    } finally {
+      setLoading(false);
+    }
+  };
       // Load content on component mount
       useEffect(() => {
         loadContent();
@@ -725,58 +790,7 @@ export default function CombinedTodoApp() {
         };
       }, [content, isLoading]);
     
-      const loadContent = async () => {
-        try {
-          const { data, error } = await supabase
-            .from('text_content')
-            .select('content')
-            .eq('id', 1)
-            .single();
-    
-          if (error && error.code !== 'PGRST116') {
-            console.error('Error loading content:', error);
-          } else if (data) {
-            setContent(data.content || '');
-          }
-        } catch (error) {
-          console.error('Error:', error);
-        } finally {
-          setIsLoading(false);
-        }
-      };
-    
-      const saveContent = async () => {
-        try {
-          const { error } = await supabase
-            .from('text_content')
-            .upsert({ 
-              id: 1, 
-              content: content,
-              updated_at: new Date().toISOString()
-            });
-    
-          if (error) {
-            console.error('Error saving content:', error);
-            setSaveStatus('error');
-          } else {
-            setSaveStatus('saved');
-          }
-        } catch (error) {
-          console.error('Error:', error);
-          setSaveStatus('error');
-        }
-      };
-    
-      const handleInput = (e: React.FormEvent<HTMLDivElement>) => {
-        const newContent = e.currentTarget.innerText;
-        setContent(newContent);
-      };
-    
-      const handlePaste = (e: React.ClipboardEvent<HTMLDivElement>) => {
-        e.preventDefault();
-        const text = e.clipboardData.getData('text/plain');
-        document.execCommand('insertText', false, text);
-      };
+
     
     
   useEffect(() => {
@@ -808,27 +822,52 @@ export default function CombinedTodoApp() {
     }
   }, [currentUserEmail, authLoading, isAdmin]);
 
-  const loadTodos = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('todos')
-        .select('*')
-        .eq('user_email', ADMIN_EMAIL)
-        .order('created_at', { ascending: false });
+useEffect(() => {
+  if (editorRef.current && content) {
+    (editorRef.current as HTMLDivElement).innerText = content;
+  }
+}, [editorRef.current]); // run only once
 
-      if (error) throw error;
-
-      setTodos(data || []);
-    } catch (error) {
-      console.error('Error loading todos:', error);
-      alert('Error loading todos. Please refresh the page.');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   // Show loading screen while checking authentication
-  if (authLoading || loading) {
+ 
+ 
+  // Load content on component mount
+
+
+  // Auto-save when content changes
+  useEffect(() => {
+    if (content && !isLoading) {
+      setSaveStatus('saving...');
+      
+      // Clear existing timeout
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+      
+      // Set new timeout for debounced save
+      timeoutRef.current = setTimeout(() => {
+        saveContent();
+      }, 1000); // Save after 1 second of no typing
+    }
+
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, [content, isLoading]);
+
+ 
+ 
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gray-50">
+        <div className="text-gray-600">Loading...</div>
+      </div>
+    );
+  }
+   if (authLoading || loading) {
     return <LoadingScreen />;
   }
 
@@ -848,9 +887,6 @@ export default function CombinedTodoApp() {
           </div>
         );
       }
- const text: string =" we all have two people, we all have two people, and i'm not saying you're crazy, we have the easy voice, that's that voice that we all love, that's that very comfortable voice, that's that mommy holding you, saying it's going to be okay, it doesn't care how good you are, just loves you, just loves you, no matter how messed up you are in life, so that's that one voice, this other voice that we walk very far away from is a boy saying, hey man, you ain't doing shit, so we try to get this voice out of our head completely, and we live over here in this lane, so what you have to do first is turn up this voice over here, the voice saying things to you that aren't nice, that it's in our heads saying, you know what man, dude, you're not, you're not doing it, i'm not saying to put yourself down, i'm saying listen to the truth, and the truth isn't in the 20 percent, the truth is in this other part of your brain saying, look man, you're wasting a bunch of percentage here, we have 80 more percent that we're not tapping into, because in this other 80 is suffering, pain, failure, failure, failure, self-doubt, darkness, and then a whole bunch of light, but to get to this light, you gotta go through all of this journey, which is not fun, so a lot of us know that i can get over here, but over here man, this is much better, because i gotta go through this journey that is not fun, this, this from 20 to 100 percent, this [ __ ] in between is not fun, so we decided to live over here, so everybody goes, how do you do that, you know exactly how to do that, you know exactly, it's not a magic trick, there's nothing i talk about that's a magic trick, it's all back down to a very primitive mindset of, we just have to do, it's like breathing, breathing becomes normal, like we don't know that, that, that we're doing, that's how you have to live your life, when that alarm clock goes off at four or five in the morning, your mind says no, you just say, this is what we do, it's what we do now, because to get to where you want to go, the amount of pain involved, i'm not saying physical, i'm not saying you gotta break yourself off, the amount of mental pain, of how many times you're gonna have to do something that you don't want to do to get to where you want to go, when i was 297 pounds and i was fat as hell, trying to be a navy seal, the scariest thing in the world to me, even to this day, was that, that could have been the rest of my life, i thought then i was trying hard, that's the scariest thing in the world, i thought then, 297 pounds, working for eco labs, spraying for cockroaches, making a thousand dollars a month, i thought that was me at my 100 percent potential, coming to find out a few years later, i wasn't anywhere near that, 106 pounds less, graduate navy seal training, we're going to do all these other things, looking back on that, that was me trying hard, that's why people gotta understand, what is in us, we have no idea until we start trying hard, and i mean really trying hard, when you're obsessed with, hey, this is my new norm, my new norm is that, wow, this isn't always fun, it's not always meant to be fun, and that's when you know you're trying hard, is that, and so people listening to us, that maybe are at 20 or 30, you know, about yeah, i'm going hard, i'm going max, and yet they're not seeing the results, like how do they actually shape themselves out of that, we're all in a battle with our own brains, that's like, that's all life is, it's the most proper thing in the world, is your own brain, it could work for you or against you, and as opposed to focusing on all those bad things that happened, all the things you didn't have, the people that called you names, all the stuff you're doing again, and you started thinking, wait a second, i just visualized this, and now i can take it to the next level, next level, because the visualization got you through, it did, and i was able to visualize the end, so before, so when i was 297, i was all fat and out of shape, i couldn't run a quarter mile, and i was drinking milkshakes and eating boxes of donuts, i visualized, man, how would it feel, for a brief moment, i was so, there was 22 guys that graduated, i watched this segment on tv about these guys going to navy seal training, and i couldn't even, i, i wasn't a great swimmer, i was afraid of the water, all this crap, man, but at the very end it says, 22 guys, there's command officers up there, and it gives this great speech, i was like, man, i wonder, so i started visualizing me being the 23rd guy, in these dress whites, sitting there with these guys, getting that navy seal, you know, graduating this navy seal training, i was like, god, so i put myself there, i was like, man, that's an amazing feeling, i put myself there at 297, not even able to do anything that these great men were doing, [Music] you get that certificate, you walk across the stage, and what's next, but i didn't know that then, my mind was that, i thought i lived in that moment forever, so i said, wow man, if i could just feel like that, i could feel like these guys feel, and what was that feeling you wanted so bad, no, victory, i wanted to win, not like beat somebody else, it wasn't about that, i, i just wanted to go the distance, everything in my life, when something got hard, i quit, if it was reading, that's why, you know, i wasn't great at reading, i wasn't great at writing, so i just quit, i couldn't catch on as fast as you, i didn't work harder than you, so i quit, you know, i wasn't great at things, so i quit, you know, i'm, i'm not good at this, like man, if i could just go that distance, that extra mile, to just go, just to finish, i want to finish, i want to feel victory, and victory for me wasn't winning, it was just finishing, so i said, you know what, if i could feel like these guys feel, it would change my life, but what i realized, the best feeling i had was when i was by myself, trying to lose this weight, i had to lose it in literally less than three months, 106 pounds, less than three months, and literally, i started feeling victory just by putting myself in the battle, it wasn't about going to navy seal training, it wasn't about being the 23rd guy in that chair, i started realizing, man, just by going to war with myself every day, and putting these challenges, and these goals, and these obstacles, these insurmountable obstacles, so it went about losing 106 pounds, me losing five pounds was an accomplishment, me losing 10 pounds, and then 50 pounds, and the more i just, the more i gained confidence, and then the more i gained confidence, the more i realized, these guys can't do what i'm doing right now, i had no coach, had no trainer, had no money, i didn't know how to lose weight, i had no knowledge of what i was doing, i was just working, i was just sacrificing, and then through that, all these different tools started coming up, but i would have never found these tools if i didn't put myself in a very uncomfortable place, we all look for toughness, we all want it, but we look for it in a comfortable environment, you will not find toughness in a comfortable environment, those of you who are listening to this, whoever hear this, you will not find it,trijya choubey dumped you worthless jobless berozgar and she went to tarun kaushik, may be she deserses but you punk get start to work your ass off,how your father did the dirty things ,how yout friend pulled your hair while doing pushups"
-;
-
   return (
     <div className="min-h-screen pt-6">
            <div className="p-4">
@@ -861,20 +897,18 @@ export default function CombinedTodoApp() {
 
     
           <div className="p-6">
-            <div
-              ref={editorRef}
-              contentEditable
-              suppressContentEditableWarning={true}
-              onInput={handleInput}
-              onPaste={handlePaste}
-              className="min-h-96 w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent leading-relaxed"
-              style={{ 
-           
-                whiteSpace: 'pre-wrap',
-                wordWrap: 'break-word'
-              }}
-              dangerouslySetInnerHTML={{ __html: content }}
-            />
+    <textarea
+  value={content}
+  onChange={(e) => setContent(e.target.value)}
+  className="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent leading-relaxed"
+  style={{
+    minHeight: '400px',
+    whiteSpace: 'pre-wrap',
+    wordWrap: 'break-word',
+    resize: 'vertical',
+  }}
+/>
+
           </div>
 
    
