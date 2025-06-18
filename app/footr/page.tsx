@@ -6,7 +6,7 @@ import Image from "next/image";
 
 function Footer() {
   return (
-    <footer className="flex flex-col w-screen px-5 py-10 border-t border-fun-pink-darker z-5 bg-bg">
+    <footer className="flex flex-col w-screen px-5 py-10  z-5 bg-bg">
       <div className="w-full max-w-4xl m-auto grid grid-cols-2 sm:grid-cols-3 justify-between items-start">
         {footer.columns.map((item, index) => {
           return (
@@ -41,11 +41,11 @@ function Footer() {
             </div>
           );
         })}
-        <div className="text-center col-span-2 sm:col-auto sm:text-left pt-8 sm:mt-0 sm:pt-0 text-fun-gray border-t border-fun-pink-dark sm:border-0">
+        <div className="text-center col-span-2 sm:col-auto sm:text-left pt-8 sm:mt-0 sm:pt-0 text-fun-gray ">
           <h4 className="uppercase text-fun-gray text-sm font-bold">
-            Support My Work
+            {/* Support My Work */}
           </h4>
-          <div className="space-y-2 mt-4 w-full flex items-center sm:items-start flex-col">
+          {/* <div className="space-y-2 mt-4 w-full flex items-center sm:items-start flex-col">
             {footer.support.buymeacoffee !== "" && (
               <div>
                 <a
@@ -75,12 +75,12 @@ function Footer() {
             <p className="text-fun-gray text-xs pt-1">
               {footer.support.message}
             </p>
-          </div>
+          </div> */}
         </div>
       </div>
-      <div className="max-w-4xl w-full m-auto mt-8 pt-8 sm:mt-4 sm:pt-4 text-center text-fun-gray border-t border-fun-pink-dark">
+      <div className="max-w-4xl w-full m-auto mt-8 pt-8 sm:mt-4 sm:pt-4 text-center ">
         <div className="flex flex-col items-center justify-center ">
-          <div className="inline-flex items-center uppercase text-xs font-bold tracking-widest">
+          {/* <div className="inline-flex items-center uppercase text-xs font-bold tracking-widest">
             Made with{" "}
             <div className="space-x-2 inline-flex items-center -mt-1 ml-3">
               <span>
@@ -109,8 +109,8 @@ function Footer() {
                 <span className="sr-only">TailwindCSS</span>
               </span>
             </div>
-          </div>
-          <div className="mt-2 text-xs ">
+          </div> */}
+          {/* <div className="mt-2 text-xs ">
             Made by{" "}
             <a
               href="mailto:contact@braydentw.io"
@@ -119,12 +119,12 @@ function Footer() {
          ar
             </a>
             . All rights reserved.
-          </div>
+          </div> */}
         </div>
       </div>
-      <div className="mt-8 text-center sm:text-right sm:-mt-12">
+      {/* <div className="mt-8 text-center sm:text-right sm:-mt-12">
         <a
-          className="w-auto inline-flex items-center sm:w-auto font-bold flex-shrink text-xs border border-fun-pink px-4 py-2 rounded-xl text-fun-pink cursor-pointer opacity-50"
+          className="w-auto inline-flex items-center sm:w-auto font-bold flex-shrink text-xs  px-4 py-2 rounded-xl  cursor-pointer opacity-50"
           href="/webby"
           target="_blank"
           rel="nooreferrer"
@@ -137,7 +137,7 @@ function Footer() {
           />
           <span className="ml-2">View Source Code </span>
         </a>
-      </div>
+      </div> */}
     </footer>
   );
 }

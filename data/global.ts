@@ -57,16 +57,16 @@ export const footer: Footer = {
         //   link: "/blog",
         //   leavesWebsite: false,
         // },
-        {
-          name: "Projects",
-          link: "/projects",
-          leavesWebsite: false,
-        },
-        {
-          name: "Designs",
-          link: "/designs",
-          leavesWebsite: false,
-        },
+        // {
+        //   name: "Projects",
+        //   link: "/projects",
+        //   leavesWebsite: false,
+        // },
+        // {
+        //   name: "Designs",
+        //   link: "/designs",
+        //   leavesWebsite: false,
+        // },
       ],
     },
     {
