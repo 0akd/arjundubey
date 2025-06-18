@@ -63,7 +63,7 @@ export default function DonationPage() {
     DONATE
           </h1>
           <p className="text-gray-600">
-       {" Your contribution will help me to make this world a better place so don't think much just donate please :)"}
+       {"don't think much just donate please :)"}
           </p>
         </div>
 
@@ -106,10 +106,10 @@ export default function DonationPage() {
         </div>
 
         {/* Selected Amount Display */}
-        <div className=" border-4 border-blue-600 rounded-lg p-4">
+        <div className=" border-1 border-blue-600 rounded-lg p-4">
           <div className="flex justify-between items-center">
             <span className="font-medium">Donation Amount:</span>
-            <span className="text-2xl font-bold text-blue-600">
+            <span className="text-2xl font-bold ">
               ₹{getFinalAmount().toFixed(2)}
             </span>
           </div>
