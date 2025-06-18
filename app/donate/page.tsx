@@ -56,7 +56,7 @@ export default function DonationPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-4">
+    <div className=" flex flex-col items-center justify-center p-4">
       <div className="max-w-lg w-full  rounded-xl shadow-lg p-8 space-y-6">
         <div className="text-center">
           <h1 className="text-3xl font-bold  mb-2">
