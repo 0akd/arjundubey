@@ -101,8 +101,8 @@ export default function RazorpayPayment({
       <button
         onClick={handlePayment}
         disabled={loading}
-        className={`bg-blue-600 text-white px-6 py-3 rounded-lg font-medium
-          hover:bg-blue-700 transition-colors ${loading ? 'opacity-75 cursor-not-allowed' : ''}`}
+        className={`bg-purple-500 px-6 py-3 rounded-lg font-medium
+           transition-colors ${loading ? 'opacity-75 cursor-not-allowed' : ''}`}
       >
         {loading ? 'Processing...' : `Pay ₹${amount}`}
       </button>
