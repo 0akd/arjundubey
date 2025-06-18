@@ -41,6 +41,7 @@ const Expedu = lazy(() => import('./education/page'))
 const Projects = lazy(() => import('./projects/page'))
 const Blog = lazy(() => import('./blog/page'))
 const Progress = lazy(() => import('./display/page'))
+const Donate = lazy(() => import ('./donate/page'))
 export const dynamic = 'force-dynamic'
 export const dynamicParams = true
 export const revalidate = 0
@@ -78,6 +79,9 @@ export default function Home() {
         </LazySection>
          <LazySection>
           <Progress />
+        </LazySection>
+                <LazySection>
+          <Donate />
         </LazySection>
       </div>
     </main></>
