@@ -53,11 +53,11 @@ export default function LeetCodeStatsCard() {
 
   if (loading) {
     return (
-      <div className="w-full max-w-2xl mx-auto p-6">
-        <div className="border-4 border-gray-300 rounded-2xl p-6 shadow-2xl">
-          <div className="flex items-center justify-center h-64">
+      <div className="w-full max-w-4xl mx-auto p-4">
+        <div className="rounded-2xl p-6 shadow-2xl">
+          <div className="flex items-center justify-center h-32">
             <div className="text-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-400 mx-auto mb-4"></div>
               <p className="text-lg font-medium">Loading LeetCode stats...</p>
             </div>
           </div>
@@ -68,15 +68,15 @@ export default function LeetCodeStatsCard() {
 
   if (error) {
     return (
-      <div className="w-full max-w-2xl mx-auto p-6">
-        <div className="border-4 border-red-400 rounded-2xl p-6 shadow-2xl">
-          <div className="flex items-center justify-center h-64">
+      <div className="w-full max-w-4xl mx-auto p-4">
+        <div className="rounded-2xl p-6 shadow-2xl">
+          <div className="flex items-center justify-center h-32">
             <div className="text-center">
-              <div className="text-red-600 mb-4">
-                <Trophy className="w-12 h-12 mx-auto opacity-50" />
+              <div className="text-red-400 mb-4">
+                <Trophy className="w-12 h-12 mx-auto" />
               </div>
-              <p className="text-lg font-medium text-red-700">Failed to load stats</p>
-              <p className="text-sm text-red-600 mt-2">Error: {error}</p>
+              <p className="text-lg font-medium">Failed to load stats</p>
+              <p className="text-sm mt-2">Error: {error}</p>
             </div>
           </div>
         </div>
@@ -95,167 +95,160 @@ export default function LeetCodeStatsCard() {
   const overallProgress = (stats.totalSolved / stats.totalQuestions) * 100;
 
   return (
-    <div className="w-full max-w-2xl mx-auto p-6">
-      <div className="relative border-4 border-gradient-to-r from-emerald-400 via-blue-500 to-purple-600 rounded-2xl p-6 shadow-2xl backdrop-blur-sm">
-        {/* Gradient border effect */}
-        <div className="absolute inset-0 bg-gradient-to-r from-emerald-400 via-blue-500 to-purple-600 rounded-2xl blur opacity-20 -z-10"></div>
+    <div className="w-full max-w-6xl mx-auto p-4">
+      <div className="relative rounded-2xl p-4 lg:p-6 shadow-2xl border border-purple-500/30">
         
-        {/* Top corner LeetCode ID */}
-        <div className="absolute top-4 right-4">
+        {/* Header - More compact */}
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-lg bg-gradient-to-r from-yellow-400 to-orange-500">
+              <Trophy className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <h2 className="text-xl lg:text-2xl font-bold">LeetCode Progress</h2>
+              <p className="text-sm text-cyan-400 font-medium">solving in java</p>
+            </div>
+          </div>
           <a 
             href={profileUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center px-3 py-1 rounded-full border-2 border-orange-400 hover:border-orange-300 transition-all duration-300 hover:scale-105 hover:shadow-lg"
+            className="inline-flex items-center px-3 py-1 rounded-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-400 hover:to-red-400 transition-all duration-300 hover:scale-105 hover:shadow-lg"
           >
-            <span className="text-sm font-mono font-bold">@{leetcodeId}</span>
+            <span className="text-sm font-mono font-bold text-white">@{leetcodeId}</span>
           </a>
         </div>
 
-        {/* Header */}
-        <div className="flex items-center gap-3 mb-6 mt-8">
-          <div className="p-2 rounded-lg border-2 border-yellow-400">
-            <Trophy className="w-6 h-6 text-yellow-600" />
-          </div>
-          <div>
-            <h2 className="text-2xl font-bold">LeetCode Progress</h2>
-            <p className="text-sm opacity-70">solving in java</p>
-          </div>
-        </div>
-
-        {/* Main Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        {/* Main Stats Grid - More columns on all screen sizes */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4 mb-4">
           {/* Overall Progress */}
-          <div className="border-2 border-indigo-400 rounded-xl p-4">
-            <div className="flex items-center justify-between mb-3">
+          <div className="col-span-2 lg:col-span-1 rounded-xl p-4 border border-indigo-400/50">
+            <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
-                <Target className="w-5 h-5 text-indigo-600" />
-                <span className="font-semibold">Overall Progress</span>
+                <Target className="w-4 h-4 text-cyan-300" />
+                <span className="font-semibold text-sm">Overall</span>
               </div>
-              <span className="text-2xl font-bold">{stats.totalSolved}</span>
+              <span className="text-xl font-bold">{stats.totalSolved}</span>
             </div>
-            <div className="h-3 border border-gray-300 rounded-full overflow-hidden mb-2">
+            <div className="h-2 rounded-full overflow-hidden mb-2 border border-slate-600">
               <div 
-                className="h-full bg-gradient-to-r from-indigo-500 to-purple-600 transition-all duration-1000"
+                className="h-full transition-all duration-1000"
                 style={{ width: `${Math.max(overallProgress, 0.5)}%` }}
               ></div>
             </div>
-            <p className="text-xs opacity-70">{stats.totalSolved} / {stats.totalQuestions?.toLocaleString()} solved</p>
+            <p className="text-xs">{stats.totalSolved} / {stats.totalQuestions?.toLocaleString()}</p>
           </div>
 
           {/* Acceptance Rate */}
-          <div className="border-2 border-green-400 rounded-xl p-4">
-            <div className="flex items-center justify-between mb-3">
+          <div className="col-span-2 lg:col-span-1 rounded-xl p-4 border border-green-400/50">
+            <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
-                <TrendingUp className="w-5 h-5 text-green-600" />
-                <span className="font-semibold">Acceptance Rate</span>
+                <TrendingUp className="w-4 h-4 text-lime-300" />
+                <span className="font-semibold text-sm">Rate</span>
               </div>
-              <span className="text-2xl font-bold">{stats.acceptanceRate}%</span>
+              <span className="text-xl font-bold">{stats.acceptanceRate}%</span>
             </div>
-            <div className="h-3 border border-gray-300 rounded-full overflow-hidden mb-2">
+            <div className="h-2 rounded-full overflow-hidden mb-2 border border-slate-600">
               <div 
-                className="h-full bg-gradient-to-r from-green-400 to-emerald-600 transition-all duration-1000"
+                className="h-full transition-all duration-1000"
                 style={{ width: `${stats.acceptanceRate}%` }}
               ></div>
             </div>
-            <p className="text-xs opacity-70">
-              {stats.acceptanceRate === 100 ? 'Perfect success rate!' : 'Keep improving!'}
+            <p className="text-xs">
+              {stats.acceptanceRate === 100 ? 'Perfect!' : 'Keep going!'}
             </p>
+          </div>
+
+          {/* Ranking */}
+          <div className="rounded-xl p-4 border border-blue-400/50">
+            <div className="flex items-center justify-center mb-1">
+              <Trophy className="w-5 h-5 text-yellow-300" />
+            </div>
+            <div className="text-lg font-bold text-center">{stats.ranking?.toLocaleString() || 'N/A'}</div>
+            <div className="text-xs text-center">Ranking</div>
+          </div>
+
+          {/* Points */}
+          <div className="rounded-xl p-4 border border-purple-400/50">
+            <div className="flex items-center justify-center mb-1">
+              <Star className="w-5 h-5 text-yellow-400" />
+            </div>
+            <div className="text-lg font-bold text-center">{stats.contributionPoints || 0}</div>
+            <div className="text-xs text-center">Points</div>
           </div>
         </div>
 
-        {/* Difficulty Breakdown */}
-        <div className="border-2 border-pink-400 rounded-xl p-4 mb-6">
-          <h3 className="font-semibold mb-4 flex items-center gap-2">
-            <Award className="w-5 h-5 text-pink-600" />
-            Problem Difficulty Breakdown
+        {/* Difficulty Breakdown - More compact */}
+        <div className="rounded-xl p-4 mb-4 border border-slate-600/50">
+          <h3 className="font-semibold mb-3 flex items-center gap-2">
+            <Award className="w-4 h-4 text-pink-400" />
+            Difficulty Breakdown
           </h3>
           
-          <div className="space-y-4">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
             {/* Easy */}
-            <div className="flex items-center gap-4">
-              <div className="w-16 text-sm font-medium">Easy</div>
-              <div className="flex-1 h-2 border border-gray-300 rounded-full overflow-hidden">
+            <div className="flex items-center gap-3">
+              <div className="w-12 text-sm font-medium text-green-400">Easy</div>
+              <div className="flex-1 h-2 rounded-full overflow-hidden border border-slate-600">
                 <div 
-                  className="h-full bg-gradient-to-r from-green-400 to-green-600 transition-all duration-1000"
+                  className="h-full transition-all duration-1000"
                   style={{ width: `${Math.max(easyProgress, 0.5)}%` }}
                 ></div>
               </div>
-              <div className="text-sm font-mono w-20 text-right">
+              <div className="text-sm font-mono text-green-300 w-16 text-right">
                 {stats.easySolved}/{stats.totalEasy}
               </div>
             </div>
 
             {/* Medium */}
-            <div className="flex items-center gap-4">
-              <div className="w-16 text-sm font-medium">Medium</div>
-              <div className="flex-1 h-2 border border-gray-300 rounded-full overflow-hidden">
+            <div className="flex items-center gap-3">
+              <div className="w-12 text-sm font-medium text-yellow-400">Med</div>
+              <div className="flex-1 h-2 rounded-full overflow-hidden border border-slate-600">
                 <div 
-                  className="h-full bg-gradient-to-r from-yellow-400 to-orange-600 transition-all duration-1000"
+                  className="h-full transition-all duration-1000"
                   style={{ width: `${Math.max(mediumProgress, 0.5)}%` }}
                 ></div>
               </div>
-              <div className="text-sm font-mono w-20 text-right">
+              <div className="text-sm font-mono text-yellow-300 w-16 text-right">
                 {stats.mediumSolved}/{stats.totalMedium}
               </div>
             </div>
 
             {/* Hard */}
-            <div className="flex items-center gap-4">
-              <div className="w-16 text-sm font-medium">Hard</div>
-              <div className="flex-1 h-2 border border-gray-300 rounded-full overflow-hidden">
+            <div className="flex items-center gap-3">
+              <div className="w-12 text-sm font-medium text-red-400">Hard</div>
+              <div className="flex-1 h-2 rounded-full overflow-hidden border border-slate-600">
                 <div 
-                  className="h-full bg-gradient-to-r from-red-400 to-red-600 transition-all duration-1000"
+                  className="h-full transition-all duration-1000"
                   style={{ width: `${Math.max(hardProgress, 0.5)}%` }}
                 ></div>
               </div>
-              <div className="text-sm font-mono w-20 text-right">
+              <div className="text-sm font-mono text-red-300 w-16 text-right">
                 {stats.hardSolved}/{stats.totalHard}
               </div>
             </div>
           </div>
         </div>
 
-        {/* Bottom Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="border-2 border-blue-400 rounded-lg p-3 text-center">
+        {/* Bottom Stats - More columns */}
+        <div className="grid grid-cols-2 gap-3 mb-4">
+          <div className="rounded-lg p-3 text-center border border-cyan-400/50">
             <div className="flex items-center justify-center mb-1">
-              <Trophy className="w-4 h-4 text-blue-600" />
+              <Award className="w-4 h-4 text-cyan-300" />
             </div>
-            <div className="text-lg font-bold">{stats.ranking?.toLocaleString() || 'N/A'}</div>
-            <div className="text-xs opacity-70">Ranking</div>
+            <div className="text-base font-bold">{stats.reputation || 0}</div>
+            <div className="text-xs">Reputation</div>
           </div>
 
-          <div className="border-2 border-purple-400 rounded-lg p-3 text-center">
+          <div className="rounded-lg p-3 text-center border border-rose-400/50">
             <div className="flex items-center justify-center mb-1">
-              <Star className="w-4 h-4 text-purple-600" />
+              <Calendar className="w-4 h-4 text-rose-300" />
             </div>
-            <div className="text-lg font-bold">{stats.contributionPoints || 0}</div>
-            <div className="text-xs opacity-70">Points</div>
-          </div>
-
-          <div className="border-2 border-cyan-400 rounded-lg p-3 text-center">
-            <div className="flex items-center justify-center mb-1">
-              <Award className="w-4 h-4 text-cyan-600" />
-            </div>
-            <div className="text-lg font-bold">{stats.reputation || 0}</div>
-            <div className="text-xs opacity-70">Reputation</div>
-          </div>
-
-          <div className="border-2 border-rose-400 rounded-lg p-3 text-center">
-            <div className="flex items-center justify-center mb-1">
-              <Calendar className="w-4 h-4 text-rose-600" />
-            </div>
-            <div className="text-lg font-bold">
+            <div className="text-base font-bold">
               {stats.submissionCalendar ? Object.keys(stats.submissionCalendar).length : 0}
             </div>
-            <div className="text-xs opacity-70">Active Days</div>
+            <div className="text-xs">Active Days</div>
           </div>
-        </div>
-
-        {/* Motivational Footer */}
-        <div className="mt-6 text-center p-3 border-2 border-gradient-to-r from-violet-400 to-pink-400 rounded-lg">
-          <p className="text-sm font-medium">They don't know me son !!!!!!!</p>
         </div>
       </div>
     </div>
