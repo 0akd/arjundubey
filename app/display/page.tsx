@@ -1,6 +1,7 @@
 "use client"
 import React, { useState, useEffect } from 'react';
-import { Brain, BrainCircuit, AppWindowMac, BicepsFlexed, Flower, Target, BarChart3, TrendingUp, Trophy, Loader2 } from 'lucide-react';
+import { Brain, BrainCircuit, Monitor, Zap, Flower, Target, BarChart3, TrendingUp, Trophy, Loader2 } from 'lucide-react';
+import supabase from '@/config/supabase';
 
 interface Todo {
   id: number;
@@ -37,7 +38,7 @@ const categoryConfig = {
     textColor: 'text-blue-600'
   },
   Websites: { 
-    icon: <AppWindowMac size={18} />, 
+    icon: <Monitor size={18} />, 
     color: 'from-yellow-400 to-yellow-500',
     borderColor: 'border-yellow-400',
     textColor: 'text-yellow-600'
@@ -49,7 +50,7 @@ const categoryConfig = {
     textColor: 'text-purple-600'
   },
   Strength: { 
-    icon: <BicepsFlexed size={18} />, 
+    icon: <Zap size={18} />, 
     color: 'from-orange-400 to-orange-500',
     borderColor: 'border-orange-400',
     textColor: 'text-orange-600'
@@ -62,17 +63,19 @@ const categoryConfig = {
   }
 };
 
-// Mock data for demonstration
-const mockTodos: Todo[] = [
-  { id: 1, title: "Learn React", description: "", category: "Intelligence", completed: true, created_at: "2024-01-01", user_email: "test@test.com" },
-  { id: 2, title: "Build Portfolio", description: "", category: "Websites", completed: false, created_at: "2024-01-02", user_email: "test@test.com" },
-  { id: 3, title: "Solve Algorithm", description: "", category: "ProblemSolving", completed: true, created_at: "2024-01-03", user_email: "test@test.com" },
-  { id: 4, title: "Workout", description: "", category: "Strength", completed: true, created_at: "2024-01-04", user_email: "test@test.com" },
-  { id: 5, title: "Meditation", description: "", category: "Spiritual", completed: false, created_at: "2024-01-05", user_email: "test@test.com" },
-  { id: 6, title: "JavaScript Deep Dive", description: "", category: "Intelligence", completed: true, created_at: "2024-01-06", user_email: "test@test.com" },
-  { id: 7, title: "E-commerce Site", description: "", category: "Websites", completed: true, created_at: "2024-01-07", user_email: "test@test.com" },
-  { id: 8, title: "Data Structures", description: "", category: "ProblemSolving", completed: false, created_at: "2024-01-08", user_email: "test@test.com" },
-];
+
+
+// Loading Component
+function LoadingSpinner() {
+  return (
+    <div className="flex items-center justify-center py-12">
+      <div className="text-center">
+        <Loader2 className="w-6 h-6 animate-spin mx-auto mb-4 text-blue-500" />
+        <p className="text-sm text-gray-600">Loading progress data...</p>
+      </div>
+    </div>
+  );
+}
 
 // Compact Circular Progress Component
 function CompactCircularProgress({ percentage, size = 60, strokeWidth = 4, color = "text-blue-500" }: {
@@ -122,8 +125,34 @@ function CompactCircularProgress({ percentage, size = 60, strokeWidth = 4, color
 
 // Main Component
 export default function CompactProgressDashboard() {
-  const [todos, setTodos] = useState<Todo[]>(mockTodos);
-  const [loading, setLoading] = useState(false);
+  const [todos, setTodos] = useState<Todo[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    loadTodos();
+  }, []);
+
+  const loadTodos = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const { data, error } = await supabase
+        .from('todos')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      setTodos(data || []);
+    } catch (error) {
+      console.error('Error loading todos:', error);
+      setError('Failed to load progress data. Please try again later.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const getCategoryData = (): CategoryData[] => {
     return categories.map(category => {
@@ -159,6 +188,25 @@ export default function CompactProgressDashboard() {
 
   const categoryData = getCategoryData();
   const overallStats = getOverallStats();
+
+  if (loading) {
+    return <LoadingSpinner />;
+  }
+
+  if (error) {
+    return (
+      <div className="text-center py-12 px-4">
+        <div className="text-red-500 mb-4 text-2xl">⚠️</div>
+        <p className="text-gray-700 mb-4">{error}</p>
+        <button 
+          onClick={loadTodos}
+          className="px-4 py-2 border-2 border-blue-400 text-blue-600 rounded-lg hover:border-blue-500 transition-colors"
+        >
+          Try Again
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full max-w-5xl mx-auto p-3 sm:p-6 space-y-4">

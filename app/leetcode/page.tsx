@@ -1,27 +1,92 @@
-import React from 'react';
+"use client"
+import React, { useState, useEffect } from 'react';
 import { Trophy, Target, TrendingUp, Calendar, Star, Award } from 'lucide-react';
 
+// Define the type for LeetCode stats
+interface LeetCodeStats {
+  totalSolved: number;
+  totalQuestions: number;
+  easySolved: number;
+  totalEasy: number;
+  mediumSolved: number;
+  totalMedium: number;
+  hardSolved: number;
+  totalHard: number;
+  acceptanceRate: number;
+  ranking?: number;
+  contributionPoints?: number;
+  reputation?: number;
+  submissionCalendar?: Record<string, number>;
+}
+
 export default function LeetCodeStatsCard() {
-  const stats = {
-    status: "success",
-    message: "retrieved",
-    totalSolved: 1,
-    totalQuestions: 3586,
-    easySolved: 0,
-    totalEasy: 882,
-    mediumSolved: 1,
-    totalMedium: 1861,
-    hardSolved: 0,
-    totalHard: 843,
-    acceptanceRate: 100,
-    ranking: 5000001,
-    contributionPoints: 16,
-    reputation: 0,
-    submissionCalendar: { "1750291200": 1 }
-  };
+  const [stats, setStats] = useState<LeetCodeStats | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const leetcodeId = "h7O7p66Vgo";
   const profileUrl = `https://leetcode.com/${leetcodeId}`;
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch(`https://leetcode-stats-api.herokuapp.com/${leetcodeId}`);
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data: LeetCodeStats = await response.json();
+        setStats(data);
+      } catch (err) {
+        // Type-safe error handling
+        const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred';
+        setError(errorMessage);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStats();
+  }, [leetcodeId]);
+
+  if (loading) {
+    return (
+      <div className="w-full max-w-2xl mx-auto p-6">
+        <div className="border-4 border-gray-300 rounded-2xl p-6 shadow-2xl">
+          <div className="flex items-center justify-center h-64">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+              <p className="text-lg font-medium">Loading LeetCode stats...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="w-full max-w-2xl mx-auto p-6">
+        <div className="border-4 border-red-400 rounded-2xl p-6 shadow-2xl">
+          <div className="flex items-center justify-center h-64">
+            <div className="text-center">
+              <div className="text-red-600 mb-4">
+                <Trophy className="w-12 h-12 mx-auto opacity-50" />
+              </div>
+              <p className="text-lg font-medium text-red-700">Failed to load stats</p>
+              <p className="text-sm text-red-600 mt-2">Error: {error}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!stats) {
+    return null;
+  }
 
   // Calculate progress percentages
   const easyProgress = (stats.easySolved / stats.totalEasy) * 100;
@@ -75,7 +140,7 @@ export default function LeetCodeStatsCard() {
                 style={{ width: `${Math.max(overallProgress, 0.5)}%` }}
               ></div>
             </div>
-            <p className="text-xs opacity-70">{stats.totalSolved} / {stats.totalQuestions.toLocaleString()} solved</p>
+            <p className="text-xs opacity-70">{stats.totalSolved} / {stats.totalQuestions?.toLocaleString()} solved</p>
           </div>
 
           {/* Acceptance Rate */}
@@ -93,7 +158,9 @@ export default function LeetCodeStatsCard() {
                 style={{ width: `${stats.acceptanceRate}%` }}
               ></div>
             </div>
-            <p className="text-xs opacity-70">Perfect success rate!</p>
+            <p className="text-xs opacity-70">
+              {stats.acceptanceRate === 100 ? 'Perfect success rate!' : 'Keep improving!'}
+            </p>
           </div>
         </div>
 
@@ -155,7 +222,7 @@ export default function LeetCodeStatsCard() {
             <div className="flex items-center justify-center mb-1">
               <Trophy className="w-4 h-4 text-blue-600" />
             </div>
-            <div className="text-lg font-bold">{stats.ranking.toLocaleString()}</div>
+            <div className="text-lg font-bold">{stats.ranking?.toLocaleString() || 'N/A'}</div>
             <div className="text-xs opacity-70">Ranking</div>
           </div>
 
@@ -163,7 +230,7 @@ export default function LeetCodeStatsCard() {
             <div className="flex items-center justify-center mb-1">
               <Star className="w-4 h-4 text-purple-600" />
             </div>
-            <div className="text-lg font-bold">{stats.contributionPoints}</div>
+            <div className="text-lg font-bold">{stats.contributionPoints || 0}</div>
             <div className="text-xs opacity-70">Points</div>
           </div>
 
@@ -171,7 +238,7 @@ export default function LeetCodeStatsCard() {
             <div className="flex items-center justify-center mb-1">
               <Award className="w-4 h-4 text-cyan-600" />
             </div>
-            <div className="text-lg font-bold">{stats.reputation}</div>
+            <div className="text-lg font-bold">{stats.reputation || 0}</div>
             <div className="text-xs opacity-70">Reputation</div>
           </div>
 
@@ -179,14 +246,16 @@ export default function LeetCodeStatsCard() {
             <div className="flex items-center justify-center mb-1">
               <Calendar className="w-4 h-4 text-rose-600" />
             </div>
-            <div className="text-lg font-bold">{Object.keys(stats.submissionCalendar).length}</div>
+            <div className="text-lg font-bold">
+              {stats.submissionCalendar ? Object.keys(stats.submissionCalendar).length : 0}
+            </div>
             <div className="text-xs opacity-70">Active Days</div>
           </div>
         </div>
 
         {/* Motivational Footer */}
         <div className="mt-6 text-center p-3 border-2 border-gradient-to-r from-violet-400 to-pink-400 rounded-lg">
-          <p className="text-sm font-medium">🚀 Keep coding, keep growing! Every problem solved is progress made.</p>
+          <p className="text-sm font-medium">They don't know me son !!!!!!!</p>
         </div>
       </div>
     </div>
