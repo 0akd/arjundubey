@@ -130,9 +130,9 @@ export default function LeetCodeStatsCard() {
               </div>
               <span className="text-xl font-bold">{stats.totalSolved}</span>
             </div>
-            <div className="h-2 rounded-full overflow-hidden mb-2 border border-slate-600">
+            <div className="h-2 bg-white/10 rounded-full overflow-hidden mb-2">
               <div 
-                className="h-full transition-all duration-1000"
+                className="h-full bg-gradient-to-r from-cyan-400 to-blue-500 transition-all duration-1000 rounded-full"
                 style={{ width: `${Math.max(overallProgress, 0.5)}%` }}
               ></div>
             </div>
@@ -148,9 +148,9 @@ export default function LeetCodeStatsCard() {
               </div>
               <span className="text-xl font-bold">{stats.acceptanceRate}%</span>
             </div>
-            <div className="h-2 rounded-full overflow-hidden mb-2 border border-slate-600">
+            <div className="h-2 bg-white/10 rounded-full overflow-hidden mb-2">
               <div 
-                className="h-full transition-all duration-1000"
+                className="h-full bg-gradient-to-r from-green-400 to-emerald-500 transition-all duration-1000 rounded-full"
                 style={{ width: `${stats.acceptanceRate}%` }}
               ></div>
             </div>
@@ -189,9 +189,9 @@ export default function LeetCodeStatsCard() {
             {/* Easy */}
             <div className="flex items-center gap-3">
               <div className="w-12 text-sm font-medium text-green-400">Easy</div>
-              <div className="flex-1 h-2 rounded-full overflow-hidden border border-slate-600">
+              <div className="flex-1 h-2 bg-white/10 rounded-full overflow-hidden">
                 <div 
-                  className="h-full transition-all duration-1000"
+                  className="h-full bg-gradient-to-r from-green-400 to-green-500 transition-all duration-1000 rounded-full"
                   style={{ width: `${Math.max(easyProgress, 0.5)}%` }}
                 ></div>
               </div>
@@ -203,9 +203,9 @@ export default function LeetCodeStatsCard() {
             {/* Medium */}
             <div className="flex items-center gap-3">
               <div className="w-12 text-sm font-medium text-yellow-400">Med</div>
-              <div className="flex-1 h-2 rounded-full overflow-hidden border border-slate-600">
+              <div className="flex-1 h-2 bg-white/10 rounded-full overflow-hidden">
                 <div 
-                  className="h-full transition-all duration-1000"
+                  className="h-full bg-gradient-to-r from-yellow-400 to-orange-500 transition-all duration-1000 rounded-full"
                   style={{ width: `${Math.max(mediumProgress, 0.5)}%` }}
                 ></div>
               </div>
@@ -217,9 +217,9 @@ export default function LeetCodeStatsCard() {
             {/* Hard */}
             <div className="flex items-center gap-3">
               <div className="w-12 text-sm font-medium text-red-400">Hard</div>
-              <div className="flex-1 h-2 rounded-full overflow-hidden border border-slate-600">
+              <div className="flex-1 h-2 bg-white/10 rounded-full overflow-hidden">
                 <div 
-                  className="h-full transition-all duration-1000"
+                  className="h-full bg-gradient-to-r from-red-500 to-pink-600 transition-all duration-1000 rounded-full"
                   style={{ width: `${Math.max(hardProgress, 0.5)}%` }}
                 ></div>
               </div>
