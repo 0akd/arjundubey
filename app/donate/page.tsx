@@ -1,12 +1,23 @@
 "use client"; // Required for hooks and interactivity
 
 import React, { useState } from "react";
-import { Heart, Zap, Gift, IndianRupee, CreditCard, Sparkles } from "lucide-react";
+import { Heart, Zap, Gift, IndianRupee, CreditCard, Sparkles, User, Mail, Phone } from "lucide-react";
 import RazorpayPayment from "./pay"; // Adjust import path as needed
+
+interface CustomerDetails {
+  name: string;
+  email: string;
+  contact: string;
+}
 
 export default function DonationPage() {
   const [selectedAmount, setSelectedAmount] = useState<number>(0);
   const [customAmount, setCustomAmount] = useState<string>("");
+  const [customerDetails, setCustomerDetails] = useState<CustomerDetails>({
+    name: "",
+    email: "",
+    contact: ""
+  });
   const [paymentId, setPaymentId] = useState<string | null>(null);
   const [error, setError] = useState<any>(null);
 
@@ -49,11 +60,22 @@ export default function DonationPage() {
     }
   };
 
+  const handleCustomerDetailsChange = (field: keyof CustomerDetails, value: string) => {
+    setCustomerDetails(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
   const getFinalAmount = () => {
     if (customAmount && !isNaN(parseFloat(customAmount))) {
       return parseFloat(customAmount);
     }
     return selectedAmount;
+  };
+
+  const isFormValid = () => {
+    return getFinalAmount() > 0;
   };
 
   return (
@@ -154,6 +176,73 @@ export default function DonationPage() {
           </div>
         </div>
 
+        {/* Customer Details Form - Optional */}
+        <div className="border-2 border-blue-300 rounded-xl p-3 mb-4">
+        <div className="mb-3">
+  <div className="flex items-center gap-2">
+    <User className="w-4 h-4 text-blue-500" />
+    <h3 className="text-sm font-semibold">Completely Optional ( can skip )</h3>
+  </div>
+  <span className="text-xs text-gray-500 font-medium ml-6">{"Just wanted to know who's donating so if happy can fill your nickname or directly donate :)"}</span>
+</div>
+
+          
+          <div className="space-y-3">
+            {/* Name Input */}
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <User className="w-3 h-3 text-gray-500" />
+                <label htmlFor="customerName" className="text-xs font-medium text-gray-700">
+                 Name
+                </label>
+              </div>
+              <input
+                id="customerName"
+                type="text"
+                placeholder="if want me to acknowledge u 👽"
+                value={customerDetails.name}
+                onChange={(e) => handleCustomerDetailsChange('name', e.target.value)}
+                className="w-full px-3 py-2 border-2 border-blue-200 rounded-lg focus:border-blue-400 focus:ring-1 focus:ring-blue-100 text-sm transition-all duration-300 bg-transparent placeholder-opacity-50"
+              />
+            </div>
+
+            {/* Email Input */}
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <Mail className="w-3 h-3 text-gray-500" />
+                <label htmlFor="customerEmail" className="text-xs font-medium text-gray-700">
+                  Email Address
+                </label>
+              </div>
+              <input
+                id="customerEmail"
+                type="email"
+                placeholder="if want my blogs in ur mails 😇"
+                value={customerDetails.email}
+                onChange={(e) => handleCustomerDetailsChange('email', e.target.value)}
+                className="w-full px-3 py-2 border-2 border-blue-200 rounded-lg focus:border-blue-400 focus:ring-1 focus:ring-blue-100 text-sm transition-all duration-300 bg-transparent placeholder-opacity-50"
+              />
+            </div>
+
+            {/* Contact Input */}
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <Phone className="w-3 h-3 text-gray-500" />
+                <label htmlFor="customerContact" className="text-xs font-medium text-gray-700">
+                  Phone Number
+                </label>
+              </div>
+              <input
+                id="customerContact"
+                type="tel"
+                placeholder="if want sms about updates 👋"
+                value={customerDetails.contact}
+                onChange={(e) => handleCustomerDetailsChange('contact', e.target.value)}
+                className="w-full px-3 py-2 border-2 border-blue-200 rounded-lg focus:border-blue-400 focus:ring-1 focus:ring-blue-100 text-sm transition-all duration-300 bg-transparent placeholder-opacity-50"
+              />
+            </div>
+          </div>
+        </div>
 
         {/* Amount Display and Payment in one row */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
@@ -187,12 +276,28 @@ export default function DonationPage() {
             <div className="flex justify-center">
               <RazorpayPayment
                 amount={getFinalAmount()}
+                customerDetails={customerDetails}
                 onSuccess={handleSuccess}
                 onError={handleError}
+                disabled={!isFormValid()}
               />
             </div>
           </div>
         </div>
+
+        {/* Amount validation message */}
+        {getFinalAmount() <= 0 && (
+          <div className="border-2 border-yellow-300 rounded-xl p-2 mb-3">
+            <div className="text-center">
+              <div className="flex items-center justify-center gap-2">
+                <Sparkles className="w-3 h-3 text-yellow-500" />
+                <span className="text-xs font-medium text-yellow-600">
+                  Please select or enter an amount to proceed with payment
+                </span>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Success/Error Messages */}
         {paymentId && (
