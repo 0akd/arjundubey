@@ -1,7 +1,7 @@
 "use client"; // Required for hooks and interactivity
 
 import React, { useState } from "react";
-import { Heart, Zap, Gift, DollarSign, CreditCard, Sparkles } from "lucide-react";
+import { Heart, Zap, Gift, IndianRupee, CreditCard, Sparkles } from "lucide-react";
 import RazorpayPayment from "./pay"; // Adjust import path as needed
 
 export default function DonationPage() {
@@ -136,7 +136,7 @@ export default function DonationPage() {
           {/* Custom Amount Input */}
           <div className="border-2 border-emerald-300 rounded-xl p-3">
             <div className="flex items-center gap-2 mb-2">
-              <DollarSign className="w-4 h-4 text-emerald-500" />
+              <IndianRupee className="w-4 h-4 text-emerald-500" />
               <label htmlFor="customAmount" className="text-sm font-semibold">
                 Custom Amount (₹)
               </label>
