@@ -1,6 +1,7 @@
 "use client"; // Required for hooks and interactivity
 
 import React, { useState } from "react";
+import { Heart, Zap, Gift, DollarSign, CreditCard, Sparkles } from "lucide-react";
 import RazorpayPayment from "./pay"; // Adjust import path as needed
 
 export default function DonationPage() {
@@ -56,94 +57,176 @@ export default function DonationPage() {
   };
 
   return (
-    <div className=" flex flex-col items-center justify-center p-4">
-      <div className="max-w-lg w-full  rounded-xl shadow-lg p-8 space-y-6">
-        <div className="text-center">
-          <h1 className="text-3xl font-bold  mb-2">
-    DONATE
-          </h1>
-          <p className="text-gray-600">
-       {"don't think much just donate please :)"}
-          </p>
-        </div>
-
-        {/* Custom Amount Input */}
-        <div className="space-y-2">
-          <label htmlFor="customAmount" className="block text-sm font-medium ">
-            Custom Amount (₹)
-          </label>
-<input
-  id="customAmount"
-  type="number"
-  min="1"
-  step="0.01"
-  placeholder="..... Enter custom amount ....."
-  value={customAmount}
-  onChange={handleCustomAmountChange}
-  className="w-full px-4 py-3 border-2 border-green-500 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-lg"
-  style={{ border: '1px solid #5bdb00' }}
-/>
-        </div>
-
-        {/* Preset Amount Buttons */}
-        <div className="space-y-3">
-          <h3 className="text-sm font-medium">Or Qucickly select from following donation amounts</h3>
-          <div className="grid grid-cols-4 gap-3">
-            {donationAmounts.map((amount) => (
-              <button
-                key={amount}
-                onClick={() => handleAmountSelect(amount)}
-                className={`px-4 py-3 border-2 border-yellow-600 rounded-lg font-medium transition-all duration-200 ${
-                  selectedAmount === amount && !customAmount
-                    ? " shadow-md transform scale-105"
-                    : " "
-                }`}
-              >
-                ₹{amount}
-              </button>
-            ))}
+    <div className="w-full max-w-lg mx-auto p-4">
+      <div className="relative border-4 border-gradient-to-r from-pink-300 via-purple-300 to-cyan-300 rounded-2xl p-4 shadow-2xl backdrop-blur-sm">
+        {/* Gradient border effect */}
+        <div className="absolute inset-0 bg-gradient-to-r from-pink-300 via-purple-300 to-cyan-300 rounded-2xl blur opacity-15 -z-10"></div>
+        
+        {/* Header with top corner decoration */}
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-lg border-2 border-rose-300">
+              <Heart className="w-5 h-5 text-rose-500" />
+            </div>
+            <div>
+              <h1 className="text-xl font-bold">DONATE</h1>
+              <p className="text-xs opacity-70">don't think much just donate please :)</p>
+            </div>
+          </div>
+          <div className="inline-flex items-center px-2 py-1 rounded-full border-2 border-yellow-300 hover:border-yellow-200 transition-all duration-300 hover:scale-105">
+            <Sparkles className="w-3 h-3 text-yellow-500 mr-1" />
+            <span className="text-xs font-mono font-bold">SUPPORT</span>
           </div>
         </div>
 
-        {/* Selected Amount Display */}
-        <div className=" border-1 border-blue-600 rounded-lg p-4">
-          <div className="flex justify-between items-center">
-            <span className="font-medium">Donation Amount:</span>
-            <span className="text-2xl font-bold ">
-              ₹{getFinalAmount().toFixed(2)}
-            </span>
+       {/* Combined Input and Quick Select */}
+        <div className="relative grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
+          {/* Quick Select */}
+          <div className="border-2 border-indigo-300 rounded-xl p-3">
+            <div className="flex items-center gap-2 mb-2">
+              <Zap className="w-4 h-4 text-indigo-500" />
+              <h3 className="text-sm font-semibold">Quick Select</h3>
+            </div>
+            <div className="grid grid-cols-4 gap-1">
+              {donationAmounts.slice(0, 4).map((amount) => (
+                <button
+                  key={amount}
+                  onClick={() => handleAmountSelect(amount)}
+                  className={`px-2 py-1 border-2 rounded-md font-medium transition-all duration-300 hover:scale-105 text-xs ${
+                    selectedAmount === amount && !customAmount
+                      ? "border-orange-300 shadow-md transform scale-105"
+                      : "border-gray-300 hover:border-orange-200"
+                  }`}
+                >
+                  ₹{amount}
+                </button>
+              ))}
+            </div>
+            <div className="grid grid-cols-3 gap-1 mt-1">
+              {donationAmounts.slice(4).map((amount) => (
+                <button
+                  key={amount}
+                  onClick={() => handleAmountSelect(amount)}
+                  className={`px-2 py-1 border-2 rounded-md font-medium transition-all duration-300 hover:scale-105 text-xs ${
+                    selectedAmount === amount && !customAmount
+                      ? "border-orange-300 shadow-md transform scale-105"
+                      : "border-gray-300 hover:border-orange-200"
+                  }`}
+                >
+                  ₹{amount}
+                </button>
+              ))}
+            </div>
+          </div>
+          
+          {/* OR Divider - Hidden on mobile, visible on md+ */}
+          <div className="hidden md:flex absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
+            <div className=" px-2 py-1 border-1 border-blue-500 text-pink-500 rounded-full">
+              <span className="text-xs font-bold">OR</span>
+            </div>
+          </div>
+          
+          {/* Mobile OR Divider - Visible only on mobile */}
+          <div className="md:hidden flex justify-center my-1">
+            <div className=" px-3 py-1 border-1 border-blue-500 text-pink-500 rounded-full">
+              <span className="text-xs font-bold ">OR</span>
+            </div>
+          </div>
+
+          {/* Custom Amount Input */}
+          <div className="border-2 border-emerald-300 rounded-xl p-3">
+            <div className="flex items-center gap-2 mb-2">
+              <DollarSign className="w-4 h-4 text-emerald-500" />
+              <label htmlFor="customAmount" className="text-sm font-semibold">
+                Custom Amount (₹)
+              </label>
+            </div>
+            <input
+              id="customAmount"
+              type="number"
+              min="1"
+              step="0.01"
+              placeholder="Enter amount..."
+              value={customAmount}
+              onChange={handleCustomAmountChange}
+              className="w-full px-3 py-2 border-2 border-emerald-200 rounded-lg focus:border-emerald-400 focus:ring-1 focus:ring-emerald-100 text-sm font-mono transition-all duration-300 bg-transparent placeholder-opacity-50"
+            />
           </div>
         </div>
 
-        {/* Payment Button */}
-        <div className="flex justify-center pt-2">
-          <RazorpayPayment
-            amount={getFinalAmount()}
-            onSuccess={handleSuccess}
-            onError={handleError}
-          />
+
+        {/* Amount Display and Payment in one row */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
+          {/* Selected Amount Display */}
+          <div className="border-2 border-violet-300 rounded-xl p-3">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <Gift className="w-4 h-4 text-violet-500" />
+                <span className="text-sm font-semibold">Amount</span>
+              </div>
+              <div className="text-lg font-bold font-mono">
+                ₹{getFinalAmount().toFixed(2)}
+              </div>
+            </div>
+            <div className="h-1.5 border border-gray-300 rounded-full overflow-hidden">
+              <div 
+                className="h-full bg-gradient-to-r from-violet-300 to-purple-400 transition-all duration-1000"
+                style={{ width: `${Math.min((getFinalAmount() / 500) * 100, 100)}%` }}
+              ></div>
+            </div>
+          </div>
+
+          {/* Payment Button */}
+          <div className="border-2 border-purple-300 rounded-xl p-3">
+            <div className="flex items-center justify-center mb-2">
+              <div className="flex items-center gap-2">
+                <CreditCard className="w-4 h-4 text-purple-500" />
+                <span className="text-sm font-semibold">Secure Payment</span>
+              </div>
+            </div>
+            <div className="flex justify-center">
+              <RazorpayPayment
+                amount={getFinalAmount()}
+                onSuccess={handleSuccess}
+                onError={handleError}
+              />
+            </div>
+          </div>
         </div>
 
         {/* Success/Error Messages */}
         {paymentId && (
-          <div className="p-4 bg-green-100 border border-green-200 text-green-800 rounded-lg text-center">
-            <div className="font-medium">Donation Successful! 🎉</div>
-            <div className="text-sm mt-1">Payment ID: {paymentId}</div>
-            <div className="text-sm">Thank you for your generous contribution!</div>
+          <div className="border-2 border-green-300 rounded-xl p-3 mb-3">
+            <div className="text-center">
+              <div className="flex items-center justify-center gap-2 mb-1">
+                <Heart className="w-4 h-4 text-green-500" />
+                <span className="font-bold text-green-600 text-sm">Donation Successful! 🎉</span>
+              </div>
+              <div className="text-xs font-mono mb-1">Payment ID: {paymentId}</div>
+              <div className="text-xs opacity-70">Thank you for your generous contribution!</div>
+            </div>
           </div>
         )}
         
         {error && (
-          <div className="p-4 bg-red-100 border border-red-200 text-red-800 rounded-lg text-center">
-            <div className="font-medium">Payment Failed</div>
-            <div className="text-sm mt-1">Error: {error.message || "Unknown error"}</div>
-            <div className="text-sm">Please try again or contact support.</div>
+          <div className="border-2 border-red-300 rounded-xl p-3 mb-3">
+            <div className="text-center">
+              <div className="flex items-center justify-center gap-2 mb-1">
+                <Zap className="w-4 h-4 text-red-500" />
+                <span className="font-bold text-red-600 text-sm">Payment Failed</span>
+              </div>
+              <div className="text-xs font-mono mb-1">Error: {error.message || "Unknown error"}</div>
+              <div className="text-xs opacity-70">Please try again or contact support.</div>
+            </div>
           </div>
         )}
 
         {/* Footer Note */}
-        <div className="text-center text-sm text-gray-500 pt-4 border-t">
-          Your donation is secure and processed through Razorpay
+        <div className="text-center border-2 border-cyan-300 rounded-xl p-2">
+          <div className="flex items-center justify-center gap-2">
+            <Sparkles className="w-3 h-3 text-cyan-500" />
+            <span className="text-xs font-semibold">Powered by Razorpay - Secure & Instant</span>
+          </div>
         </div>
       </div>
     </div>
