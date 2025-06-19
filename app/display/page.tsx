@@ -1,7 +1,6 @@
 "use client"
 import React, { useState, useEffect } from 'react';
-import { Brain, BrainCircuit,AppWindowMac, BicepsFlexed, Flower, Target, BarChart3, TrendingUp, Trophy, Loader2 } from 'lucide-react';
-import supabase from '@/config/supabase';
+import { Brain, BrainCircuit, AppWindowMac, BicepsFlexed, Flower, Target, BarChart3, TrendingUp, Trophy, Loader2 } from 'lucide-react';
 
 interface Todo {
   id: number;
@@ -32,54 +31,51 @@ const categories = [
 
 const categoryConfig = {
   Intelligence: { 
-    icon: <Brain size={24} />, 
-    color: 'from-blue-500 to-blue-600',
-
+    icon: <Brain size={18} />, 
+    color: 'from-blue-400 to-blue-500',
+    borderColor: 'border-blue-400',
     textColor: 'text-blue-600'
   },
-    Websites: { 
-    icon: <AppWindowMac size={24} />, 
-    color: 'from-yellow-500 to-yellow-600',
-
+  Websites: { 
+    icon: <AppWindowMac size={18} />, 
+    color: 'from-yellow-400 to-yellow-500',
+    borderColor: 'border-yellow-400',
     textColor: 'text-yellow-600'
   },
   ProblemSolving: { 
-    icon: <BrainCircuit size={24} />, 
-    color: 'from-purple-500 to-purple-600',
-
+    icon: <BrainCircuit size={18} />, 
+    color: 'from-purple-400 to-purple-500',
+    borderColor: 'border-purple-400',
     textColor: 'text-purple-600'
   },
   Strength: { 
-    icon: <BicepsFlexed size={24} />, 
-    color: 'from-orange-500 to-orange-600',
-
+    icon: <BicepsFlexed size={18} />, 
+    color: 'from-orange-400 to-orange-500',
+    borderColor: 'border-orange-400',
     textColor: 'text-orange-600'
   },
   Spiritual: { 
-    icon: <Flower size={24} />, 
-    color: 'from-green-500 to-green-600',
-
+    icon: <Flower size={18} />, 
+    color: 'from-green-400 to-green-500',
+    borderColor: 'border-green-400',
     textColor: 'text-green-600'
   }
 };
 
-// Admin email to fetch data from
-const ADMIN_EMAIL = 'reboostify@gmail.com';
+// Mock data for demonstration
+const mockTodos: Todo[] = [
+  { id: 1, title: "Learn React", description: "", category: "Intelligence", completed: true, created_at: "2024-01-01", user_email: "test@test.com" },
+  { id: 2, title: "Build Portfolio", description: "", category: "Websites", completed: false, created_at: "2024-01-02", user_email: "test@test.com" },
+  { id: 3, title: "Solve Algorithm", description: "", category: "ProblemSolving", completed: true, created_at: "2024-01-03", user_email: "test@test.com" },
+  { id: 4, title: "Workout", description: "", category: "Strength", completed: true, created_at: "2024-01-04", user_email: "test@test.com" },
+  { id: 5, title: "Meditation", description: "", category: "Spiritual", completed: false, created_at: "2024-01-05", user_email: "test@test.com" },
+  { id: 6, title: "JavaScript Deep Dive", description: "", category: "Intelligence", completed: true, created_at: "2024-01-06", user_email: "test@test.com" },
+  { id: 7, title: "E-commerce Site", description: "", category: "Websites", completed: true, created_at: "2024-01-07", user_email: "test@test.com" },
+  { id: 8, title: "Data Structures", description: "", category: "ProblemSolving", completed: false, created_at: "2024-01-08", user_email: "test@test.com" },
+];
 
-// Loading Component
-function LoadingSpinner() {
-  return (
-    <div className="flex items-center justify-center py-12">
-      <div className="text-center">
-        <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-blue-500" />
-        <p className="text-gray-600">Loading progress data...</p>
-      </div>
-    </div>
-  );
-}
-
-// Circular Progress Component
-function CircularProgress({ percentage, size = 120, strokeWidth = 8, color = "text-blue-500" }: {
+// Compact Circular Progress Component
+function CompactCircularProgress({ percentage, size = 60, strokeWidth = 4, color = "text-blue-500" }: {
   percentage: number;
   size?: number;
   strokeWidth?: number;
@@ -92,11 +88,7 @@ function CircularProgress({ percentage, size = 120, strokeWidth = 8, color = "te
 
   return (
     <div className="relative inline-flex items-center justify-center">
-      <svg
-        width={size}
-        height={size}
-        className="transform -rotate-90"
-      >
+      <svg width={size} height={size} className="transform -rotate-90">
         <circle
           cx={size / 2}
           cy={size / 2}
@@ -115,13 +107,12 @@ function CircularProgress({ percentage, size = 120, strokeWidth = 8, color = "te
           strokeWidth={strokeWidth}
           strokeDasharray={strokeDasharray}
           strokeDashoffset={strokeDashoffset}
-          className={`transition-all duration-1000 ease-out ${color}`}
+          className={`transition-all duration-700 ease-out ${color}`}
           strokeLinecap="round"
         />
       </svg>
-      
       <div className="absolute inset-0 flex items-center justify-center">
-        <div className={`text-xl font-bold ${color}`}>
+        <div className={`text-sm font-bold ${color}`}>
           {Math.round(percentage)}%
         </div>
       </div>
@@ -129,37 +120,10 @@ function CircularProgress({ percentage, size = 120, strokeWidth = 8, color = "te
   );
 }
 
-// Main Public Progress View Component
-export default function PublicProgressView() {
-  const [todos, setTodos] = useState<Todo[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    loadTodos();
-  }, []);
-
-  const loadTodos = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      const { data, error } = await supabase
-        .from('todos')
-        .select('*')
-        .eq('user_email', ADMIN_EMAIL)
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-
-      setTodos(data || []);
-    } catch (error) {
-      console.error('Error loading todos:', error);
-      setError('Failed to load progress data. Please try again later.');
-    } finally {
-      setLoading(false);
-    }
-  };
+// Main Component
+export default function CompactProgressDashboard() {
+  const [todos, setTodos] = useState<Todo[]>(mockTodos);
+  const [loading, setLoading] = useState(false);
 
   const getCategoryData = (): CategoryData[] => {
     return categories.map(category => {
@@ -193,161 +157,144 @@ export default function PublicProgressView() {
     };
   };
 
-  if (loading) {
-    return <LoadingSpinner />;
-  }
-
-  if (error) {
-    return (
-      <div className="text-center py-12">
-        <div className="text-red-500 mb-4">⚠️</div>
-        <p className=" mb-4">{error}</p>
-        <button 
-          onClick={loadTodos}
-          className="px-4 py-2 bg-blue-500  rounded-lg hover:bg-blue-600 transition-colors"
-        >
-          Try Again
-        </button>
-      </div>
-    );
-  }
-
   const categoryData = getCategoryData();
   const overallStats = getOverallStats();
 
   return (
-    <div className="w-full max-w-6xl mx-auto p-6 space-y-8">
-      {/* Header */}
-    <div className="text-center">
-        <h2 className="text-3xl md:text-4xl font-bold mb-4">
-       Stats
-        </h2>
-        <p className="text-lg">
-        my realtime progress
-        </p>
+    <div className="w-full max-w-5xl mx-auto p-3 sm:p-6 space-y-4">
+      {/* Compact Header */}
+      <div className="text-center mb-6">
+        <h1 className="text-2xl sm:text-3xl font-bold mb-2 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+          Progress Stats
+        </h1>
+        <p className="text-sm text-gray-600">Real-time progress tracking</p>
       </div>
 
-      {/* Overall Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="bg-gradient-to-br  p-6 rounded-xl border border-blue-200">
-          <div className="flex items-center justify-between mb-2">
-            <Target className="text-blue-600" size={24} />
-            <div className="text-2xl font-bold text-blue-700">{overallStats.totalTodos}</div>
+      {/* Compact Stats Grid */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+        <div className="border-2 border-blue-300 rounded-xl p-3 hover:border-blue-400 transition-colors">
+          <div className="flex items-center justify-between mb-1">
+            <Target className="text-blue-500" size={16} />
+            <span className="text-lg font-bold text-blue-600">{overallStats.totalTodos}</span>
           </div>
-          <div className="text-blue-600 font-medium">Total Goals</div>
+          <p className="text-xs text-blue-600 font-medium">Total</p>
         </div>
 
-        <div className="bg-gradient-to-br  p-6 rounded-xl border border-green-200">
-          <div className="flex items-center justify-between mb-2">
-            <Trophy className="text-green-600" size={24} />
-            <div className="text-2xl font-bold text-green-700">{overallStats.completedTodos}</div>
+        <div className="border-2 border-green-300 rounded-xl p-3 hover:border-green-400 transition-colors">
+          <div className="flex items-center justify-between mb-1">
+            <Trophy className="text-green-500" size={16} />
+            <span className="text-lg font-bold text-green-600">{overallStats.completedTodos}</span>
           </div>
-          <div className="text-green-600 font-medium">Completed</div>
+          <p className="text-xs text-green-600 font-medium">Done</p>
         </div>
 
-        <div className="bg-gradient-to-br  p-6 rounded-xl border border-orange-200">
-          <div className="flex items-center justify-between mb-2">
-            <TrendingUp className="text-orange-600" size={24} />
-            <div className="text-2xl font-bold text-orange-700">{overallStats.remainingTodos}</div>
+        <div className="border-2 border-orange-300 rounded-xl p-3 hover:border-orange-400 transition-colors">
+          <div className="flex items-center justify-between mb-1">
+            <TrendingUp className="text-orange-500" size={16} />
+            <span className="text-lg font-bold text-orange-600">{overallStats.remainingTodos}</span>
           </div>
-          <div className="text-orange-600 font-medium">In Progress</div>
+          <p className="text-xs text-orange-600 font-medium">Active</p>
         </div>
 
-        <div className="bg-gradient-to-br  p-6 rounded-xl border border-purple-200">
-          <div className="flex items-center justify-between mb-2">
-            <BarChart3 className="text-purple-600" size={24} />
-            <div className="text-2xl font-bold text-purple-700">{Math.round(overallStats.overallPercentage)}%</div>
+        <div className="border-2 border-purple-300 rounded-xl p-3 hover:border-purple-400 transition-colors">
+          <div className="flex items-center justify-between mb-1">
+            <BarChart3 className="text-purple-500" size={16} />
+            <span className="text-lg font-bold text-purple-600">{Math.round(overallStats.overallPercentage)}%</span>
           </div>
-          <div className="text-purple-600 font-medium">Overall Progress</div>
+          <p className="text-xs text-purple-600 font-medium">Success</p>
         </div>
       </div>
 
-      {/* Category Progress */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      {/* Compact Category Grid - 3 columns on mobile, 5 on larger screens */}
+      <div className="grid grid-cols-3 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-6">
         {categoryData.map((category) => {
           const config = categoryConfig[category.name as keyof typeof categoryConfig];
           return (
             <div
               key={category.name}
-              className={` p-6 rounded-xl border  hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1`}
+              className={`border-2 ${config.borderColor} rounded-xl p-3 hover:shadow-md transition-all duration-300 transform hover:-translate-y-0.5 group`}
             >
-              <div className="text-center">
-                <div className="mb-4">
-                  <CircularProgress
+              <div className="text-center space-y-2">
+                {/* Icon and Progress Circle */}
+                <div className="flex flex-col items-center space-y-2">
+                  <div className={`${config.textColor} group-hover:scale-110 transition-transform`}>
+                    {category.icon}
+                  </div>
+                  <CompactCircularProgress
                     percentage={category.percentage}
-                    size={100}
-                    strokeWidth={6}
+                    size={45}
+                    strokeWidth={3}
                     color={config.textColor}
                   />
                 </div>
                 
-                <div className={`${config.textColor} mb-2`}>
-                  {category.icon}
-                </div>
-                
-                <h3 className={`text-lg font-semibold mb-2 ${config.textColor}`}>
-                  {category.name}
+                {/* Category Name - truncated for mobile */}
+                <h3 className={`text-xs font-semibold ${config.textColor} truncate`}>
+                  {category.name.length > 8 ? category.name.substring(0, 8) + '...' : category.name}
                 </h3>
                 
-                <div className="space-y-2">
-       
-                  
-                  {/* Progress Bar */}
-                  <div className="w-full  rounded-full h-2">
-                    <div 
-                      className={`bg-gradient-to-r ${config.color} h-2 rounded-full transition-all duration-1000 ease-out`}
-                      style={{ width: `${category.percentage}%` }}
-                    />
-                  </div>
-                  
-                  {/* Mini dots indicator */}
-                  {category.total > 0 && (
-                    <div className="flex justify-center">
-                      <div className="flex gap-1">
-                        {Array.from({ length: Math.min(category.total, 8) }, (_, i) => (
-                          <div
-                            key={i}
-                            className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                              i < category.completed 
-                                ? config.textColor.replace('text-', 'bg-')
-                                : 'bg-gray-300'
-                            }`}
-                          />
-                        ))}
-                        {category.total > 8 && (
-                          <span className="text-xs text-gray-500 ml-1">+{category.total - 8}</span>
-                        )}
-                      </div>
-                    </div>
-                  )}
+                {/* Compact Stats */}
+                <div className="text-xs text-gray-600">
+                  {category.completed}/{category.total}
                 </div>
+                
+                {/* Mini Progress Bar */}
+                <div className="w-full bg-gray-200 rounded-full h-1.5">
+                  <div 
+                    className={`bg-gradient-to-r ${config.color} h-1.5 rounded-full transition-all duration-700 ease-out`}
+                    style={{ width: `${category.percentage}%` }}
+                  />
+                </div>
+                
+                {/* Dot Indicators - only show on larger screens */}
+                {category.total > 0 && (
+                  <div className="hidden sm:flex justify-center">
+                    <div className="flex gap-0.5">
+                      {Array.from({ length: Math.min(category.total, 5) }, (_, i) => (
+                        <div
+                          key={i}
+                          className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
+                            i < category.completed 
+                              ? config.textColor.replace('text-', 'bg-')
+                              : 'bg-gray-300'
+                          }`}
+                        />
+                      ))}
+                      {category.total > 5 && (
+                        <span className="text-xs text-gray-400 ml-1">+{category.total - 5}</span>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           );
         })}
       </div>
 
-      {/* Overall Progress Section */}
-      <div className="bg-gradient-to-r  p-8 rounded-xl border">
-        <div className="text-center">
-          <h3 className="text-2xl font-bold mb-6 ">Overall Success Rate</h3>
-          
-          <div className="flex justify-center mb-6">
-            <CircularProgress
-              percentage={overallStats.overallPercentage}
-              size={150}
-              strokeWidth={10}
-              color="text-blue-500"
-            />
-          </div>
-          
-         
+      {/* Compact Overall Progress */}
+      <div className="border-2 border-gradient-to-r border-blue-300 rounded-xl p-4 text-center">
+        <h3 className="text-lg font-bold mb-3 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+          Overall Success Rate
+        </h3>
+        
+        <div className="flex justify-center mb-3">
+          <CompactCircularProgress
+            percentage={overallStats.overallPercentage}
+            size={80}
+            strokeWidth={6}
+            color="text-blue-500"
+          />
+        </div>
+        
+        <div className="text-xs text-gray-500">
+          {overallStats.completedTodos} of {overallStats.totalTodos} goals completed
         </div>
       </div>
 
-      {/* Footer */}
-      <div className="text-center  text-sm">
-        <p>Data updates in real-time • Last updated: {new Date().toLocaleTimeString()}</p>
+      {/* Compact Footer */}
+      <div className="text-center text-xs text-gray-400 pt-2">
+        <p>Live updates • {new Date().toLocaleTimeString()}</p>
       </div>
     </div>
   );
