@@ -15,11 +15,11 @@ const ThemeChanger = () => {
 
   if (!mounted) return null
 
-  const isDark = theme === 'dark'
+  const isDark = theme === 'light'
 
   return (
     <button
-      onClick={() => setTheme(isDark ? 'light' : 'dark')}
+      onClick={() => setTheme(isDark ? 'dark' : 'light')}
       className={`
         group relative overflow-hidden
         p-2.5 rounded-xl
