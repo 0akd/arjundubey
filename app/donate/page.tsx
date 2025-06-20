@@ -92,7 +92,7 @@ export default function DonationPage() {
             </div>
             <div>
               <h1 className="text-xl font-bold">DONATE</h1>
-              <p className="text-xs opacity-70">don't think much just donate please :)</p>
+              <p className="text-xs opacity-70">Your help would mean a lot to me , thank you in advance! :)</p>
             </div>
           </div>
           <div className="inline-flex items-center px-2 py-1 rounded-full border-2 border-yellow-300 hover:border-yellow-200 transition-all duration-300 hover:scale-105">
@@ -107,7 +107,7 @@ export default function DonationPage() {
           <div className="border-2 border-indigo-300 rounded-xl p-3">
             <div className="flex items-center gap-2 mb-2">
               <Zap className="w-4 h-4 text-indigo-500" />
-              <h3 className="text-sm font-semibold">Quick Select</h3>
+              <h3 className="text-sm font-semibold">Direct Select</h3>
             </div>
             <div className="grid grid-cols-4 gap-1">
               {donationAmounts.slice(0, 4).map((amount) => (
