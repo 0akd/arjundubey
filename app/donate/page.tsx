@@ -192,7 +192,7 @@ export default function DonationPage() {
             <div>
               <div className="flex items-center gap-2 mb-1">
                 <User className="w-3 h-3 " />
-                <label htmlFor="customerName" className="text-xs font-medium text-gray-700">
+                <label htmlFor="customerName" className="text-xs font-medium ">
                  Name
                 </label>
               </div>
@@ -210,7 +210,7 @@ export default function DonationPage() {
             <div>
               <div className="flex items-center gap-2 mb-1">
                 <Mail className="w-3 h-3 " />
-                <label htmlFor="customerEmail" className="text-xs font-medium text-gray-700">
+                <label htmlFor="customerEmail" className="text-xs font-medium ">
                   Email Address
                 </label>
               </div>
@@ -228,7 +228,7 @@ export default function DonationPage() {
             <div>
               <div className="flex items-center gap-2 mb-1">
                 <Phone className="w-3 h-3 " />
-                <label htmlFor="customerContact" className="text-xs font-medium text-gray-700">
+                <label htmlFor="customerContact" className="text-xs font-medium ">
                   Phone Number
                 </label>
               </div>
