@@ -75,7 +75,8 @@ export default function RazorpayPayment({
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
         amount: orderData.amount,
         currency: 'INR',
-        name: 'Arjun Dubey',
+       name: `${customerDetails.name.split(" ")[0]} To Arjun Dubey`,
+
         order_id: orderData.id,
         handler: function(response: any) {
           onSuccess(response.razorpay_payment_id)
