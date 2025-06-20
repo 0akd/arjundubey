@@ -142,7 +142,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                     )}
                     
                     <div className="flex-1">
-                      <span className="font-bold text-white/90 group-hover:text-white
+                      <span className="font-bold 
                                      tracking-wide text-sm transition-colors duration-300">
                         {item.name}
                       </span>

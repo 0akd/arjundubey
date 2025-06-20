@@ -26,11 +26,7 @@
   --border-focus: #0d6efd;
   
   /* Brand Colors */
-  --primary: #0d6efd;
-  --primary-hover: #0b5ed7;
-  --primary-active: #0a58ca;
-  --primary-light: #cfe2ff;
-  --primary-dark: #084298;
+
   
   --secondary: #6c757d;
   --secondary-hover: #5c636a;
@@ -153,11 +149,7 @@
   --border-focus: #58a6ff;
   
   /* Brand Colors */
-  --primary: #58a6ff;
-  --primary-hover: #79c0ff;
-  --primary-active: #a5d6ff;
-  --primary-light: #0d419d;
-  --primary-dark: #0969da;
+
   
   --secondary: #8b949e;
   --secondary-hover: #b1bac4;
