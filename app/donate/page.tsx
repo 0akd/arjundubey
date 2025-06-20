@@ -183,7 +183,7 @@ export default function DonationPage() {
     <User className="w-4 h-4 text-blue-500" />
     <h3 className="text-sm font-semibold">Totally Optional ( can skip )</h3>
   </div>
-  <span className="text-xs text-gray-500 font-medium ml-6">{"Just wanted to know who's donating so if happy can fill your nickname or directly donate :)"}</span>
+  <span className="text-xs  font-medium ml-6">{"Just wanted to know who's donating so if happy can fill your nickname or directly donate :)"}</span>
 </div>
 
           
@@ -191,7 +191,7 @@ export default function DonationPage() {
             {/* Name Input */}
             <div>
               <div className="flex items-center gap-2 mb-1">
-                <User className="w-3 h-3 text-gray-500" />
+                <User className="w-3 h-3 " />
                 <label htmlFor="customerName" className="text-xs font-medium text-gray-700">
                  Name
                 </label>
@@ -209,7 +209,7 @@ export default function DonationPage() {
             {/* Email Input */}
             <div>
               <div className="flex items-center gap-2 mb-1">
-                <Mail className="w-3 h-3 text-gray-500" />
+                <Mail className="w-3 h-3 " />
                 <label htmlFor="customerEmail" className="text-xs font-medium text-gray-700">
                   Email Address
                 </label>
@@ -227,7 +227,7 @@ export default function DonationPage() {
             {/* Contact Input */}
             <div>
               <div className="flex items-center gap-2 mb-1">
-                <Phone className="w-3 h-3 text-gray-500" />
+                <Phone className="w-3 h-3 " />
                 <label htmlFor="customerContact" className="text-xs font-medium text-gray-700">
                   Phone Number
                 </label>
