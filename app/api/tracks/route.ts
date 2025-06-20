@@ -3,26 +3,30 @@ import { list } from '@vercel/blob'
 
 export async function GET() {
   try {
-    // List all blobs with .mp3 extension
+    // List all blobs in the 'music/' folder
     const { blobs } = await list({
-      prefix: 'music/', // Optional: organize files in a music folder
+      prefix: 'music/',
     })
 
-    // Filter for MP3 files and format for the music player
+    // Filter for .mp3 and .m4a files and format for the music player
     const tracks = blobs
-      .filter(blob => blob.pathname.endsWith('.mp3'))
-      .map((blob, index) => {
-        // Extract filename without extension for title
+      .filter(blob =>
+        blob.pathname.endsWith('.mp3') || blob.pathname.endsWith('.m4a') || blob.pathname.endsWith('.opus')
+      )
+      .map(blob => {
         const filename = blob.pathname.split('/').pop() || ''
-        const title = filename.replace('.mp3', '').replace(/[-_]/g, ' ')
-        
+        const title = filename
+          .replace(/\.(mp3|m4a)$/i, '')
+          .replace(/[-_]/g, ' ')
+
         return {
           id: blob.pathname,
-          title: title,
-          artist: 'Unknown Artist', // You can parse this from filename or metadata
+          title,
+          artist: 'Unknown Artist',
           url: blob.url,
         }
       })
+      .sort((a, b) => a.title.localeCompare(b.title, undefined, { numeric: true }))
 
     return NextResponse.json({ tracks })
   } catch (error) {
