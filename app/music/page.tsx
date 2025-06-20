@@ -236,11 +236,11 @@ export default function MusicPage() {
 
   if (!showPlayer) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className=" flex items-center justify-center">
         <div className="text-center">
           <div className="w-8 h-8 border-3 border-purple-400 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
           <p className="text-lg font-medium bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-            Loading your music...
+            Loading music tracks ...
           </p>
         </div>
       </div>
