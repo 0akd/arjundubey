@@ -181,7 +181,7 @@ export default function DonationPage() {
         <div className="mb-3">
   <div className="flex items-center gap-2">
     <User className="w-4 h-4 text-blue-500" />
-    <h3 className="text-sm font-semibold">Completely Optional ( can skip )</h3>
+    <h3 className="text-sm font-semibold">Totally Optional ( can skip )</h3>
   </div>
   <span className="text-xs text-gray-500 font-medium ml-6">{"Just wanted to know who's donating so if happy can fill your nickname or directly donate :)"}</span>
 </div>
@@ -199,7 +199,7 @@ export default function DonationPage() {
               <input
                 id="customerName"
                 type="text"
-                placeholder="if want me to acknowledge u 👽"
+                placeholder=". . . for acknowledging u 👽"
                 value={customerDetails.name}
                 onChange={(e) => handleCustomerDetailsChange('name', e.target.value)}
                 className="w-full px-3 py-2 border-2 border-blue-200 rounded-lg focus:border-blue-400 focus:ring-1 focus:ring-blue-100 text-sm transition-all duration-300 bg-transparent placeholder-opacity-50"
@@ -217,7 +217,7 @@ export default function DonationPage() {
               <input
                 id="customerEmail"
                 type="email"
-                placeholder="if want my blogs in ur mails 😇"
+                placeholder=". . . for my blogs in ur mails 😇"
                 value={customerDetails.email}
                 onChange={(e) => handleCustomerDetailsChange('email', e.target.value)}
                 className="w-full px-3 py-2 border-2 border-blue-200 rounded-lg focus:border-blue-400 focus:ring-1 focus:ring-blue-100 text-sm transition-all duration-300 bg-transparent placeholder-opacity-50"
@@ -235,7 +235,7 @@ export default function DonationPage() {
               <input
                 id="customerContact"
                 type="tel"
-                placeholder="if want sms about updates 👋"
+                placeholder=". . . for updates 👋 or just skip "
                 value={customerDetails.contact}
                 onChange={(e) => handleCustomerDetailsChange('contact', e.target.value)}
                 className="w-full px-3 py-2 border-2 border-blue-200 rounded-lg focus:border-blue-400 focus:ring-1 focus:ring-blue-100 text-sm transition-all duration-300 bg-transparent placeholder-opacity-50"
@@ -270,7 +270,7 @@ export default function DonationPage() {
             <div className="flex items-center justify-center mb-2">
               <div className="flex items-center gap-2">
                 <CreditCard className="w-4 h-4 text-purple-500" />
-                <span className="text-sm font-semibold">Secure Payment</span>
+                <span className="text-sm font-semibold">Secure Network Pipeline</span>
               </div>
             </div>
             <div className="flex justify-center">
