@@ -43,6 +43,7 @@ const Blog = lazy(() => import('./blog/page'))
 const Progress = lazy(() => import('./display/page'))
 const Donate = lazy(() => import ('./donate/page'))
 const LeeCode = lazy(() => import ('./leetcode/page'))
+const Music = lazy(() => import ('./music/page'))
 export const dynamic = 'force-dynamic'
 export const dynamicParams = true
 export const revalidate = 0
@@ -84,6 +85,9 @@ export default function Home() {
         
                         <LazySection>
           <LeeCode />
+        </LazySection>
+        <LazySection>
+          <Music />
         </LazySection>
                 <LazySection>
           <Donate />

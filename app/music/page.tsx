@@ -6,42 +6,86 @@ import { Play, Pause, SkipBack, SkipForward, Volume2 } from 'lucide-react'
 interface Track {
   id: string
   title: string
-  artist: string
   url: string
   duration?: number
 }
 
 export default function MusicPage() {
-  // All state hooks at the top
   const [tracks, setTracks] = useState<Track[]>([])
-  const [loading, setLoading] = useState(true)
+  const [fetchingTracks, setFetchingTracks] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [currentTrack, setCurrentTrack] = useState(0)
   const [isPlaying, setIsPlaying] = useState(false)
   const [currentTime, setCurrentTime] = useState(0)
   const [duration, setDuration] = useState(0)
   const [volume, setVolume] = useState(1)
-  const [isLoadingPlayer, setIsLoadingPlayer] = useState(false)
+  const [audioLoading, setAudioLoading] = useState(false)
 
-  // All refs at the top
   const audioRef = useRef<HTMLAudioElement>(null)
   const progressRef = useRef<HTMLDivElement>(null)
+  const loadingTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
-  // Fetch tracks effect
   useEffect(() => {
     fetchTracks()
   }, [])
 
-  // Audio event listeners effect
   useEffect(() => {
     const audio = audioRef.current
     if (!audio) return
 
     const updateTime = () => setCurrentTime(audio.currentTime)
     const updateDuration = () => setDuration(audio.duration)
-    const handleLoadStart = () => setIsLoadingPlayer(true)
-    const handleCanPlay = () => setIsLoadingPlayer(false)
+    
+    const handleLoadStart = () => {
+      console.log('Audio loadstart event')
+      setAudioLoading(true)
+      // Set a timeout to clear loading state if it takes too long
+      if (loadingTimeoutRef.current) {
+        clearTimeout(loadingTimeoutRef.current)
+      }
+      loadingTimeoutRef.current = setTimeout(() => {
+        console.log('Audio loading timeout - clearing loading state')
+        setAudioLoading(false)
+        setIsPlaying(false)
+      }, 10000) // 10 second timeout
+    }
+    
+    const handleCanPlay = () => {
+      console.log('Audio canplay event')
+      setAudioLoading(false)
+      if (loadingTimeoutRef.current) {
+        clearTimeout(loadingTimeoutRef.current)
+        loadingTimeoutRef.current = null
+      }
+    }
+    
+    const handleWaiting = () => {
+      console.log('Audio waiting event')
+      setAudioLoading(true)
+    }
+    
+    const handlePlaying = () => {
+      console.log('Audio playing event')
+      setAudioLoading(false)
+      if (loadingTimeoutRef.current) {
+        clearTimeout(loadingTimeoutRef.current)
+        loadingTimeoutRef.current = null
+      }
+    }
+    
+    const handleError = () => {
+      console.log('Audio error event')
+      setAudioLoading(false)
+      setIsPlaying(false)
+      if (loadingTimeoutRef.current) {
+        clearTimeout(loadingTimeoutRef.current)
+        loadingTimeoutRef.current = null
+      }
+      console.error('Audio error occurred')
+    }
+    
     const handleEnded = () => {
+      setAudioLoading(false)
       if (currentTrack < tracks.length - 1) {
         setCurrentTrack(prev => prev + 1)
       } else {
@@ -54,23 +98,31 @@ export default function MusicPage() {
     audio.addEventListener('loadedmetadata', updateDuration)
     audio.addEventListener('loadstart', handleLoadStart)
     audio.addEventListener('canplay', handleCanPlay)
+    audio.addEventListener('waiting', handleWaiting)
+    audio.addEventListener('playing', handlePlaying)
     audio.addEventListener('ended', handleEnded)
+    audio.addEventListener('error', handleError)
 
     return () => {
       audio.removeEventListener('timeupdate', updateTime)
       audio.removeEventListener('loadedmetadata', updateDuration)
       audio.removeEventListener('loadstart', handleLoadStart)
       audio.removeEventListener('canplay', handleCanPlay)
+      audio.removeEventListener('waiting', handleWaiting)
+      audio.removeEventListener('playing', handlePlaying)
       audio.removeEventListener('ended', handleEnded)
+      audio.removeEventListener('error', handleError)
+      
+      if (loadingTimeoutRef.current) {
+        clearTimeout(loadingTimeoutRef.current)
+      }
     }
   }, [currentTrack, tracks.length])
 
-  // Volume effect
   useEffect(() => {
     if (audioRef.current) audioRef.current.volume = volume
   }, [volume])
 
-  // Auto-play effect when track changes
   useEffect(() => {
     if (audioRef.current && tracks.length > 0 && isPlaying) {
       const playAudio = async () => {
@@ -79,7 +131,11 @@ export default function MusicPage() {
         } catch (error) {
           console.error('Error playing audio:', error)
           setIsPlaying(false)
-          setIsLoadingPlayer(false)
+          setAudioLoading(false)
+          if (loadingTimeoutRef.current) {
+            clearTimeout(loadingTimeoutRef.current)
+            loadingTimeoutRef.current = null
+          }
         }
       }
       playAudio()
@@ -88,7 +144,7 @@ export default function MusicPage() {
 
   const fetchTracks = async () => {
     try {
-      setLoading(true)
+      setFetchingTracks(true)
       const response = await fetch('/api/tracks')
       if (!response.ok) throw new Error('Failed to fetch tracks')
       const data = await response.json()
@@ -96,23 +152,44 @@ export default function MusicPage() {
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred')
     } finally {
-      setLoading(false)
+      setFetchingTracks(false)
     }
   }
 
   const togglePlay = async () => {
-    if (!audioRef.current) return
+    if (!audioRef.current || tracks.length === 0) return
+    
+    console.log('togglePlay called', { 
+      isPlaying, 
+      currentTrack, 
+      trackUrl: tracks[currentTrack]?.url,
+      tracksCount: tracks.length 
+    })
+    
     try {
       if (isPlaying) {
         audioRef.current.pause()
         setIsPlaying(false)
+        setAudioLoading(false)
+        if (loadingTimeoutRef.current) {
+          clearTimeout(loadingTimeoutRef.current)
+          loadingTimeoutRef.current = null
+        }
       } else {
-        await audioRef.current.play()
         setIsPlaying(true)
+        // Don't set loading here - let the audio events handle it
+        console.log('Attempting to play audio...')
+        await audioRef.current.play()
+        console.log('Audio play() resolved')
       }
     } catch (error) {
       console.error('Error playing audio:', error)
-      setIsLoadingPlayer(false)
+      setAudioLoading(false)
+      setIsPlaying(false)
+      if (loadingTimeoutRef.current) {
+        clearTimeout(loadingTimeoutRef.current)
+        loadingTimeoutRef.current = null
+      }
     }
   }
 
@@ -154,27 +231,30 @@ export default function MusicPage() {
     return `${minutes}:${seconds.toString().padStart(2, '0')}`
   }
 
-  // Loading state
-  if (loading) {
+  // Show player immediately, even if no tracks are loaded yet
+  const showPlayer = !fetchingTracks || tracks.length > 0 || error
+
+  if (!showPlayer) {
     return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <div className="w-8 h-8 border-4 border-purple-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading tracks...</p>
+          <div className="w-8 h-8 border-3 border-purple-400 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
+          <p className="text-lg font-medium bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+            Loading your music...
+          </p>
         </div>
       </div>
     )
   }
 
-  // Error state
-  if (error) {
+  if (error && tracks.length === 0) {
     return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <p className="text-red-600 mb-4">Error: {error}</p>
+          <p className="text-red-500 mb-4 text-lg">Error: {error}</p>
           <button
             onClick={fetchTracks}
-            className="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 transition-colors"
+            className="px-6 py-2 bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-lg hover:from-purple-600 hover:to-blue-600 transition-all duration-200 shadow-lg hover:shadow-xl"
           >
             Retry
           </button>
@@ -183,95 +263,86 @@ export default function MusicPage() {
     )
   }
 
-  // No tracks state
-  if (tracks.length === 0) {
-    return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-gray-600">No tracks available</p>
-        </div>
-      </div>
-    )
-  }
-
+  // Show player even with no tracks, but with loading state
   const track = tracks[currentTrack]
+  const hasValidTrack = track && track.url
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-200 py-8">
-      <div className="container mx-auto px-4">
-        <h1 className="text-3xl font-bold text-center mb-8 text-gray-800">Music Player</h1>
+    <div className=" p-4">
+      <div className="max-w-sm lg:max-w-4xl mx-auto">
+        <div className="lg:grid lg:grid-cols-3 lg:gap-6 lg:items-start">
+          {/* Player Section */}
+          <div className="lg:col-span-1 border-2 border-gradient-to-r  rounded-lg p-4 mb-4 lg:mb-0 shadow-lg">
+            {hasValidTrack && (
+              <audio
+                ref={audioRef}
+                src={track.url}
+                preload="none"
+              />
+            )}
 
-        <div className="w-full max-w-md mx-auto bg-gradient-to-br from-purple-600 to-blue-600 rounded-xl shadow-2xl text-white overflow-hidden">
-          <audio
-            ref={audioRef}
-            src={track?.url}
-            preload="metadata"
-            onLoadStart={() => setIsLoadingPlayer(true)}
-            onCanPlay={() => setIsLoadingPlayer(false)}
-          />
+            {/* Track Info */}
+            <div className="text-center mb-4">
+              <div className="w-16 h-16 mx-auto mb-2 border-2 border-gradient-to-r from-purple-400 to-blue-400  rounded-full flex items-center justify-center">
+                <Volume2 size={20} className={`transition-all duration-300 ${isPlaying ? 'scale-110 text-purple-600' : 'text-blue-600'}`} />
+              </div>
+              <h2 className="font-semibold text-sm truncate">
+                {hasValidTrack ? track.title : fetchingTracks ? 'Loading...' : 'No track selected'}
+              </h2>
+            </div>
 
-          <div className="p-6 text-center">
-            <div className="w-32 h-32 mx-auto mb-4 bg-white/20 rounded-full flex items-center justify-center transition-all duration-300 hover:bg-white/30">
-              <div className="w-24 h-24 bg-white/30 rounded-full flex items-center justify-center transition-all duration-300">
-                <Volume2 size={32} className={`transition-all duration-300 ${isPlaying ? 'scale-110' : ''}`} />
+            {/* Progress Bar */}
+            <div className="mb-3">
+              <div
+                ref={progressRef}
+                className="w-full h-1 border border-purple-300  rounded-full cursor-pointer hover:h-2 transition-all duration-200"
+                onClick={handleProgressClick}
+              >
+                <div
+                  className="h-full bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 rounded-full transition-all duration-100 shadow-sm"
+                  style={{ width: `${duration ? (currentTime / duration) * 100 : 0}%` }}
+                />
+              </div>
+              <div className="flex justify-between text-xs text-gray-500 mt-1">
+                <span>{formatTime(currentTime)}</span>
+                <span>{formatTime(duration)}</span>
               </div>
             </div>
-            <h2 className="text-xl font-bold mb-1 truncate">{track?.title}</h2>
-            <p className="text-white/80 truncate">{track?.artist}</p>
-          </div>
 
-          <div className="px-6 pb-4">
-            <div
-              ref={progressRef}
-              className="w-full h-2 bg-white/20 rounded-full cursor-pointer mb-2 hover:h-3 transition-all duration-200"
-              onClick={handleProgressClick}
-            >
-              <div
-                className="h-full bg-white rounded-full transition-all duration-100 shadow-sm"
-                style={{ width: `${duration ? (currentTime / duration) * 100 : 0}%` }}
-              />
+            {/* Controls */}
+            <div className="flex items-center justify-center gap-4 mb-3">
+              <button
+                onClick={prevTrack}
+                disabled={currentTrack === 0 || !hasValidTrack}
+                className="p-1 border-2 border-purple-300 rounded-full hover:border-purple-400 hover:bg-purple-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 hover:scale-105"
+              >
+                <SkipBack size={16} className="text-purple-600" />
+              </button>
+
+              <button
+                onClick={togglePlay}
+                disabled={!hasValidTrack}
+                className="p-2 border-2 border-gradient-to-r from-purple-400 to-blue-400  rounded-full hover:from-purple-200 hover:to-blue-200 disabled:opacity-50 transition-all duration-200 hover:scale-105 shadow-lg"
+              >
+                {isPlaying ? (
+                  <Pause size={16} className="text-purple-600" />
+                ) : (
+                  <Play size={16} className="ml-0.5 text-purple-600" />
+                )}
+              </button>
+
+              <button
+                onClick={nextTrack}
+                disabled={currentTrack === tracks.length - 1 || !hasValidTrack}
+                className="p-1 border-2 border-blue-300 rounded-full hover:border-blue-400 hover:bg-blue-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 hover:scale-105"
+              >
+                <SkipForward size={16} className="text-blue-600" />
+              </button>
             </div>
-            <div className="flex justify-between text-sm text-white/80">
-              <span>{formatTime(currentTime)}</span>
-              <span>{formatTime(duration)}</span>
-            </div>
-          </div>
 
-          <div className="flex items-center justify-center gap-6 p-6">
-            <button
-              onClick={prevTrack}
-              disabled={currentTrack === 0}
-              className="p-2 rounded-full bg-white/20 hover:bg-white/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 hover:scale-105"
-            >
-              <SkipBack size={20} />
-            </button>
-
-            <button
-              onClick={togglePlay}
-              disabled={isLoadingPlayer}
-              className="p-4 rounded-full bg-white text-purple-600 hover:bg-white/90 disabled:opacity-50 transition-all duration-200 hover:scale-105 shadow-lg"
-            >
-              {isLoadingPlayer ? (
-                <div className="w-6 h-6 border-2 border-purple-600 border-t-transparent rounded-full animate-spin" />
-              ) : isPlaying ? (
-                <Pause size={24} />
-              ) : (
-                <Play size={24} className="ml-1" />
-              )}
-            </button>
-
-            <button
-              onClick={nextTrack}
-              disabled={currentTrack === tracks.length - 1}
-              className="p-2 rounded-full bg-white/20 hover:bg-white/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 hover:scale-105"
-            >
-              <SkipForward size={20} />
-            </button>
-          </div>
-
-          <div className="px-6 pb-6">
-            <div className="flex items-center gap-3">
-              <Volume2 size={16} className="text-white/60" />
+            {/* Volume */}
+            <div className="flex items-center gap-2">
+              <Volume2 size={12} className="text-purple-500" />
               <input
                 type="range"
                 min="0"
@@ -279,69 +350,97 @@ export default function MusicPage() {
                 step="0.01"
                 value={volume}
                 onChange={(e) => setVolume(parseFloat(e.target.value))}
-                className="flex-1 h-2 bg-white/20 rounded-full appearance-none cursor-pointer slider transition-all duration-200 hover:h-3"
+                className="flex-1 h-1 bg-gradient-to-r  rounded-full appearance-none cursor-pointer slider transition-all duration-200 hover:h-2"
               />
             </div>
           </div>
 
-          {tracks.length > 1 && (
-            <div className="border-t border-white/20">
-              <div className="max-h-40 overflow-y-auto">
-                {tracks.map((t, index) => (
-                  <button
-                    key={t.id}
-                    onClick={() => handleTrackSelect(index)}
-                    className={`w-full p-3 text-left hover:bg-white/10 transition-all duration-200 ${
-                      index === currentTrack ? 'bg-white/20' : ''
-                    } border-b border-white/10 last:border-b-0`}
-                  >
-                    <div className="truncate font-medium flex items-center">
-                      {index === currentTrack && isPlaying && (
-                        <div className="w-3 h-3 mr-2 flex items-center justify-center">
-                          <div className="w-1 h-1 bg-white rounded-full animate-pulse"></div>
-                        </div>
-                      )}
-                      {t.title}
-                    </div>
-                    <div className="truncate text-sm text-white/60">{t.artist}</div>
-                  </button>
-                ))}
-              </div>
+          {/* Playlist Section */}
+          <div className="lg:col-span-2 border-2 border-gradient-to-r  rounded-lg shadow-lg">
+            <div className="p-3 border-b border-gradient-to-r from-cyan-200 to-green-200">
+              <h3 className="font-semibold text-sm text-gray-700">
+                Playlist {tracks.length > 0 && `(${tracks.length} tracks)`}
+              </h3>
             </div>
-          )}
-
-          <style jsx>{`
-            .slider::-webkit-slider-thumb {
-              appearance: none;
-              width: 16px;
-              height: 16px;
-              border-radius: 50%;
-              background: white;
-              cursor: pointer;
-              box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-              transition: all 0.2s ease;
-            }
-            .slider::-webkit-slider-thumb:hover {
-              transform: scale(1.1);
-              box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-            }
-            .slider::-moz-range-thumb {
-              width: 16px;
-              height: 16px;
-              border-radius: 50%;
-              background: white;
-              cursor: pointer;
-              border: none;
-              box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-              transition: all 0.2s ease;
-            }
-            .slider::-moz-range-thumb:hover {
-              transform: scale(1.1);
-              box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-            }
-          `}</style>
+            
+            <div className="h-48 overflow-y-auto">
+              {tracks.length === 0 && !fetchingTracks ? (
+                <div className="p-8 text-center">
+                  <p className="text-sm mb-2">No tracks available</p>
+                  <button
+                    onClick={fetchTracks}
+                    className="px-3 py-1 border border-gray-300 rounded text-sm hover:border-gray-400 transition-colors"
+                  >
+                    Refresh
+                  </button>
+                </div>
+              ) : (
+                <>
+                  {tracks.map((t, index) => (
+                    <button
+                      key={t.id}
+                      onClick={() => handleTrackSelect(index)}
+                      className={`w-full p-3 text-left transition-all duration-200 ${
+                        index === currentTrack 
+                          ? 'bg-gradient-to-r from-transparent  to-blue-900/90 border-r-4 border-gradient-to-b from-purple-400 via-pink-400 to-blue-400 shadow-md' 
+                          : 'hover:bg-gradient-to-r hover:from-cyan-50 hover:to-green-50'
+                      } border-b border-gray-100 last:border-b-0`}
+                    >
+                      <div className="truncate text-sm font-medium flex items-center">
+                        {index === currentTrack && isPlaying && (
+                          <div className="w-2 h-2 mr-2 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full animate-pulse shadow-sm"></div>
+                        )}
+                        <span>
+                          {t.title}
+                        </span>
+                      </div>
+                    </button>
+                  ))}
+                  
+                  {fetchingTracks && (
+                    <div className="p-3 text-center">
+                      <div className="w-4 h-4 border-2 border-purple-400 border-t-transparent rounded-full animate-spin mx-auto mb-1"></div>
+                      <p className="text-xs text-gray-600">Loading...</p>
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+          </div>
         </div>
       </div>
+
+      <style jsx>{`
+        .slider::-webkit-slider-thumb {
+          appearance: none;
+          width: 14px;
+          height: 14px;
+          border-radius: 50%;
+          background: linear-gradient(135deg, #a855f7, #3b82f6);
+          cursor: pointer;
+          border: 2px solid white;
+          box-shadow: 0 2px 6px rgba(168, 85, 247, 0.3);
+          transition: all 0.2s ease;
+        }
+        .slider::-webkit-slider-thumb:hover {
+          transform: scale(1.3);
+          box-shadow: 0 4px 12px rgba(168, 85, 247, 0.5);
+        }
+        .slider::-moz-range-thumb {
+          width: 14px;
+          height: 14px;
+          border-radius: 50%;
+          background: linear-gradient(135deg, #a855f7, #3b82f6);
+          cursor: pointer;
+          border: 2px solid white;
+          box-shadow: 0 2px 6px rgba(168, 85, 247, 0.3);
+          transition: all 0.2s ease;
+        }
+        .slider::-moz-range-thumb:hover {
+          transform: scale(1.3);
+          box-shadow: 0 4px 12px rgba(168, 85, 247, 0.5);
+        }
+      `}</style>
     </div>
   )
 }
