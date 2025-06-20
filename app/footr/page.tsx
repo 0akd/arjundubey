@@ -3,6 +3,7 @@ import Link from "next/link";
 import React from "react";
 import { footer } from "@/data/global";
 import Image from "next/image";
+import Eye from '@/views/page'
 
 function Footer() {
   return (
@@ -138,6 +139,10 @@ function Footer() {
           <span className="ml-2">View Source Code </span>
         </a>
       </div> */}
+        <div className="flex justify-center items-center ">
+  <Eye />
+ 
+</div>
     </footer>
   );
 }
