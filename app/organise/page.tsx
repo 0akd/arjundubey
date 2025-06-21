@@ -1,6 +1,6 @@
 "use client"
 import React, { useState , useRef, useEffect } from 'react';
-import { Plus, Check, Trash2,AppWindowMac, Edit2,RotateCcw, Target,BicepsFlexed,Flower, Brain,BrainCircuit, BookOpen, BarChart3, Loader2, Lock } from 'lucide-react';
+import { Plus, Check, Trash2,IndianRupee, Edit2,RotateCcw, Target,BicepsFlexed,Flower, Brain,BrainCircuit, BookOpen, BarChart3, Loader2, Lock } from 'lucide-react';
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { app } from "@/firebase";
 import supabase from '@/config/supabase';
@@ -31,7 +31,7 @@ const categories = [
   'ProblemSolving',
   'Strength',
   'Spiritual',
-  'Websites'
+  'Money'
 
 ];
 
@@ -39,7 +39,7 @@ const categoryIcons = {
   Intelligence: <Brain size={24} />,
   ProblemSolving: <BrainCircuit size={24} />,
  
-  Websites: <AppWindowMac size={24} />,
+Money: <IndianRupee size={24} />,
   Strength: <BicepsFlexed size={24} />,
   Spiritual: <Flower size={24} />
 };
