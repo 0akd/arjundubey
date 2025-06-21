@@ -181,7 +181,7 @@ export default function DonationPage() {
         <div className="mb-3">
   <div className="flex items-center gap-2">
     <User className="w-4 h-4 text-blue-500" />
-    <h3 className="text-sm font-semibold">Totally Optional ( can skip )</h3>
+    <h3 className="text-sm font-semibold">Totally Optional Section ( can skip )</h3>
   </div>
   <span className="text-xs text-gray-500  font-medium ml-6">{"Just wanted to know who's donating so if happy can fill your nickname or directly donate :)"}</span>
 </div>
