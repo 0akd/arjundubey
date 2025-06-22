@@ -479,11 +479,11 @@ function TodoApp({ todos, onTodosChange, userEmail, isAdmin }: {
               </div>
 
               {/* Expandable Todo List */}
-              <div className={`transition-all duration-300 ease-in-out ${
+              <div className={` transition-all duration-300 ease-in-out ${
                 isExpanded ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'
               } overflow-hidden`}>
                 <div className="px-4 sm:px-6 pb-4 sm:pb-6 border-t ">
-                  <div className="space-y-2 sm:space-y-3 pt-4">
+                  <div className="space-y-2 sm:space-y-3 pt-4 overflow-auto max-h-64">
                     {categoryTodos.length === 0 ? (
                       <p className="italic text-gray-500 text-center py-4 text-sm sm:text-base">
                         No todos in this category
@@ -1009,15 +1009,7 @@ useEffect(() => {
           )}
         </div>
 
-        {/* Quick Actions Footer */}
-        <div className="mt-8 text-center">
-          <p className="text-sm">
-            {activeTab === 'todos' 
-              ? 'Switch to Progress View to see detailed completion statistics'
-              : 'Switch to Todo Manager to add, edit, or complete tasks'
-            }
-          </p>
-        </div>
+   
        <div className="p-4">
       <div className="max-w-4xl mx-auto">
         <div className=" rounded-lg shadow-sm border border-gray-200 overflow-hidden">
