@@ -1,6 +1,6 @@
 "use client"
 import React, { useState , useRef, useEffect } from 'react';
-import { Plus, Check, Trash2,IndianRupee, Edit2,RotateCcw, Target,BicepsFlexed,Flower, Brain,BrainCircuit, BookOpen, BarChart3, Loader2, Lock } from 'lucide-react';
+import { Plus, Check,ChevronDown, Trash2,IndianRupee, Edit2,RotateCcw, Target,BicepsFlexed,Flower, Brain,BrainCircuit, BookOpen, BarChart3, Loader2, Lock } from 'lucide-react';
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { app } from "@/firebase";
 import supabase from '@/config/supabase';
@@ -101,12 +101,29 @@ function TodoApp({ todos, onTodosChange, userEmail, isAdmin }: {
 }) {
   const [showForm, setShowForm] = useState(false);
   const [editingTodo, setEditingTodo] = useState<Todo | null>(null);
+  const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({});
   const [formData, setFormData] = useState({
     title: '',
     description: '',
     category: 'Intelligence'
   });
   const [loading, setLoading] = useState(false);
+
+  // Initialize all categories as expanded on first load
+  useEffect(() => {
+    const initialExpanded: Record<string, boolean> = {};
+    categories.forEach(category => {
+      initialExpanded[category] = false;
+    });
+    setExpandedCategories(initialExpanded);
+  }, []);
+
+  const toggleCategory = (category: string) => {
+    setExpandedCategories(prev => ({
+      ...prev,
+      [category]: !prev[category]
+    }));
+  };
 
   const addTodo = async () => {
     if (!isAdmin) {
@@ -217,43 +234,44 @@ function TodoApp({ todos, onTodosChange, userEmail, isAdmin }: {
     }
   };
 
-const resetAllTodos = async () => {
-  if (!isAdmin) {
-    alert('Only the administrator can reset todos.');
-    return;
-  }
+  const resetAllTodos = async () => {
+    if (!isAdmin) {
+      alert('Only the administrator can reset todos.');
+      return;
+    }
 
-  const completedTodos = todos.filter(todo => todo.completed);
-  if (completedTodos.length === 0) {
-    alert('No completed todos to reset.');
-    return;
-  }
+    const completedTodos = todos.filter(todo => todo.completed);
+    if (completedTodos.length === 0) {
+      alert('No completed todos to reset.');
+      return;
+    }
 
-  if (!confirm(`Are you sure you want to mark all ${completedTodos.length} completed todos as incomplete?`)) {
-    return;
-  }
+    if (!confirm(`Are you sure you want to mark all ${completedTodos.length} completed todos as incomplete?`)) {
+      return;
+    }
 
-  setLoading(true);
-  try {
-    const { error } = await supabase
-      .from('todos')
-      .update({ completed: false })
-      .eq('user_email', ADMIN_EMAIL)
-      .eq('completed', true);
+    setLoading(true);
+    try {
+      const { error } = await supabase
+        .from('todos')
+        .update({ completed: false })
+        .eq('user_email', ADMIN_EMAIL)
+        .eq('completed', true);
 
-    if (error) throw error;
+      if (error) throw error;
 
-    const updatedTodos = todos.map(todo => ({ ...todo, completed: false }));
-    onTodosChange(updatedTodos);
-    
-    alert(`Successfully reset ${completedTodos.length} todos to incomplete status.`);
-  } catch (error) {
-    console.error('Error resetting todos:', error);
-    alert('Error resetting todos. Please try again.');
-  } finally {
-    setLoading(false);
-  }
-};
+      const updatedTodos = todos.map(todo => ({ ...todo, completed: false }));
+      onTodosChange(updatedTodos);
+      
+      alert(`Successfully reset ${completedTodos.length} todos to incomplete status.`);
+    } catch (error) {
+      console.error('Error resetting todos:', error);
+      alert('Error resetting todos. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const deleteTodo = async (id: number) => {
     if (!isAdmin) {
       alert('Only the administrator can delete todos.');
@@ -291,213 +309,261 @@ const resetAllTodos = async () => {
   };
 
   return (
+    <div className="space-y-4 sm:space-y-6 px-2 sm:px-0">
+      {/* Header Section */}
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
+          {isAdmin ? (
+            <>
+              <button
+                onClick={resetAllTodos}
+                className="flex items-center justify-center gap-2 px-3 sm:px-4 py-2 border border-red-300 text-red-700 rounded-lg  transition-colors text-sm sm:text-base"
+                disabled={loading || todos.filter(todo => todo.completed).length === 0}
+                title={todos.filter(todo => todo.completed).length === 0 ? 'No completed todos to reset' : 'Reset all completed todos'}
+              >
+                <RotateCcw className="w-4 h-4 sm:w-5 sm:h-5" />
+                <span className="hidden sm:inline">Reset All</span>
+                <span className="sm:hidden">Reset</span>
+                ({todos.filter(todo => todo.completed).length})
+              </button>
+              <button
+                onClick={() => setShowForm(!showForm)}
+                className="flex items-center justify-center gap-2 px-3 sm:px-4 py-2 bg-blue-600  rounded-lg transition-colors text-sm sm:text-base"
+                disabled={loading}
+              >
+                <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
+                <span className="hidden sm:inline">Add Todo</span>
+                <span className="sm:hidden">Add</span>
+              </button>
+            </>
+          ) : (
+            <div className="flex items-center justify-center gap-2 px-3 sm:px-4 py-2   rounded-lg cursor-not-allowed text-sm sm:text-base">
+              <Lock className="w-4 h-4 sm:w-5 sm:h-5" />
+              Admin Only
+            </div>
+          )}
+        </div>
+      </div>
 
- <div className="space-y-6 px-4 sm:px-6 lg:px-8">
-  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-6">
-    <div className="flex flex-col sm:flex-row gap-3">
-      {isAdmin ? (
-        <>
-          <button
-            onClick={resetAllTodos}
-            className="flex items-center gap-2 px-4 py-2 border border-red-300 text-red-700 rounded-lg hover:bg-red-50 transition-colors text-sm sm:text-base"
-            disabled={loading || todos.filter(todo => todo.completed).length === 0}
-            title={todos.filter(todo => todo.completed).length === 0 ? 'No completed todos to reset' : 'Reset all completed todos'}
-          >
-            <RotateCcw size={18} />
-            Reset All ({todos.filter(todo => todo.completed).length})
-          </button>
-          <button
-            onClick={() => setShowForm(!showForm)}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-opacity-80 transition-colors text-sm sm:text-base"
-            disabled={loading}
-          >
-            <Plus size={18} />
-            Add Todo
-          </button>
-        </>
-      ) : (
-        <div className="flex items-center gap-2 px-4 py-2 rounded-lg cursor-not-allowed text-sm sm:text-base">
-          <Lock size={18} />
-          Admin Only
+      {/* Read-only Notice */}
+      {!isAdmin && (
+        <div className="border rounded-lg p-3 sm:p-4">
+          <div className="flex items-start gap-2">
+            <Lock className="w-4 h-4 flex-shrink-0 mt-0.5" />
+            <div>
+              <p className="text-sm">
+                <strong>Read-only mode:</strong> Only reboostify@gmail.com can add, edit, or delete todos.
+              </p>
+              <p className="text-sm text-gray-600 mt-1">You can view all todos and progress.</p>
+            </div>
+          </div>
         </div>
       )}
-    </div>
-  </div>
 
-  {!isAdmin && (
-    <div className="border rounded-lg p-4 text-sm">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
-        <Lock size={16} />
-        <p>
-          <strong>Read-only mode:</strong> Only reboostify@gmail.com can add, edit, or delete todos. You can view all todos and progress.
-        </p>
-      </div>
-    </div>
-  )}
-
-  {showForm && isAdmin && (
-    <div className="border rounded-lg p-4 sm:p-6 shadow-sm">
-      <h3 className="text-lg sm:text-xl font-semibold mb-4">
-        {editingTodo ? 'Edit Todo' : 'Add New Todo'}
-      </h3>
-      <div className="space-y-4">
-        <input
-          type="text"
-          placeholder="Todo title"
-          value={formData.title}
-          onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-          className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 text-sm"
-          disabled={loading}
-        />
-        <textarea
-          placeholder="Description (optional)"
-          value={formData.description}
-          onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-          className="w-full p-3 border rounded-lg h-24 resize-none focus:outline-none focus:ring-2 text-sm"
-          disabled={loading}
-        />
-        <select
-          value={formData.category}
-          onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-          className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 text-sm"
-          disabled={loading}
-        >
-          {categories.map(category => (
-            <option key={category} value={category}>{category}</option>
-          ))}
-        </select>
-        <div className="flex flex-col sm:flex-row gap-3">
-          <button
-            onClick={addTodo}
-            className="flex items-center gap-2 px-6 py-2 rounded-lg hover:bg-opacity-80 transition-colors disabled:opacity-50 text-sm"
-            disabled={loading}
-          >
-            {loading && <Loader2 size={16} className="animate-spin" />}
-            {editingTodo ? 'Update Todo' : 'Add Todo'}
-          </button>
-          <button
-            onClick={cancelEdit}
-            className="px-6 py-2 border rounded-lg hover:bg-opacity-10 transition-colors text-sm"
-            disabled={loading}
-          >
-            Cancel
-          </button>
+      {/* Add/Edit Form */}
+      {showForm && isAdmin && (
+        <div className="border rounded-lg p-4 sm:p-6 shadow-sm ">
+          <h3 className="text-lg sm:text-xl font-semibold mb-4">
+            {editingTodo ? 'Edit Todo' : 'Add New Todo'}
+          </h3>
+          <div className="space-y-4">
+            <input
+              type="text"
+              placeholder="Todo title"
+              value={formData.title}
+              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+              className="w-full p-2 sm:p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
+              disabled={loading}
+            />
+            <textarea
+              placeholder="Description (optional)"
+              value={formData.description}
+              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              className="w-full p-2 sm:p-3 border rounded-lg h-20 sm:h-24 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
+              disabled={loading}
+            />
+            <select
+              value={formData.category}
+              onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+              className="w-full p-2 sm:p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
+              disabled={loading}
+            >
+              {categories.map(category => (
+                <option key={category} value={category}>{category}</option>
+              ))}
+            </select>
+            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
+              <button
+                onClick={addTodo}
+                className="flex items-center justify-center gap-2 px-4 sm:px-6 py-2 bg-blue-600  rounded-lg transition-colors disabled:opacity-50 text-sm sm:text-base"
+                disabled={loading}
+              >
+                {loading && <Loader2 size={16} className="animate-spin" />}
+                {editingTodo ? 'Update Todo' : 'Add Todo'}
+              </button>
+              <button
+                onClick={cancelEdit}
+                className="px-4 sm:px-6 py-2 border border-gray-300 rounded-lg  transition-colors text-sm sm:text-base"
+                disabled={loading}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
-  )}
+      )}
 
-  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-    {categories.map(category => {
-      const categoryTodos = getTodosByCategory(category);
-      const completionPercentage = getCompletionPercentage(category);
-      return (
-        <div key={category} className="border rounded-lg p-4 sm:p-6 shadow-sm">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-3">
-            <h3 className="text-lg sm:text-xl font-semibold flex items-center gap-2">
-              {categoryIcons[category as keyof typeof categoryIcons]}
-              {category}
-            </h3>
-            <div className="flex items-center gap-3 text-sm">
-              <span>
-                {categoryTodos.filter(t => t.completed).length}/{categoryTodos.length} completed
-              </span>
-              <div className="w-10 h-10 relative">
-                <svg className="w-10 h-10 transform -rotate-90" viewBox="0 0 36 36">
-                  <path
-                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeDasharray="100, 100"
-                    className="opacity-30"
-                  />
-                  <path
-                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeDasharray={`${completionPercentage}, 100`}
-                    className="transition-all duration-500 ease-in-out"
-                  />
-                </svg>
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="text-xs font-medium">
-                    {Math.round(completionPercentage)}%
-                  </span>
+      {/* Categories Grid */}
+      <div className="grid gap-4 sm:gap-6">
+        {categories.map(category => {
+          const categoryTodos = getTodosByCategory(category);
+          const completionPercentage = getCompletionPercentage(category);
+          const isExpanded = expandedCategories[category];
+          
+          return (
+            <div key={category} className="border rounded-lg shadow-sm  overflow-hidden">
+              {/* Category Header - Always Visible */}
+              <div 
+                className="p-4 sm:p-6 cursor-pointer select-none  transition-colors"
+                onClick={() => toggleCategory(category)}
+              >
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+                    <div className="flex items-center gap-2">
+                      {categoryIcons[category as keyof typeof categoryIcons]}
+                      <h3 className="text-lg sm:text-xl font-semibold truncate">
+                        {category}
+                      </h3>
+                    </div>
+                    <button
+                      className={`p-1 rounded-full transition-transform duration-200 ${
+                        isExpanded ? 'rotate-180' : ''
+                      }`}
+                      aria-label={isExpanded ? 'Collapse category' : 'Expand category'}
+                    >
+                      <ChevronDown className="w-5 h-5" />
+                    </button>
+                  </div>
+                  
+                  <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+                    <span className="text-xs sm:text-sm text-gray-600 whitespace-nowrap">
+                      {categoryTodos.filter(t => t.completed).length}/{categoryTodos.length}
+                    </span>
+                    <div className="w-8 h-8 sm:w-12 sm:h-12 relative flex-shrink-0">
+                      <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                        <path
+                          d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeDasharray="100, 100"
+                          className="opacity-30 text-gray-300"
+                        />
+                        <path
+                          d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeDasharray={`${completionPercentage}, 100`}
+                          className="transition-all duration-500 ease-in-out text-blue-600"
+                        />
+                      </svg>
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <span className="text-xs font-medium">
+                          {Math.round(completionPercentage)}%
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Expandable Todo List */}
+              <div className={`transition-all duration-300 ease-in-out ${
+                isExpanded ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'
+              } overflow-hidden`}>
+                <div className="px-4 sm:px-6 pb-4 sm:pb-6 border-t ">
+                  <div className="space-y-2 sm:space-y-3 pt-4">
+                    {categoryTodos.length === 0 ? (
+                      <p className="italic text-gray-500 text-center py-4 text-sm sm:text-base">
+                        No todos in this category
+                      </p>
+                    ) : (
+                      categoryTodos.map(todo => (
+                        <div
+                          key={todo.id}
+                          className={`flex items-start gap-2 sm:gap-3 p-3 sm:p-4  border rounded-lg transition-all ${
+                            todo.completed ? 'opacity-75' : 'hover:shadow-sm'
+                          }`}
+                        >
+                          <button
+                            onClick={() => toggleTodo(todo.id)}
+                            className={`flex-shrink-0 w-5 h-5 sm:w-6 sm:h-6 rounded-full border-2 flex items-center justify-center mt-0.5 sm:mt-1 transition-all ${
+                              todo.completed 
+                                ? 'bg-green-500 border-green-500 ' 
+                                : 'border-gray-300 '
+                            } ${!isAdmin ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
+                            disabled={!isAdmin}
+                            title={!isAdmin ? 'Admin access required' : 'Toggle completion'}
+                          >
+                            {todo.completed && <Check className="w-3 h-3 sm:w-3.5 sm:h-3.5" />}
+                          </button>
+                          
+                          <div className="flex-1 min-w-0">
+                            <h4 className={`font-medium text-sm sm:text-base ${
+                              todo.completed ? 'line-through text-gray-500' : ''
+                            }`}>
+                              {todo.title}
+                            </h4>
+                            {todo.description && (
+                              <p className={`text-xs sm:text-sm mt-1 ${
+                                todo.completed ? 'line-through text-gray-400' : 'text-gray-600'
+                              }`}>
+                                {todo.description}
+                              </p>
+                            )}
+                            <p className="text-xs text-gray-400 mt-1">
+                              Created {new Date(todo.created_at).toLocaleDateString()}
+                            </p>
+                          </div>
+                          
+                          <div className="flex gap-1 sm:gap-2 flex-shrink-0">
+                            <button
+                              onClick={() => editTodo(todo)}
+                              className={`p-1 sm:p-1.5 rounded transition-colors ${
+                                isAdmin 
+                                  ? 'text-blue-600 hover:bg-blue-100 cursor-pointer' 
+                                  : 'text-gray-400 cursor-not-allowed'
+                              }`}
+                              disabled={!isAdmin}
+                              title={!isAdmin ? 'Admin access required' : 'Edit todo'}
+                            >
+                              <Edit2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                            </button>
+                            <button
+                              onClick={() => deleteTodo(todo.id)}
+                              className={`p-1 sm:p-1.5 rounded transition-colors ${
+                                isAdmin 
+                                  ? 'text-red-600 hover:bg-red-100 cursor-pointer' 
+                                  : 'text-gray-400 cursor-not-allowed'
+                              }`}
+                              disabled={!isAdmin}
+                              title={!isAdmin ? 'Admin access required' : 'Delete todo'}
+                            >
+                              <Trash2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                            </button>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-
-          <div className="space-y-3">
-            {categoryTodos.length === 0 ? (
-              <p className="italic text-sm">No todos in this category</p>
-            ) : (
-              categoryTodos.map(todo => (
-                <div
-                  key={todo.id}
-                  className={`flex flex-col sm:flex-row items-start sm:items-center gap-3 p-4 border rounded-lg transition-all ${
-                    todo.completed ? 'opacity-75' : 'hover:shadow-sm'
-                  }`}
-                >
-                  <button
-                    onClick={() => toggleTodo(todo.id)}
-                    className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all mt-1 sm:mt-0 ${
-                      todo.completed ? '' : 'border-opacity-30 hover:border-opacity-70'
-                    } ${!isAdmin ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
-                    disabled={!isAdmin}
-                    title={!isAdmin ? 'Admin access required' : 'Toggle completion'}
-                  >
-                    {todo.completed && <Check size={14} />}
-                  </button>
-
-                  <div className="flex-1 min-w-0 text-sm">
-                    <h4 className={`font-medium ${todo.completed ? 'line-through' : ''}`}>
-                      {todo.title}
-                    </h4>
-                    {todo.description && (
-                      <p className={`mt-1 ${todo.completed ? 'line-through' : ''}`}>
-                        {todo.description}
-                      </p>
-                    )}
-                    <p className="text-xs mt-1">
-                      Created {new Date(todo.created_at).toLocaleDateString()}
-                    </p>
-                  </div>
-
-                  <div className="flex gap-2 self-start sm:self-center">
-                    <button
-                      onClick={() => editTodo(todo)}
-                      className={`p-1 transition-colors ${
-                        isAdmin ? 'cursor-pointer hover:opacity-80' : 'cursor-not-allowed opacity-40'
-                      }`}
-                      disabled={!isAdmin}
-                      title={!isAdmin ? 'Admin access required' : 'Edit todo'}
-                    >
-                      <Edit2 size={16} />
-                    </button>
-                    <button
-                      onClick={() => deleteTodo(todo.id)}
-                      className={`p-1 transition-colors ${
-                        isAdmin ? 'cursor-pointer hover:opacity-80' : 'cursor-not-allowed opacity-40'
-                      }`}
-                      disabled={!isAdmin}
-                      title={!isAdmin ? 'Admin access required' : 'Delete todo'}
-                    >
-                      <Trash2 size={16} />
-                    </button>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-        </div>
-      );
-    })}
-  </div>
-</div>
-
+          );
+        })}
+      </div>
+    </div>
   );
 }
 
@@ -680,8 +746,7 @@ export default function CombinedTodoApp() {
 
   // Check if current user is admin
  
-  const text: string =" we all have two people, we all have two people, and i'm not saying you're crazy, we have the easy voice, that's that voice that we all love, that's that very comfortable voice, that's that mommy holding you, saying it's going to be okay, it doesn't care how good you are, just loves you, just loves you, no matter how messed up you are in life, so that's that one voice, this other voice that we walk very far away from is a boy saying, hey man, you ain't doing shit, so we try to get this voice out of our head completely, and we live over here in this lane, so what you have to do first is turn up this voice over here, the voice saying things to you that aren't nice, that it's in our heads saying, you know what man, dude, you're not, you're not doing it, i'm not saying to put yourself down, i'm saying listen to the truth, and the truth isn't in the 20 percent, the truth is in this other part of your brain saying, look man, you're wasting a bunch of percentage here, we have 80 more percent that we're not tapping into, because in this other 80 is suffering, pain, failure, failure, failure, self-doubt, darkness, and then a whole bunch of light, but to get to this light, you gotta go through all of this journey, which is not fun, so a lot of us know that i can get over here, but over here man, this is much better, because i gotta go through this journey that is not fun, this, this from 20 to 100 percent, this [ __ ] in between is not fun, so we decided to live over here, so everybody goes, how do you do that, you know exactly how to do that, you know exactly, it's not a magic trick, there's nothing i talk about that's a magic trick, it's all back down to a very primitive mindset of, we just have to do, it's like breathing, breathing becomes normal, like we don't know that, that, that we're doing, that's how you have to live your life, when that alarm clock goes off at four or five in the morning, your mind says no, you just say, this is what we do, it's what we do now, because to get to where you want to go, the amount of pain involved, i'm not saying physical, i'm not saying you gotta break yourself off, the amount of mental pain, of how many times you're gonna have to do something that you don't want to do to get to where you want to go, when i was 297 pounds and i was fat as hell, trying to be a navy seal, the scariest thing in the world to me, even to this day, was that, that could have been the rest of my life, i thought then i was trying hard, that's the scariest thing in the world, i thought then, 297 pounds, working for eco labs, spraying for cockroaches, making a thousand dollars a month, i thought that was me at my 100 percent potential, coming to find out a few years later, i wasn't anywhere near that, 106 pounds less, graduate navy seal training, we're going to do all these other things, looking back on that, that was me trying hard, that's why people gotta understand, what is in us, we have no idea until we start trying hard, and i mean really trying hard, when you're obsessed with, hey, this is my new norm, my new norm is that, wow, this isn't always fun, it's not always meant to be fun, and that's when you know you're trying hard, is that, and so people listening to us, that maybe are at 20 or 30, you know, about yeah, i'm going hard, i'm going max, and yet they're not seeing the results, like how do they actually shape themselves out of that, we're all in a battle with our own brains, that's like, that's all life is, it's the most proper thing in the world, is your own brain, it could work for you or against you, and as opposed to focusing on all those bad things that happened, all the things you didn't have, the people that called you names, all the stuff you're doing again, and you started thinking, wait a second, i just visualized this, and now i can take it to the next level, next level, because the visualization got you through, it did, and i was able to visualize the end, so before, so when i was 297, i was all fat and out of shape, i couldn't run a quarter mile, and i was drinking milkshakes and eating boxes of donuts, i visualized, man, how would it feel, for a brief moment, i was so, there was 22 guys that graduated, i watched this segment on tv about these guys going to navy seal training, and i couldn't even, i, i wasn't a great swimmer, i was afraid of the water, all this crap, man, but at the very end it says, 22 guys, there's command officers up there, and it gives this great speech, i was like, man, i wonder, so i started visualizing me being the 23rd guy, in these dress whites, sitting there with these guys, getting that navy seal, you know, graduating this navy seal training, i was like, god, so i put myself there, i was like, man, that's an amazing feeling, i put myself there at 297, not even able to do anything that these great men were doing, [Music] you get that certificate, you walk across the stage, and what's next, but i didn't know that then, my mind was that, i thought i lived in that moment forever, so i said, wow man, if i could just feel like that, i could feel like these guys feel, and what was that feeling you wanted so bad, no, victory, i wanted to win, not like beat somebody else, it wasn't about that, i, i just wanted to go the distance, everything in my life, when something got hard, i quit, if it was reading, that's why, you know, i wasn't great at reading, i wasn't great at writing, so i just quit, i couldn't catch on as fast as you, i didn't work harder than you, so i quit, you know, i wasn't great at things, so i quit, you know, i'm, i'm not good at this, like man, if i could just go that distance, that extra mile, to just go, just to finish, i want to finish, i want to feel victory, and victory for me wasn't winning, it was just finishing, so i said, you know what, if i could feel like these guys feel, it would change my life, but what i realized, the best feeling i had was when i was by myself, trying to lose this weight, i had to lose it in literally less than three months, 106 pounds, less than three months, and literally, i started feeling victory just by putting myself in the battle, it wasn't about going to navy seal training, it wasn't about being the 23rd guy in that chair, i started realizing, man, just by going to war with myself every day, and putting these challenges, and these goals, and these obstacles, these insurmountable obstacles, so it went about losing 106 pounds, me losing five pounds was an accomplishment, me losing 10 pounds, and then 50 pounds, and the more i just, the more i gained confidence, and then the more i gained confidence, the more i realized, these guys can't do what i'm doing right now, i had no coach, had no trainer, had no money, i didn't know how to lose weight, i had no knowledge of what i was doing, i was just working, i was just sacrificing, and then through that, all these different tools started coming up, but i would have never found these tools if i didn't put myself in a very uncomfortable place, we all look for toughness, we all want it, but we look for it in a comfortable environment, you will not find toughness in a comfortable environment, those of you who are listening to this, whoever hear this, you will not find it,trijya choubey dumped you worthless jobless berozgar and she went to tarun kaushik, may be she deserses but you punk get start to work your ass off,how your father did the dirty things ,how yout friend pulled your hair while doing pushups"
-;
+  
  const saveContent = async () => {
     try {
       const { error } = await supabase
@@ -870,33 +935,8 @@ useEffect(() => {
         );
       }
   return (
-    <div className="min-h-screen pt-6">
-           <div className="p-4">
-      <div className="max-w-4xl mx-auto">
-        <div className=" rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-     
-        
-
-    
-          <div className="p-6">
-    <textarea
-  value={content}
-  onChange={(e) => setContent(e.target.value)}
-  className="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent leading-relaxed"
-  style={{
-    minHeight: '400px',
-    whiteSpace: 'pre-wrap',
-    wordWrap: 'break-word',
-    resize: 'vertical',
-  }}
-/>
-
-          </div>
-
-   
-        </div>
-      </div>
-    </div>
+    <div className=" pt-6">
+       
       <div className="max-w-6xl mx-auto px-6">
         {/* Header with navigation */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
@@ -978,13 +1018,31 @@ useEffect(() => {
             }
           </p>
         </div>
-   <div className="max-w-2xl mx-auto p-6 sm:p-8 md:p-10">
-      <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6">Welcome to Our Platform</h1>
-      <ul className="list-disc pl-5 sm:pl-6 space-y-2 sm:space-y-3">
-        {text.split(',').map((item: string, index: number) => (
-          <li key={index} className="text-base sm:text-lg">{item.trim()}</li>
-        ))}
-      </ul>
+       <div className="p-4">
+      <div className="max-w-4xl mx-auto">
+        <div className=" rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+     
+        
+
+    
+          <div className="p-6">
+    <textarea
+  value={content}
+  onChange={(e) => setContent(e.target.value)}
+  className="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent leading-relaxed"
+  style={{
+    minHeight: '400px',
+    whiteSpace: 'pre-wrap',
+    wordWrap: 'break-word',
+    resize: 'vertical',
+  }}
+/>
+
+          </div>
+
+   
+        </div>
+      </div>
     </div>
       </div>
     </div>
