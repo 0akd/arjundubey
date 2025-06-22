@@ -7,7 +7,8 @@ interface ImprovedIframeProps {
   targetUrl?: string
 }
 
-export default function ImprovedIframe({ targetUrl = 'https://dtu.ac.in' }: ImprovedIframeProps) {
+export default function ImprovedIframe() {
+  const targetUrl = 'https://dtu.ac.in'
   const iframeRef = useRef<HTMLIFrameElement | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
