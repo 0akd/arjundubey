@@ -292,219 +292,212 @@ const resetAllTodos = async () => {
 
   return (
 
- <div className="space-y-6">
-    <div className="flex justify-between items-center">
-    
-      <div className="flex gap-3">
-        {isAdmin ? (
-          <>
-            <button
-              onClick={resetAllTodos}
-              className="flex items-center gap-2 px-4 py-2 border border-red-300 text-red-700 rounded-lg hover:bg-red-50 transition-colors"
-              disabled={loading || todos.filter(todo => todo.completed).length === 0}
-              title={todos.filter(todo => todo.completed).length === 0 ? 'No completed todos to reset' : 'Reset all completed todos'}
-            >
-              <RotateCcw size={20} />
-              Reset All ({todos.filter(todo => todo.completed).length})
-            </button>
-            <button
-              onClick={() => setShowForm(!showForm)}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-opacity-80 transition-colors"
-              disabled={loading}
-            >
-              <Plus size={20} />
-              Add Todo
-            </button>
-          </>
-        ) : (
-          <div className="flex items-center gap-2 px-4 py-2 rounded-lg cursor-not-allowed">
-            <Lock size={20} />
-            Admin Only
-          </div>
-        )}
-      </div>
-    </div>
-
-    {!isAdmin && (
-      <div className="border rounded-lg p-4">
-        <div className="flex items-center gap-2">
-          <Lock size={16} />
-          <p className="text-sm">
-            <strong>Read-only mode:</strong> Only reboostify@gmail.com can add, edit, or delete todos. You can view all todos and progress.
-          </p>
-        </div>
-      </div>
-    )}
-
-      {showForm && isAdmin && (
-        <div className="border rounded-lg p-6 shadow-sm">
-          <h3 className="text-xl font-semibold mb-4">
-            {editingTodo ? 'Edit Todo' : 'Add New Todo'}
-          </h3>
-          <div className="space-y-4">
-            <input
-              type="text"
-              placeholder="Todo title"
-              value={formData.title}
-              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-              className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2"
-              disabled={loading}
-            />
-            <textarea
-              placeholder="Description (optional)"
-              value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              className="w-full p-3 border rounded-lg h-24 resize-none focus:outline-none focus:ring-2"
-              disabled={loading}
-            />
-            <select
-              value={formData.category}
-              onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-              className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2"
-              disabled={loading}
-            >
-              {categories.map(category => (
-                <option key={category} value={category}>{category}</option>
-              ))}
-            </select>
-            <div className="flex gap-3">
-              <button
-                onClick={addTodo}
-                className="flex items-center gap-2 px-6 py-2 rounded-lg hover:bg-opacity-80 transition-colors disabled:opacity-50"
-                disabled={loading}
-              >
-                {loading && <Loader2 size={16} className="animate-spin" />}
-                {editingTodo ? 'Update Todo' : 'Add Todo'}
-              </button>
-              <button
-                onClick={cancelEdit}
-                className="px-6 py-2 border rounded-lg hover:bg-opacity-10 transition-colors"
-                disabled={loading}
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
+ <div className="space-y-6 px-4 sm:px-6 lg:px-8">
+  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-6">
+    <div className="flex flex-col sm:flex-row gap-3">
+      {isAdmin ? (
+        <>
+          <button
+            onClick={resetAllTodos}
+            className="flex items-center gap-2 px-4 py-2 border border-red-300 text-red-700 rounded-lg hover:bg-red-50 transition-colors text-sm sm:text-base"
+            disabled={loading || todos.filter(todo => todo.completed).length === 0}
+            title={todos.filter(todo => todo.completed).length === 0 ? 'No completed todos to reset' : 'Reset all completed todos'}
+          >
+            <RotateCcw size={18} />
+            Reset All ({todos.filter(todo => todo.completed).length})
+          </button>
+          <button
+            onClick={() => setShowForm(!showForm)}
+            className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-opacity-80 transition-colors text-sm sm:text-base"
+            disabled={loading}
+          >
+            <Plus size={18} />
+            Add Todo
+          </button>
+        </>
+      ) : (
+        <div className="flex items-center gap-2 px-4 py-2 rounded-lg cursor-not-allowed text-sm sm:text-base">
+          <Lock size={18} />
+          Admin Only
         </div>
       )}
+    </div>
+  </div>
 
-      <div className="grid gap-6">
-        {categories.map(category => {
-          const categoryTodos = getTodosByCategory(category);
-          const completionPercentage = getCompletionPercentage(category);
-          
-          return (
-            <div key={category} className="border rounded-lg p-6 shadow-sm">
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="text-xl font-semibold flex items-center gap-2">
-                  {categoryIcons[category as keyof typeof categoryIcons]}
-                  {category}
-                </h3>
-                <div className="flex items-center gap-3">
-                  <span className="text-sm">
-                    {categoryTodos.filter(t => t.completed).length}/{categoryTodos.length} completed
-                  </span>
-                  <div className="w-12 h-12 relative">
-                    <svg className="w-12 h-12 transform -rotate-90" viewBox="0 0 36 36">
-                      <path
-                        d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeDasharray="100, 100"
-                        className="opacity-30"
-                      />
-                      <path
-                        d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeDasharray={`${completionPercentage}, 100`}
-                        className="transition-all duration-500 ease-in-out"
-                      />
-                    </svg>
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <span className="text-xs font-medium">
-                        {Math.round(completionPercentage)}%
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-3">
-                {categoryTodos.length === 0 ? (
-                  <p className="italic">No todos in this category</p>
-                ) : (
-                  categoryTodos.map(todo => (
-                    <div
-                      key={todo.id}
-                      className={`flex items-start gap-3 p-4 border rounded-lg transition-all ${
-                        todo.completed ? 'opacity-75' : 'hover:shadow-sm'
-                      }`}
-                    >
-                      <button
-                        onClick={() => toggleTodo(todo.id)}
-                        className={`flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center mt-1 transition-all ${
-                          todo.completed 
-                            ? '' 
-                            : 'border-opacity-30 hover:border-opacity-70'
-                        } ${!isAdmin ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
-                        disabled={!isAdmin}
-                        title={!isAdmin ? 'Admin access required' : 'Toggle completion'}
-                      >
-                        {todo.completed && <Check size={14} />}
-                      </button>
-                      
-                      <div className="flex-1 min-w-0">
-                        <h4 className={`font-medium ${todo.completed ? 'line-through' : ''}`}>
-                          {todo.title}
-                        </h4>
-                        {todo.description && (
-                          <p className={`text-sm mt-1 ${todo.completed ? 'line-through' : ''}`}>
-                            {todo.description}
-                          </p>
-                        )}
-                        <p className="text-xs mt-1">
-                          Created {new Date(todo.created_at).toLocaleDateString()}
-                        </p>
-                      </div>
-                      
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() => editTodo(todo)}
-                          className={`flex-shrink-0 p-1 transition-colors ${
-                            isAdmin 
-                              ? 'cursor-pointer hover:opacity-80' 
-                              : 'cursor-not-allowed opacity-40'
-                          }`}
-                          disabled={!isAdmin}
-                          title={!isAdmin ? 'Admin access required' : 'Edit todo'}
-                        >
-                          <Edit2 size={16} />
-                        </button>
-                        <button
-                          onClick={() => deleteTodo(todo.id)}
-                          className={`flex-shrink-0 p-1 transition-colors ${
-                            isAdmin 
-                              ? 'cursor-pointer hover:opacity-80' 
-                              : 'cursor-not-allowed opacity-40'
-                          }`}
-                          disabled={!isAdmin}
-                          title={!isAdmin ? 'Admin access required' : 'Delete todo'}
-                        >
-                          <Trash2 size={16} />
-                        </button>
-                      </div>
-                    </div>
-                  ))
-                )}
-              </div>
-            </div>
-          );
-        })}
+  {!isAdmin && (
+    <div className="border rounded-lg p-4 text-sm">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+        <Lock size={16} />
+        <p>
+          <strong>Read-only mode:</strong> Only reboostify@gmail.com can add, edit, or delete todos. You can view all todos and progress.
+        </p>
       </div>
     </div>
+  )}
+
+  {showForm && isAdmin && (
+    <div className="border rounded-lg p-4 sm:p-6 shadow-sm">
+      <h3 className="text-lg sm:text-xl font-semibold mb-4">
+        {editingTodo ? 'Edit Todo' : 'Add New Todo'}
+      </h3>
+      <div className="space-y-4">
+        <input
+          type="text"
+          placeholder="Todo title"
+          value={formData.title}
+          onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+          className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 text-sm"
+          disabled={loading}
+        />
+        <textarea
+          placeholder="Description (optional)"
+          value={formData.description}
+          onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+          className="w-full p-3 border rounded-lg h-24 resize-none focus:outline-none focus:ring-2 text-sm"
+          disabled={loading}
+        />
+        <select
+          value={formData.category}
+          onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+          className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 text-sm"
+          disabled={loading}
+        >
+          {categories.map(category => (
+            <option key={category} value={category}>{category}</option>
+          ))}
+        </select>
+        <div className="flex flex-col sm:flex-row gap-3">
+          <button
+            onClick={addTodo}
+            className="flex items-center gap-2 px-6 py-2 rounded-lg hover:bg-opacity-80 transition-colors disabled:opacity-50 text-sm"
+            disabled={loading}
+          >
+            {loading && <Loader2 size={16} className="animate-spin" />}
+            {editingTodo ? 'Update Todo' : 'Add Todo'}
+          </button>
+          <button
+            onClick={cancelEdit}
+            className="px-6 py-2 border rounded-lg hover:bg-opacity-10 transition-colors text-sm"
+            disabled={loading}
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  )}
+
+  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    {categories.map(category => {
+      const categoryTodos = getTodosByCategory(category);
+      const completionPercentage = getCompletionPercentage(category);
+      return (
+        <div key={category} className="border rounded-lg p-4 sm:p-6 shadow-sm">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-3">
+            <h3 className="text-lg sm:text-xl font-semibold flex items-center gap-2">
+              {categoryIcons[category as keyof typeof categoryIcons]}
+              {category}
+            </h3>
+            <div className="flex items-center gap-3 text-sm">
+              <span>
+                {categoryTodos.filter(t => t.completed).length}/{categoryTodos.length} completed
+              </span>
+              <div className="w-10 h-10 relative">
+                <svg className="w-10 h-10 transform -rotate-90" viewBox="0 0 36 36">
+                  <path
+                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeDasharray="100, 100"
+                    className="opacity-30"
+                  />
+                  <path
+                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeDasharray={`${completionPercentage}, 100`}
+                    className="transition-all duration-500 ease-in-out"
+                  />
+                </svg>
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <span className="text-xs font-medium">
+                    {Math.round(completionPercentage)}%
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-3">
+            {categoryTodos.length === 0 ? (
+              <p className="italic text-sm">No todos in this category</p>
+            ) : (
+              categoryTodos.map(todo => (
+                <div
+                  key={todo.id}
+                  className={`flex flex-col sm:flex-row items-start sm:items-center gap-3 p-4 border rounded-lg transition-all ${
+                    todo.completed ? 'opacity-75' : 'hover:shadow-sm'
+                  }`}
+                >
+                  <button
+                    onClick={() => toggleTodo(todo.id)}
+                    className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all mt-1 sm:mt-0 ${
+                      todo.completed ? '' : 'border-opacity-30 hover:border-opacity-70'
+                    } ${!isAdmin ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
+                    disabled={!isAdmin}
+                    title={!isAdmin ? 'Admin access required' : 'Toggle completion'}
+                  >
+                    {todo.completed && <Check size={14} />}
+                  </button>
+
+                  <div className="flex-1 min-w-0 text-sm">
+                    <h4 className={`font-medium ${todo.completed ? 'line-through' : ''}`}>
+                      {todo.title}
+                    </h4>
+                    {todo.description && (
+                      <p className={`mt-1 ${todo.completed ? 'line-through' : ''}`}>
+                        {todo.description}
+                      </p>
+                    )}
+                    <p className="text-xs mt-1">
+                      Created {new Date(todo.created_at).toLocaleDateString()}
+                    </p>
+                  </div>
+
+                  <div className="flex gap-2 self-start sm:self-center">
+                    <button
+                      onClick={() => editTodo(todo)}
+                      className={`p-1 transition-colors ${
+                        isAdmin ? 'cursor-pointer hover:opacity-80' : 'cursor-not-allowed opacity-40'
+                      }`}
+                      disabled={!isAdmin}
+                      title={!isAdmin ? 'Admin access required' : 'Edit todo'}
+                    >
+                      <Edit2 size={16} />
+                    </button>
+                    <button
+                      onClick={() => deleteTodo(todo.id)}
+                      className={`p-1 transition-colors ${
+                        isAdmin ? 'cursor-pointer hover:opacity-80' : 'cursor-not-allowed opacity-40'
+                      }`}
+                      disabled={!isAdmin}
+                      title={!isAdmin ? 'Admin access required' : 'Delete todo'}
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      );
+    })}
+  </div>
+</div>
+
   );
 }
 
