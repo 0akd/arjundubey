@@ -9,7 +9,12 @@ const Llm = lazy(() => import('./llm/page'))
 
 export default function Lazyw({ children }: { children: React.ReactNode }) {
   return (
-    <ThemeProvider>
+     <ThemeProvider
+      attribute="data-theme"
+      defaultTheme="light"  // Set default theme to dark
+      enableSystem={false}   // Allow system preference detection
+      disableTransitionOnChange={false}
+    >
       <Suspense fallback={null}>
         <Nav />
         {children}

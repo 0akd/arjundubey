@@ -1,67 +1,67 @@
 @import "tailwindcss";
 
 :root {
-  /* Light Theme - Primary Colors */
-  --background: #ffffff;
-  --foreground: #000000;
-  --background-secondary: #f8f9fa;
-  --background-tertiary: #e9ecef;
+    /* Dark Theme - Primary Colors */
+  --background: #0d1117;
+  --foreground: #f0f6fc;
+  --background-secondary: #161b22;
+  --background-tertiary: #21262d;
   
   /* Text Colors */
-  --text-primary: #212529;
-  --text-secondary: #6c757d;
-  --text-muted: #adb5bd;
-  --text-inverse: #ffffff;
+  --text-primary: #f0f6fc;
+  --text-secondary: #8b949e;
+  --text-muted: #6e7681;
+  --text-inverse: #0d1117;
   
   /* Surface Colors */
-  --surface: #ffffff;
-  --surface-hover: #f8f9fa;
-  --surface-active: #e9ecef;
-  --surface-disabled: #f8f9fa;
+  --surface: #161b22;
+  --surface-hover: #21262d;
+  --surface-active: #30363d;
+  --surface-disabled: #21262d;
   
   /* Border Colors */
-  --border: #dee2e6;
-  --border-light: #e9ecef;
-  --border-strong: #adb5bd;
-  --border-focus: #0d6efd;
+  --border: #30363d;
+  --border-light: #21262d;
+  --border-strong: #6e7681;
+  --border-focus: #58a6ff;
   
   /* Brand Colors */
 
   
-  --secondary: #6c757d;
-  --secondary-hover: #5c636a;
-  --secondary-active: #565e64;
-  --secondary-light: #e2e3e5;
-  --secondary-dark: #495057;
+  --secondary: #8b949e;
+  --secondary-hover: #b1bac4;
+  --secondary-active: #c9d1d9;
+  --secondary-light: #30363d;
+  --secondary-dark: #6e7681;
   
   /* Status Colors */
-  --success: #198754;
-  --success-hover: #157347;
-  --success-light: #d1e7dd;
-  --success-dark: #0f5132;
+  --success: #3fb950;
+  --success-hover: #56d364;
+  --success-light: #238636;
+  --success-dark: #1a7f37;
   
-  --warning: #ffc107;
-  --warning-hover: #e0a800;
-  --warning-light: #fff3cd;
-  --warning-dark: #664d03;
+  --warning: #d29922;
+  --warning-hover: #e3c567;
+  --warning-light: #9e6a03;
+  --warning-dark: #7d4e00;
   
-  --danger: #dc3545;
-  --danger-hover: #c82333;
-  --danger-light: #f8d7da;
-  --danger-dark: #721c24;
+  --danger: #f85149;
+  --danger-hover: #ff7b72;
+  --danger-light: #da3633;
+  --danger-dark: #b62324;
   
-  --info: #0dcaf0;
-  --info-hover: #31d2f2;
-  --info-light: #cff4fc;
-  --info-dark: #055160;
+  --info: #79c0ff;
+  --info-hover: #a5d6ff;
+  --info-light: #0969da;
+  --info-dark: #0550ae;
   
-  /* Shadows */
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-  
+  /* Shadows (adjusted for dark theme) */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.4), 0 1px 2px 0 rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+ 
   /* Typography */
   --font-family-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   --font-family-mono: 'SF Mono', Monaco, Inconsolata, 'Roboto Mono', Consolas, 'Courier New', monospace;
@@ -124,66 +124,67 @@
 }
 
 [data-theme='dark'] {
-  /* Dark Theme - Primary Colors */
-  --background: #0d1117;
-  --foreground: #f0f6fc;
-  --background-secondary: #161b22;
-  --background-tertiary: #21262d;
+ /* Light Theme - Primary Colors */
+  --background: #ffffff;
+  --foreground: #000000;
+  --background-secondary: #f8f9fa;
+  --background-tertiary: #e9ecef;
   
   /* Text Colors */
-  --text-primary: #f0f6fc;
-  --text-secondary: #8b949e;
-  --text-muted: #6e7681;
-  --text-inverse: #0d1117;
+  --text-primary: #212529;
+  --text-secondary: #6c757d;
+  --text-muted: #adb5bd;
+  --text-inverse: #ffffff;
   
   /* Surface Colors */
-  --surface: #161b22;
-  --surface-hover: #21262d;
-  --surface-active: #30363d;
-  --surface-disabled: #21262d;
+  --surface: #ffffff;
+  --surface-hover: #f8f9fa;
+  --surface-active: #e9ecef;
+  --surface-disabled: #f8f9fa;
   
   /* Border Colors */
-  --border: #30363d;
-  --border-light: #21262d;
-  --border-strong: #6e7681;
-  --border-focus: #58a6ff;
+  --border: #dee2e6;
+  --border-light: #e9ecef;
+  --border-strong: #adb5bd;
+  --border-focus: #0d6efd;
   
   /* Brand Colors */
 
   
-  --secondary: #8b949e;
-  --secondary-hover: #b1bac4;
-  --secondary-active: #c9d1d9;
-  --secondary-light: #30363d;
-  --secondary-dark: #6e7681;
+  --secondary: #6c757d;
+  --secondary-hover: #5c636a;
+  --secondary-active: #565e64;
+  --secondary-light: #e2e3e5;
+  --secondary-dark: #495057;
   
   /* Status Colors */
-  --success: #3fb950;
-  --success-hover: #56d364;
-  --success-light: #238636;
-  --success-dark: #1a7f37;
+  --success: #198754;
+  --success-hover: #157347;
+  --success-light: #d1e7dd;
+  --success-dark: #0f5132;
   
-  --warning: #d29922;
-  --warning-hover: #e3c567;
-  --warning-light: #9e6a03;
-  --warning-dark: #7d4e00;
+  --warning: #ffc107;
+  --warning-hover: #e0a800;
+  --warning-light: #fff3cd;
+  --warning-dark: #664d03;
   
-  --danger: #f85149;
-  --danger-hover: #ff7b72;
-  --danger-light: #da3633;
-  --danger-dark: #b62324;
+  --danger: #dc3545;
+  --danger-hover: #c82333;
+  --danger-light: #f8d7da;
+  --danger-dark: #721c24;
   
-  --info: #79c0ff;
-  --info-hover: #a5d6ff;
-  --info-light: #0969da;
-  --info-dark: #0550ae;
+  --info: #0dcaf0;
+  --info-hover: #31d2f2;
+  --info-light: #cff4fc;
+  --info-dark: #055160;
   
-  /* Shadows (adjusted for dark theme) */
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
-  --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.4), 0 1px 2px 0 rgba(0, 0, 0, 0.2);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
-  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  
 }
 
 /* Base styles using the theme variables */
