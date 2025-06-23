@@ -3,6 +3,9 @@ import { siteConfig } from '@/lib/seo'
 import type { Metadata } from 'next'
 import LazySection from '@/components/LazySection' // We'll create this as a separate client component
 import ClientSEOWrapper from '@/components/ClientSEOWrapper'
+import SmoothScrollStyles from '@/components/scrollstyle'
+import PageWrapper from '@/components/pagewrap'
+
 // This stays as a server component - metadata export is allowed here
 export const metadata: Metadata = {
   title: 'Arjun Dubey',
@@ -44,11 +47,14 @@ const Progress = lazy(() => import('./display/page'))
 const Donate = lazy(() => import ('./donate/page'))
 const LeeCode = lazy(() => import ('./leetcode/page'))
 const Music = lazy(() => import ('./music/page'))
+
 export const dynamic = 'force-dynamic'
 export const dynamicParams = true
 export const revalidate = 0
+
 export default function Home() {
-  return (  <>
+  return (
+    <>
       {/* Optional: Additional client-side SEO components */}
       <ClientSEOWrapper
         title="Arjun Dubey"
@@ -57,42 +63,59 @@ export default function Home() {
         keywords={["Arjun Dubey , arjundubey , arjundubey , Arjun Kumar Dubey , ArjunKumarDubey , arjun"]}
       />
       
-     
-    <main>
-      <div>
-        <LazySection>
-          <Hero />
-        </LazySection>
-        
-        <LazySection>
-          <About />
-        </LazySection>
-        
-        <LazySection>
-          <Expedu />
-        </LazySection>
-        
-        <LazySection>
-          <Projects />
-        </LazySection>
-        
-        <LazySection>
-          <Blog />
-        </LazySection>
-         <LazySection>
-          <Progress />
-        </LazySection>
-        
-                        <LazySection>
-          <LeeCode />
-        </LazySection>
-        <LazySection>
-          <Music />
-        </LazySection>
-                <LazySection>
-          <Donate />
-        </LazySection>
-      </div>
-    </main></>
+      {/* Add smooth scrolling styles as a client component */}
+      <SmoothScrollStyles />
+      
+      <PageWrapper>
+        <main className="overflow-hidden">
+          <div>
+            {/* Hero section - immediate load with fade */}
+            <LazySection animationType="fadeIn" delay={0}>
+              <Hero />
+            </LazySection>
+            
+            {/* About section - slide from left */}
+            <LazySection animationType="slideLeft" delay={0.1}>
+              <About />
+            </LazySection>
+            
+            {/* Education section - fade up */}
+            <LazySection animationType="fadeUp" delay={0.2}>
+              <Expedu />
+            </LazySection>
+            
+            {/* Projects section - slide from right */}
+            <LazySection animationType="slideRight" delay={0.1}>
+              <Projects />
+            </LazySection>
+            
+            {/* Blog section - scale animation */}
+            <LazySection animationType="scale" delay={0.15}>
+              <Blog />
+            </LazySection>
+            
+            {/* Progress section - blur effect */}
+            <LazySection animationType="blur" delay={0.1}>
+              <Progress />
+            </LazySection>
+            
+            {/* LeetCode section - fade up */}
+            <LazySection animationType="fadeUp" delay={0.2}>
+              <LeeCode />
+            </LazySection>
+            
+            {/* Music section - slide from left */}
+            <LazySection animationType="slideLeft" delay={0.1}>
+              <Music />
+            </LazySection>
+            
+            {/* Donate section - fade in */}
+            <LazySection animationType="fadeIn" delay={0.15}>
+              <Donate />
+            </LazySection>
+          </div>
+        </main>
+      </PageWrapper>
+    </>
   )
 }
