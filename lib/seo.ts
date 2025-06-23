@@ -1,7 +1,7 @@
 // lib/seo.ts
 export const siteConfig = {
   name: "Arjun Dubey",
-  description: "Arjun Dubey",
+  description: "Arjun Dubey , arjundubey , arjundubey , Arjun Kumar Dubey , ArjunKumarDubey , arjun",
   url: "https://www.arjundubey.com/",
   ogImage: "https://www.arjundubey.com/images/arjun.png",
   creator: "@yourusername",
