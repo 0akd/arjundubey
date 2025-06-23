@@ -10,10 +10,10 @@ import { EDUCATION } from "./education";
 export default function About() {
   return (
     <>
-
+<div className="pt-10">
 
       <ExperienceShowcaseList title="Experience" details={EXPERIENCE} />
-      <ExperienceShowcaseList title="Education" details={EDUCATION} />
+      <ExperienceShowcaseList title="Education" details={EDUCATION} /></div>
     </>
   );
 }
