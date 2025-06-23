@@ -80,9 +80,9 @@ export default function DonationPage() {
 
   return (
     <div className="w-full max-w-lg mx-auto p-4">
-      <div className="relative border-4 border-gradient-to-r from-pink-300 via-purple-300 to-cyan-300 rounded-2xl p-4 shadow-2xl backdrop-blur-sm">
+      <div className="relative border-4 border-gradient-to-r from-pink-300 via-purple-300 to-cyan-300 rounded-2xl p-4 shadow-2xl ">
         {/* Gradient border effect */}
-        <div className="absolute inset-0 bg-gradient-to-r from-pink-300 via-purple-300 to-cyan-300 rounded-2xl blur opacity-15 -z-10"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-pink-900 via-purple-900 to-cyan-900 rounded-2xl blur opacity-15 -z-10"></div>
         
         {/* Header with top corner decoration */}
         <div className="flex items-center justify-between mb-4">
