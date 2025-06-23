@@ -13,6 +13,24 @@ interface Track {
 
 // Local tracks array with music file links and Unsplash cover images
 const LOCAL_TRACKS: Track[] = [
+    {
+    id: '2',
+    title: 'Narkotik Kal',
+    url: 'https://mkw3xpovahzkrpq2.public.blob.vercel-storage.com/music/Narkotik_Kal%5B1%5D-GceMb1QnzGkfpFVJpZj8R77xCEMBSK.m4a',
+    coverImage: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=400&h=400&fit=crop'
+  },
+    {
+    id: '2',
+    title: 'Kompa Jersey',
+    url: 'https://mkw3xpovahzkrpq2.public.blob.vercel-storage.com/music/Kompa_Jersey%5B1%5D-hdFnKgWqERJSga285y1TUkuJGXqVTJ.m4a',
+    coverImage: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=400&h=400&fit=crop'
+  },
+    {
+    id: '2',
+    title: 'Chubina Slowed',
+    url: 'https://mkw3xpovahzkrpq2.public.blob.vercel-storage.com/music/Chub1na_%E2%80%93_%28_slowed_by_Supremacy_%29%5B1%5D-LJpAjWCa4pcDNYHsLnVgslUb7hf0CQ.m4a',
+    coverImage: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=400&h=400&fit=crop'
+  },
 
   {
     id: '2',
@@ -288,7 +306,7 @@ export default function MusicPage() {
 
             {/* Track Info */}
             <div className="text-center mb-4">
-              <div className="w-16 h-16 mx-auto mb-2 border-2 border-gradient-to-r from-purple-400 to-blue-400 rounded-full overflow-hidden">
+              <div className="w-40 h-50 mx-auto mb-2 border-2 border-gradient-to-r from-purple-400 to-blue-400 rounded-full overflow-hidden">
                 {hasValidTrack && track.coverImage ? (
                   <img 
                     src={track.coverImage} 
@@ -318,7 +336,7 @@ export default function MusicPage() {
                   style={{ width: `${duration ? (currentTime / duration) * 100 : 0}%` }}
                 />
               </div>
-              <div className="flex justify-between text-xs text-gray-500 mt-1">
+              <div className="flex justify-between text-xs  mt-1">
                 <span>{formatTime(currentTime)}</span>
                 <span>{formatTime(duration)}</span>
               </div>
@@ -331,7 +349,7 @@ export default function MusicPage() {
                 disabled={currentTrack === 0 || !hasValidTrack}
                 className="p-1 border-2 border-purple-300 rounded-full hover:border-purple-400 hover:bg-purple-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 hover:scale-105"
               >
-                <SkipBack size={16} className="text-purple-600" />
+                <SkipBack size={50} className="text-purple-600" />
               </button>
 
               <button
@@ -339,10 +357,12 @@ export default function MusicPage() {
                 disabled={!hasValidTrack}
                 className="p-2 border-2 border-gradient-to-r from-purple-400 to-blue-400  rounded-full hover:from-purple-200 hover:to-blue-200 disabled:opacity-50 transition-all duration-200 hover:scale-105 shadow-lg"
               >
-                {isPlaying ? (
-                  <Pause size={16} className="text-purple-600" />
+                 {audioLoading ? (
+            <div className="w-10 h-10 border-2 border-purple-600 border-t-transparent rounded-full animate-spin" />
+          ) :isPlaying ? (
+                  <Pause size={50} className="text-purple-600" />
                 ) : (
-                  <Play size={16} className="ml-0.5 text-purple-600" />
+                  <Play size={50} className="ml-0.5 text-purple-600" />
                 )}
               </button>
 
@@ -351,7 +371,7 @@ export default function MusicPage() {
                 disabled={currentTrack === tracks.length - 1 || !hasValidTrack}
                 className="p-1 border-2 border-blue-300 rounded-full hover:border-blue-400 hover:bg-blue-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 hover:scale-105"
               >
-                <SkipForward size={16} className="text-blue-600" />
+                <SkipForward size={50} className="text-blue-600" />
               </button>
             </div>
 
@@ -378,7 +398,7 @@ export default function MusicPage() {
               </h3>
             </div>
             
-            <div className="h-48 overflow-y-auto">
+            <div className="h-92 overflow-y-auto">
               {tracks.length === 0 ? (
                 <div className="p-8 text-center">
                   <p className="text-sm mb-2">No tracks available</p>
