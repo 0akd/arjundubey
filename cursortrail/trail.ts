@@ -131,18 +131,26 @@ export function cursorTrail(props: CursorTrail) {
   let newLines: Line[] = [];
 
   function move(event: MouseEvent | TouchEvent) {
-    !(event instanceof MouseEvent)
-      ? ((cursorPosition.x = event.touches[0].pageX),
-        (cursorPosition.y = event.touches[0].pageY))
-      : ((cursorPosition.x = event.clientX),
-        (cursorPosition.y = event.clientY));
+    if (event instanceof MouseEvent) {
+      // For mouse events, use clientX/clientY (viewport-relative)
+      cursorPosition.x = event.clientX;
+      cursorPosition.y = event.clientY;
+    } else {
+      // For touch events, use clientX/clientY (viewport-relative) instead of pageX/pageY
+      const touch = event.touches[0];
+      cursorPosition.x = touch.clientX;
+      cursorPosition.y = touch.clientY;
+    }
     event.preventDefault();
   }
 
   function createLine(event: TouchEvent) {
-    event.touches.length === 1 &&
-      ((cursorPosition.x = event.touches[0].pageX),
-      (cursorPosition.y = event.touches[0].pageY));
+    if (event.touches.length === 1) {
+      const touch = event.touches[0];
+      // Use clientX/clientY for consistency with fixed positioning
+      cursorPosition.x = touch.clientX;
+      cursorPosition.y = touch.clientY;
+    }
   }
 
   function onMouseMove(e: MouseEvent | TouchEvent) {
@@ -166,7 +174,7 @@ export function cursorTrail(props: CursorTrail) {
   }
 
   function resizeCanvas() {
-    ctx.canvas.width = window.innerWidth - 20;
+    ctx.canvas.width = window.innerWidth;
     ctx.canvas.height = window.innerHeight;
   }
 
@@ -186,7 +194,6 @@ export function cursorTrail(props: CursorTrail) {
     document.addEventListener("touchstart", onMouseMove);
     window.addEventListener("orientationchange", resizeCanvas);
     window.addEventListener("resize", resizeCanvas);
-    // window.addEventListener("scroll", trackYScroll);
     window.addEventListener("focus", startAnimation);
     window.addEventListener("blur", stopAnimation);
     resizeCanvas();
@@ -200,7 +207,6 @@ export function cursorTrail(props: CursorTrail) {
     document.removeEventListener("touchstart", onMouseMove);
     window.removeEventListener("orientationchange", resizeCanvas);
     window.removeEventListener("resize", resizeCanvas);
-    // window.removeEventListener("scroll", trackYScroll);
     window.removeEventListener("focus", startAnimation);
     window.removeEventListener("blur", stopAnimation);
   }
