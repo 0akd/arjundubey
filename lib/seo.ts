@@ -5,7 +5,7 @@ export const siteConfig = {
   url: "https://www.arjundubey.com/",
   ogImage: "https://www.arjundubey.com/opengraph-image.png",
   creator: "@yourusername",
-  keywords: ["arjun", "dubey", "arjun dubey"],
+  keywords: ["Arjun Dubey , arjundubey , arjundubey , Arjun Kumar Dubey , ArjunKumarDubey , arjun"],
 }
 
 export interface SEOProps {

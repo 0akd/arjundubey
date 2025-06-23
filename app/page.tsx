@@ -54,7 +54,7 @@ export default function Home() {
         title="Arjun Dubey"
         description="They dont know me son , so its my portfolio site Arjun Dubeys Portfolio"
         url="https://www.arjundubey.com/"
-        keywords={["nextjs", "react", "typescript", "seo"]}
+        keywords={["Arjun Dubey , arjundubey , arjundubey , Arjun Kumar Dubey , ArjunKumarDubey , arjun"]}
       />
       
      
