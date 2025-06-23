@@ -84,7 +84,7 @@ export default function RazorpayPayment({
         prefill: {
           name: customerDetails.name,
           email: customerDetails.email,
-          contact: customerDetails.contact
+          contact:customerDetails.contact || "8076008591",
         },
         theme: {
           color: '#a159ff'
