@@ -7,12 +7,49 @@ interface Track {
   id: string
   title: string
   url: string
+  coverImage: string
   duration?: number
 }
 
+// Local tracks array with music file links and Unsplash cover images
+const LOCAL_TRACKS: Track[] = [
+
+  {
+    id: '2',
+    title: 'Summer Vibes',
+    url: 'https://www.soundjay.com/misc/sounds/wind-chimes-02.wav',
+    coverImage: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=400&h=400&fit=crop'
+  },
+  {
+    id: '3',
+    title: 'Slava funk slowed',
+    url: 'https://mkw3xpovahzkrpq2.public.blob.vercel-storage.com/music/SLAVA.m4a',
+    coverImage: 'https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=400&h=400&fit=crop'
+  },
+  {
+    id: '4',
+    title: 'Slava funk',
+    url: 'https://mkw3xpovahzkrpq2.public.blob.vercel-storage.com/music/SLAVA%20FUNK%21.m4a',
+    coverImage: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=400&fit=crop'
+  },
+ 
+    {
+    id: '1',
+    title: 'Legends Never Die',
+    url: 'https://mkw3xpovahzkrpq2.public.blob.vercel-storage.com/music/Legends_Never_Die-IOZ02emJv5ESaoi90EkeehmXy2w1Xk.m4a',
+    coverImage: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=400&fit=crop'
+  },
+   {
+    id: '5',
+    title: 'Goggins Speech',
+    url: 'https://mkw3xpovahzkrpq2.public.blob.vercel-storage.com/music/z_large_file_size_pending_upload-xj4CiADvh07cbqspGj0h7au8K0ErJR.m4a',
+    coverImage: 'https://images.unsplash.com/photo-1571974599782-87624638275e?w=400&h=400&fit=crop'
+  },
+]
+
 export default function MusicPage() {
-  const [tracks, setTracks] = useState<Track[]>([])
-  const [fetchingTracks, setFetchingTracks] = useState(true)
+  const [tracks, setTracks] = useState<Track[]>(LOCAL_TRACKS)
+  const [fetchingTracks, setFetchingTracks] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [currentTrack, setCurrentTrack] = useState(0)
   const [isPlaying, setIsPlaying] = useState(false)
@@ -24,10 +61,6 @@ export default function MusicPage() {
   const audioRef = useRef<HTMLAudioElement>(null)
   const progressRef = useRef<HTMLDivElement>(null)
   const loadingTimeoutRef = useRef<NodeJS.Timeout | null>(null)
-
-  useEffect(() => {
-    fetchTracks()
-  }, [])
 
   useEffect(() => {
     const audio = audioRef.current
@@ -142,20 +175,6 @@ export default function MusicPage() {
     }
   }, [currentTrack, tracks.length, isPlaying])
 
-  const fetchTracks = async () => {
-    try {
-      setFetchingTracks(true)
-      const response = await fetch('/api/tracks')
-      if (!response.ok) throw new Error('Failed to fetch tracks')
-      const data = await response.json()
-      setTracks(data.tracks)
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred')
-    } finally {
-      setFetchingTracks(false)
-    }
-  }
-
   const togglePlay = async () => {
     if (!audioRef.current || tracks.length === 0) return
     
@@ -231,21 +250,8 @@ export default function MusicPage() {
     return `${minutes}:${seconds.toString().padStart(2, '0')}`
   }
 
-  // Show player immediately, even if no tracks are loaded yet
-  const showPlayer = !fetchingTracks || tracks.length > 0 || error
-
-  if (!showPlayer) {
-    return (
-      <div className=" flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-8 h-8 border-3 border-purple-400 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
-          <p className="text-lg font-medium bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-            Loading music tracks ...
-          </p>
-        </div>
-      </div>
-    )
-  }
+  // Show player immediately since we have local tracks
+  const showPlayer = true
 
   if (error && tracks.length === 0) {
     return (
@@ -253,7 +259,7 @@ export default function MusicPage() {
         <div className="text-center">
           <p className="text-red-500 mb-4 text-lg">Error: {error}</p>
           <button
-            onClick={fetchTracks}
+            onClick={() => setTracks(LOCAL_TRACKS)}
             className="px-6 py-2 bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-lg hover:from-purple-600 hover:to-blue-600 transition-all duration-200 shadow-lg hover:shadow-xl"
           >
             Retry
@@ -263,7 +269,6 @@ export default function MusicPage() {
     )
   }
 
-  // Show player even with no tracks, but with loading state
   const track = tracks[currentTrack]
   const hasValidTrack = track && track.url
 
@@ -283,8 +288,18 @@ export default function MusicPage() {
 
             {/* Track Info */}
             <div className="text-center mb-4">
-              <div className="w-16 h-16 mx-auto mb-2 border-2 border-gradient-to-r from-purple-400 to-blue-400  rounded-full flex items-center justify-center">
-                <Volume2 size={20} className={`transition-all duration-300 ${isPlaying ? 'scale-110 text-purple-600' : 'text-blue-600'}`} />
+              <div className="w-16 h-16 mx-auto mb-2 border-2 border-gradient-to-r from-purple-400 to-blue-400 rounded-full overflow-hidden">
+                {hasValidTrack && track.coverImage ? (
+                  <img 
+                    src={track.coverImage} 
+                    alt={track.title}
+                    className={`w-full h-full object-cover transition-all duration-300 ${isPlaying ? 'scale-110' : ''}`}
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center">
+                    <Volume2 size={20} className={`transition-all duration-300 ${isPlaying ? 'scale-110 text-purple-600' : 'text-blue-600'}`} />
+                  </div>
+                )}
               </div>
               <h2 className="font-semibold text-sm truncate">
                 {hasValidTrack ? track.title : fetchingTracks ? 'Loading...' : 'No track selected'}
@@ -364,14 +379,14 @@ export default function MusicPage() {
             </div>
             
             <div className="h-48 overflow-y-auto">
-              {tracks.length === 0 && !fetchingTracks ? (
+              {tracks.length === 0 ? (
                 <div className="p-8 text-center">
                   <p className="text-sm mb-2">No tracks available</p>
                   <button
-                    onClick={fetchTracks}
+                    onClick={() => setTracks(LOCAL_TRACKS)}
                     className="px-3 py-1 border border-gray-300 rounded text-sm hover:border-gray-400 transition-colors"
                   >
-                    Refresh
+                    Load Tracks
                   </button>
                 </div>
               ) : (
@@ -390,19 +405,19 @@ export default function MusicPage() {
                         {index === currentTrack && isPlaying && (
                           <div className="w-2 h-2 mr-2 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full animate-pulse shadow-sm"></div>
                         )}
+                        <div className="w-8 h-8 mr-3 rounded border overflow-hidden flex-shrink-0">
+                          <img 
+                            src={t.coverImage} 
+                            alt={t.title}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
                         <span>
                           {t.title}
                         </span>
                       </div>
                     </button>
                   ))}
-                  
-                  {fetchingTracks && (
-                    <div className="p-3 text-center">
-                      <div className="w-4 h-4 border-2 border-purple-400 border-t-transparent rounded-full animate-spin mx-auto mb-1"></div>
-                      <p className="text-xs text-gray-600">Loading...</p>
-                    </div>
-                  )}
                 </>
               )}
             </div>
