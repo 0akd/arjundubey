@@ -411,7 +411,7 @@ export default function MusicPage() {
           {/* Playlist Section */}
           <div className="lg:col-span-2 border-2 border-gradient-to-r  rounded-lg shadow-lg">
             <div className="p-3 border-b border-gradient-to-r from-cyan-200 to-green-200">
-              <h3 className="font-semibold text-sm text-gray-700">
+              <h3 className="font-semibold text-sm ">
                 Playlist {tracks.length > 0 && `(${tracks.length} tracks)`}
               </h3>
             </div>
@@ -435,13 +435,13 @@ export default function MusicPage() {
                       onClick={() => handleTrackSelect(index)}
                       className={`w-full p-3 text-left transition-all duration-200 ${
                         index === currentTrack 
-                          ? 'bg-gradient-to-r from-transparent  to-blue-900/90 border-r-4 border-gradient-to-b from-purple-400 via-pink-400 to-blue-400 shadow-md' 
+                          ? 'bg-gradient-to-r from-transparent  to-blue-900/90 border-r-4 border-gradient-to-b from-pink-900 to-blue-900/90 shadow-md' 
                           : 'hover:bg-gradient-to-r '
                       } border-b border-gray-100 last:border-b-0`}
                     >
                       <div className="truncate text-sm font-medium flex items-center">
                         {index === currentTrack && isPlaying && (
-                          <div className="w-2 h-2 mr-2 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full animate-pulse shadow-sm"></div>
+                         <div className="w-4 h-4 mr-2 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full animate-pulse shadow-sm"></div>
                         )}
                         <div className="w-8 h-8 mr-3 rounded border overflow-hidden flex-shrink-0">
                           <img 
