@@ -14,6 +14,24 @@ interface Track {
 // Local tracks array with music file links and Unsplash cover images
 const LOCAL_TRACKS: Track[] = [
     {
+    id: '1',
+    title: 'Lost Soul Down NBSPLV',
+    url: 'https://mkw3xpovahzkrpq2.public.blob.vercel-storage.com/music/NBSPLV_-_The_lost_soul_down_X_Lost_soul__%28ChainsawMan_Girls%29%5B1%5D-liq3EBAIoPR7Y5sdl8AOHscg7raHIB.m4a',
+    coverImage: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=400&h=400&fit=crop'
+  },
+    {
+    id: '2',
+    title: 'We Are',
+    url: 'https://mkw3xpovahzkrpq2.public.blob.vercel-storage.com/music/We_Are%5B1%5D-htzfT8vew2DsfsA60H42xVDLgOV50W.m4a',
+    coverImage: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=400&h=400&fit=crop'
+  },
+    {
+    id: '3',
+    title: 'Tri Poloski',
+    url: 'https://mkw3xpovahzkrpq2.public.blob.vercel-storage.com/music/Tri_Poloski%5B1%5D-EMLQBoTtHRomr9jDMTmdbxJkhFeifN.m4a',
+    coverImage: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=400&h=400&fit=crop'
+  },
+    {
     id: '2',
     title: 'Narkotik Kal',
     url: 'https://mkw3xpovahzkrpq2.public.blob.vercel-storage.com/music/Narkotik_Kal%5B1%5D-GceMb1QnzGkfpFVJpZj8R77xCEMBSK.m4a',
@@ -418,7 +436,7 @@ export default function MusicPage() {
                       className={`w-full p-3 text-left transition-all duration-200 ${
                         index === currentTrack 
                           ? 'bg-gradient-to-r from-transparent  to-blue-900/90 border-r-4 border-gradient-to-b from-purple-400 via-pink-400 to-blue-400 shadow-md' 
-                          : 'hover:bg-gradient-to-r hover:from-cyan-50 hover:to-green-50'
+                          : 'hover:bg-gradient-to-r '
                       } border-b border-gray-100 last:border-b-0`}
                     >
                       <div className="truncate text-sm font-medium flex items-center">
