@@ -5,6 +5,7 @@ import TabButton from "./tabbutton";
 import dynamic from 'next/dynamic';
 import Skill from '../skills/page'
 
+
 // Dynamically import the 3D gallery with no SSR to avoid hydration issues
 const Images = dynamic(() => import('../3d/gallery/page'), { 
   ssr: false,
