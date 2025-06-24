@@ -82,11 +82,11 @@ export default function Home() {
         
             
             {/* Projects section - slide from right */}
-            <LazySection animationType="slideRight" delay={8}>
+            <LazySection animationType="slideRight" delay={4}>
               <Projects />
             </LazySection>
                 {/* Education section - fade up */}
-            <LazySection animationType="fadeUp" delay={2}>
+            <LazySection animationType="fadeUp" delay={1}>
               <Expedu />
             </LazySection>
             {/* Blog section - scale animation */}
@@ -98,20 +98,20 @@ export default function Home() {
        
             
             {/* Music section - slide from left */}
-            <LazySection animationType="slideLeft" delay={1}>
+            <LazySection animationType="slideLeft" delay={1.5}>
               <Music />
             </LazySection>
             
             {/* Donate section - fade in */}
-            <LazySection animationType="fadeIn" delay={2}>
+            <LazySection animationType="fadeIn" delay={1}>
               <Donate />
             </LazySection>
-                 <LazySection animationType="blur" delay={1.5}>
+                 <LazySection animationType="blur" delay={1.2}>
               <Progress />
             </LazySection>
             
             {/* LeetCode section - fade up */}
-            <LazySection animationType="fadeUp" delay={2}>
+            <LazySection animationType="fadeUp" delay={1.6}>
               <LeeCode />
             </LazySection>
           </div>
