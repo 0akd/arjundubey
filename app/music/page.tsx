@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import { Play, Pause, SkipBack, SkipForward, Volume2 } from 'lucide-react'
+import { Play, Pause, SkipBack, SkipForward, Volume2, ChevronUp, ChevronDown, List } from 'lucide-react'
 
 interface Track {
   id: string
@@ -93,6 +93,8 @@ export default function MusicPage() {
   const [duration, setDuration] = useState(0)
   const [volume, setVolume] = useState(1)
   const [audioLoading, setAudioLoading] = useState(false)
+  // New state for playlist collapse
+  const [isPlaylistExpanded, setIsPlaylistExpanded] = useState(false)
 
   const audioRef = useRef<HTMLAudioElement>(null)
   const progressRef = useRef<HTMLDivElement>(null)
@@ -232,6 +234,10 @@ export default function MusicPage() {
         }
       } else {
         setIsPlaying(true)
+        // Auto-expand playlist on mobile when play button is clicked
+        if (window.innerWidth < 1024) {
+          setIsPlaylistExpanded(true)
+        }
         // Don't set loading here - let the audio events handle it
         console.log('Attempting to play audio...')
         await audioRef.current.play()
@@ -277,6 +283,14 @@ export default function MusicPage() {
   const handleTrackSelect = (index: number) => {
     setCurrentTrack(index)
     setIsPlaying(true)
+    // Auto-expand playlist on mobile when a track is selected
+    if (window.innerWidth < 1024) {
+      setIsPlaylistExpanded(true)
+    }
+  }
+
+  const togglePlaylist = () => {
+    setIsPlaylistExpanded(prev => !prev)
   }
 
   const formatTime = (time: number) => {
@@ -309,11 +323,11 @@ export default function MusicPage() {
   const hasValidTrack = track && track.url
 
   return (
-    <div className=" p-4">
+    <div className="p-4">
       <div className="max-w-sm lg:max-w-4xl mx-auto">
         <div className="lg:grid lg:grid-cols-3 lg:gap-6 lg:items-start">
           {/* Player Section */}
-          <div className="lg:col-span-1 border-2 border-gradient-to-r  rounded-lg p-4 mb-4 lg:mb-0 shadow-lg">
+          <div className="lg:col-span-1 border-2 border-gradient-to-r rounded-lg p-4 mb-4 lg:mb-0 shadow-lg">
             {hasValidTrack && (
               <audio
                 ref={audioRef}
@@ -346,7 +360,7 @@ export default function MusicPage() {
             <div className="mb-3">
               <div
                 ref={progressRef}
-                className="w-full h-1 border border-purple-300  rounded-full cursor-pointer hover:h-2 transition-all duration-200"
+                className="w-full h-1 border border-purple-300 rounded-full cursor-pointer hover:h-2 transition-all duration-200"
                 onClick={handleProgressClick}
               >
                 <div
@@ -354,7 +368,7 @@ export default function MusicPage() {
                   style={{ width: `${duration ? (currentTime / duration) * 100 : 0}%` }}
                 />
               </div>
-              <div className="flex justify-between text-xs  mt-1">
+              <div className="flex justify-between text-xs mt-1">
                 <span>{formatTime(currentTime)}</span>
                 <span>{formatTime(duration)}</span>
               </div>
@@ -373,11 +387,11 @@ export default function MusicPage() {
               <button
                 onClick={togglePlay}
                 disabled={!hasValidTrack}
-                className="p-2 border-2 border-gradient-to-r from-purple-400 to-blue-400  rounded-full hover:from-purple-200 hover:to-blue-200 disabled:opacity-50 transition-all duration-200 hover:scale-105 shadow-lg"
+                className="p-2 border-2 border-gradient-to-r from-purple-400 to-blue-400 rounded-full hover:from-purple-200 hover:to-blue-200 disabled:opacity-50 transition-all duration-200 hover:scale-105 shadow-lg"
               >
-                 {audioLoading ? (
-            <div className="w-10 h-10 border-2 border-purple-600 border-t-transparent rounded-full animate-spin" />
-          ) :isPlaying ? (
+                {audioLoading ? (
+                  <div className="w-10 h-10 border-2 border-purple-600 border-t-transparent rounded-full animate-spin" />
+                ) : isPlaying ? (
                   <Pause size={50} className="text-purple-600" />
                 ) : (
                   <Play size={50} className="ml-0.5 text-purple-600" />
@@ -394,7 +408,7 @@ export default function MusicPage() {
             </div>
 
             {/* Volume */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 mb-4">
               <Volume2 size={12} className="text-purple-500" />
               <input
                 type="range"
@@ -403,20 +417,47 @@ export default function MusicPage() {
                 step="0.01"
                 value={volume}
                 onChange={(e) => setVolume(parseFloat(e.target.value))}
-                className="flex-1 h-1 bg-gradient-to-r  rounded-full appearance-none cursor-pointer slider transition-all duration-200 hover:h-2"
+                className="flex-1 h-1 bg-gradient-to-r rounded-full appearance-none cursor-pointer slider transition-all duration-200 hover:h-2"
               />
+            </div>
+
+            {/* Playlist Toggle Button (Mobile Only) */}
+            <div className="lg:hidden">
+              <button
+                onClick={togglePlaylist}
+                className="w-full flex items-center justify-center gap-2 p-3 border-2 border-gradient-to-r from-purple-300 to-blue-300 rounded-lg hover:from-purple-200 hover:to-blue-200 transition-all duration-200 shadow-md"
+              >
+                <List size={20} className="text-purple-600" />
+                <span className="font-medium text-purple-600">
+                  {isPlaylistExpanded ? 'Hide Playlist' : 'Show Playlist'}
+                </span>
+                {isPlaylistExpanded ? (
+                  <ChevronUp size={20} className="text-purple-600" />
+                ) : (
+                  <ChevronDown size={20} className="text-purple-600" />
+                )}
+              </button>
             </div>
           </div>
 
           {/* Playlist Section */}
-          <div className="lg:col-span-2 border-2 border-gradient-to-r  rounded-lg shadow-lg">
-            <div className="p-3 border-b border-gradient-to-r from-cyan-200 to-green-200">
-              <h3 className="font-semibold text-sm ">
+          <div className={`lg:col-span-2 border-2 border-gradient-to-r rounded-lg shadow-lg transition-all duration-300 ease-in-out lg:block ${
+            isPlaylistExpanded ? 'block' : 'hidden'
+          }`}>
+            <div className="p-3 border-b border-gradient-to-r from-cyan-200 to-green-200 flex items-center justify-between">
+              <h3 className="font-semibold text-sm">
                 Playlist {tracks.length > 0 && `(${tracks.length} tracks)`}
               </h3>
+              {/* Collapse button for mobile */}
+              <button
+                onClick={togglePlaylist}
+                className="lg:hidden p-1 hover:bg-gray-100 rounded transition-colors"
+              >
+                <ChevronUp size={16} className="text-gray-600" />
+              </button>
             </div>
             
-            <div className="h-92 overflow-y-auto">
+            <div className="h-95 overflow-y-auto">
               {tracks.length === 0 ? (
                 <div className="p-8 text-center">
                   <p className="text-sm mb-2">No tracks available</p>
@@ -431,17 +472,17 @@ export default function MusicPage() {
                 <>
                   {tracks.map((t, index) => (
                     <button
-                      key={t.id}
+                      key={`${t.id}-${index}`}
                       onClick={() => handleTrackSelect(index)}
                       className={`w-full p-3 text-left transition-all duration-200 ${
                         index === currentTrack 
-                          ? 'bg-gradient-to-r from-transparent  to-blue-900/90 border-r-4 border-gradient-to-b from-pink-900 to-blue-900/90 shadow-md' 
-                          : 'hover:bg-gradient-to-r '
+                          ? 'bg-gradient-to-r from-transparent to-blue-900/90 border-r-4 border-gradient-to-b from-pink-900 to-blue-900/90 shadow-md' 
+                          : 'hover:bg-gradient-to-r'
                       } border-b border-gray-100 last:border-b-0`}
                     >
                       <div className="truncate text-sm font-medium flex items-center">
                         {index === currentTrack && isPlaying && (
-                         <div className="w-4 h-4 mr-2 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full animate-pulse shadow-sm"></div>
+                          <div className="w-4 h-4 mr-2 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full animate-pulse shadow-sm"></div>
                         )}
                         <div className="w-8 h-8 mr-3 rounded border overflow-hidden flex-shrink-0">
                           <img 
