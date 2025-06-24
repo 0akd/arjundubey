@@ -10,7 +10,7 @@ export const EDUCATION: ExperienceShowcaseListItemProps[] = [
     date: "2024-Present",
     location: "New Delhi, Delhi",
     description:
-      "Relevant courses included Power Electronics , ELctricalCAD, Programmable Logic Controllers (PLCs) and ELectrical Wiring+Safety.",
+      "Relevant courses included |Power Electronics | ELctricalCAD|Programmable Logic Controllers (PLCs) - Control Systems Engineering|Communications & Signal Processing",
   },
   
   

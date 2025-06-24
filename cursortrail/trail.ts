@@ -17,7 +17,7 @@ export function cursorTrail(props: CursorTrail) {
   let AnimationFeature = {
     friction:0.5,
     trails: 10,
-    size: 4,
+    size: 10,
     dampening: 0.1,
     tension: 0.98,
   };

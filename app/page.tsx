@@ -70,48 +70,49 @@ export default function Home() {
         <main className="overflow-hidden">
           <div>
             {/* Hero section - immediate load with fade */}
-            <LazySection animationType="fadeIn" delay={0}>
+            <LazySection animationType="fadeIn" delay={0.8}>
               <Hero />
             </LazySection>
             
             {/* About section - slide from left */}
-            <LazySection animationType="slideLeft" delay={0.1}>
+            <LazySection animationType="slideLeft" delay={1.6}>
               <About />
             </LazySection>
             
-            {/* Education section - fade up */}
-            <LazySection animationType="fadeUp" delay={0.2}>
-              <Expedu />
-            </LazySection>
+        
             
             {/* Projects section - slide from right */}
-            <LazySection animationType="slideRight" delay={0.1}>
+            <LazySection animationType="slideRight" delay={8}>
               <Projects />
             </LazySection>
-            
+                {/* Education section - fade up */}
+            <LazySection animationType="fadeUp" delay={2}>
+              <Expedu />
+            </LazySection>
             {/* Blog section - scale animation */}
-            <LazySection animationType="scale" delay={0.15}>
+            <LazySection animationType="scale" delay={1.5}>
               <Blog />
             </LazySection>
             
-            {/* Progress section - blur effect */}
-            <LazySection animationType="blur" delay={0.1}>
-              <Progress />
-            </LazySection>
-            
-            {/* LeetCode section - fade up */}
-            <LazySection animationType="fadeUp" delay={0.2}>
-              <LeeCode />
-            </LazySection>
+          
+       
             
             {/* Music section - slide from left */}
-            <LazySection animationType="slideLeft" delay={0.1}>
+            <LazySection animationType="slideLeft" delay={1}>
               <Music />
             </LazySection>
             
             {/* Donate section - fade in */}
-            <LazySection animationType="fadeIn" delay={0.15}>
+            <LazySection animationType="fadeIn" delay={2}>
               <Donate />
+            </LazySection>
+                 <LazySection animationType="blur" delay={1.5}>
+              <Progress />
+            </LazySection>
+            
+            {/* LeetCode section - fade up */}
+            <LazySection animationType="fadeUp" delay={2}>
+              <LeeCode />
             </LazySection>
           </div>
         </main>

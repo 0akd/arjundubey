@@ -73,31 +73,12 @@ export default function SmoothScrollProvider({ children }: SmoothScrollProviderP
     <>
       {/* Scroll progress indicator */}
       <motion.div
-        className="fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 origin-left z-50 shadow-lg"
+        className="fixed top-0 left-0 right-0 h-1 bg-cyan-400 origin-left z-50 shadow-lg"
         style={{ scaleX }}
       />
       
       {/* Scroll indicator dots */}
-      <div className="fixed right-6 top-1/2 transform -translate-y-1/2 z-40 hidden lg:flex flex-col space-y-3">
-        {[...Array(9)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="w-3 h-3 rounded-full bg-gray-300 cursor-pointer hover:bg-blue-500 transition-colors shadow-md backdrop-blur-sm"
-            whileHover={{ scale: 1.5 }}
-            whileTap={{ scale: 0.9 }}
-            onClick={() => {
-              const sections = document.querySelectorAll('main > div > div')
-              if (sections[i]) {
-                sections[i].scrollIntoView({ 
-                  behavior: 'smooth',
-                  block: 'start'
-                })
-              }
-            }}
-          />
-        ))}
-      </div>
-      
+     
       {children}
     </>
   )

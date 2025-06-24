@@ -220,13 +220,7 @@ export default function CompactProgressDashboard() {
 
       {/* Compact Stats Grid */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
-        <div className="border-2 border-blue-300 rounded-xl p-3 hover:border-blue-400 transition-colors">
-          <div className="flex items-center justify-between mb-1">
-            <Target className="text-blue-500" size={16} />
-            <span className="text-lg font-bold text-blue-600">{overallStats.totalTodos}</span>
-          </div>
-          <p className="text-xs text-blue-600 font-medium">Total</p>
-        </div>
+       
 
         <div className="border-2 border-green-300 rounded-xl p-3 hover:border-green-400 transition-colors">
           <div className="flex items-center justify-between mb-1">
@@ -244,13 +238,7 @@ export default function CompactProgressDashboard() {
           <p className="text-xs text-orange-600 font-medium">Active</p>
         </div>
 
-        <div className="border-2 border-purple-300 rounded-xl p-3 hover:border-purple-400 transition-colors">
-          <div className="flex items-center justify-between mb-1">
-            <BarChart3 className="text-purple-500" size={16} />
-            <span className="text-lg font-bold text-purple-600">{Math.round(overallStats.overallPercentage)}%</span>
-          </div>
-          <p className="text-xs text-purple-600 font-medium">Success</p>
-        </div>
+   
       </div>
 
       {/* Compact Category Grid - 3 columns on mobile, 5 on larger screens */}
@@ -287,7 +275,7 @@ export default function CompactProgressDashboard() {
                 </div>
                 
                 {/* Mini Progress Bar */}
-                <div className="w-full bg-gray-200 rounded-full h-1.5">
+                <div className="w-full  rounded-full h-1.5">
                   <div 
                     className={`bg-gradient-to-r ${config.color} h-1.5 rounded-full transition-all duration-700 ease-out`}
                     style={{ width: `${category.percentage}%` }}
@@ -304,12 +292,12 @@ export default function CompactProgressDashboard() {
                           className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
                             i < category.completed 
                               ? config.textColor.replace('text-', 'bg-')
-                              : 'bg-gray-300'
+                              : ''
                           }`}
                         />
                       ))}
                       {category.total > 5 && (
-                        <span className="text-xs text-gray-400 ml-1">+{category.total - 5}</span>
+                        <span className="text-xs  ml-1">+{category.total - 5}</span>
                       )}
                     </div>
                   </div>
@@ -320,30 +308,8 @@ export default function CompactProgressDashboard() {
         })}
       </div>
 
-      {/* Compact Overall Progress */}
-      <div className="border-2 border-gradient-to-r border-blue-300 rounded-xl p-4 text-center">
-        <h3 className="text-lg font-bold mb-3 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-          Overall Success Rate
-        </h3>
-        
-        <div className="flex justify-center mb-3">
-          <CompactCircularProgress
-            percentage={overallStats.overallPercentage}
-            size={80}
-            strokeWidth={6}
-            color="text-blue-500"
-          />
-        </div>
-        
-        <div className="text-xs text-gray-500">
-          {overallStats.completedTodos} of {overallStats.totalTodos} goals completed
-        </div>
-      </div>
+    
 
-      {/* Compact Footer */}
-      <div className="text-center text-xs text-gray-400 pt-2">
-        <p>Live updates • {new Date().toLocaleTimeString()}</p>
-      </div>
     </div>
   );
 }

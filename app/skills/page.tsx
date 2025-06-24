@@ -85,7 +85,7 @@ function Skills() {
 
   return (
     <motion.div 
-      className="flex flex-col space-y-8 sm:space-y-10 md:space-y-12 px-4 sm:px-6 lg:px-8"
+      className="flex flex-col space-y-8 sm:space-y-10 md:space-y-12  "
       variants={containerVariants}
       initial="initial"
       whileInView="animate"
@@ -102,7 +102,7 @@ function Skills() {
           <div key={category} className="w-full">
             {/* Category Header */}
             <motion.div 
-              className="mb-4 sm:mb-6"
+              className="mb-1"
               variants={categoryHeaderVariants}
               initial="initial"
               whileInView="animate"
@@ -115,7 +115,7 @@ function Skills() {
                 {category}
               </h3>
               <motion.div 
-                className="w-16 sm:w-20 md:w-24 h-1 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full mt-2"
+                className="w-16 sm:w-20 md:w-24 h-1 bg-gradient-to-r from-cyan-300 to bg-transparent  rounded-full mt-2"
                 initial={{ width: 0 }}
                 whileInView={{ width: "auto" }}
                 viewport={{ once: true }}
@@ -124,7 +124,7 @@ function Skills() {
             </motion.div>
             
             {/* Skills Grid */}
-            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 gap-3 sm:gap-4 md:gap-6">
+            <div className="grid grid-cols-4 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 gap-3">
               {categorySkills.map((skill, index) => {
                 const currentIndex = globalIndex++;
                 const isAutoAnimating = currentIndex === autoAnimateIndex;
@@ -133,7 +133,7 @@ function Skills() {
                   <motion.div
                     key={`${category}-${index}`}
                     title={skill.title}
-                    className="group flex flex-col items-center justify-center p-3 sm:p-4 md:p-5 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors duration-300"
+                    className="group flex flex-col items-center justify-center p-3 sm:p-4 md:p-5 rounded-lg hover:bg-gray-500  transition-colors duration-300"
                     variants={fadeInAnimationVariants}
                     initial="initial"
                     whileInView="animate"
