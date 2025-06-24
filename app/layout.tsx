@@ -5,7 +5,7 @@ import Lazyw from './lazyshell'
 
 import { cn } from "@/lib/utils";
 import ClientCursorTrail from "@/components/ClientCursorTrail";
-
+import BG from './bg'
 import { siteConfig } from '@/lib/seo'
 export const dynamic = 'force-dynamic'
 export const dynamicParams = true
@@ -102,7 +102,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body suppressHydrationWarning>
         <main className={cn(
           "bg-transparent bg-[radial-gradient(#2f7df4_1px,transparent_1px)] [background-size:16px_16px]",
-        )}>
+        )}><BG/>
           <ClientCursorTrail className="pointer-events-none inset-0 -z-10 " />
           <Lazyw>
             {children}
