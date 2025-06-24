@@ -1,11 +1,13 @@
 export interface BlogPost {
-  id: string;
-  title: string;
-  description: string;
-  content: string; // markdown content
-  image_url: string;
-  slug: string;
-  created_at: string;
-  updated_at: string;
-  published: boolean;
+  id: string
+  title: string
+  description: string
+  content: string
+  image_url: string
+  published: boolean
+  created_at: string
+  updated_at?: string
+  tags?: string[]
+  author?: string
+  slug?: string
 }
