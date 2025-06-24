@@ -9,5 +9,5 @@ export interface BlogPost {
   updated_at?: string
   tags?: string[]
   author?: string
-  slug?: string
+  slug: string
 }
