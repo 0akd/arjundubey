@@ -181,7 +181,7 @@ const AboutSection: React.FC = () => {
               </TabButton>
             ))}
           </div>
-          <div className=" px-15">{currentTabContent}</div>
+          <div className=" px-5">{currentTabContent}</div>
         </div>
       </div><div className="relative">      {/* Left overlay */}
         <div className="absolute top-0 left-0 h-full w-[25%] z-50" />
