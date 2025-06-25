@@ -17,7 +17,7 @@ const LOCAL_TRACKS: Track[] = [
     id: '1',
     title: 'menory reboot + fainted',
     url: 'https://mkw3xpovahzkrpq2.public.blob.vercel-storage.com/music/Fainted%20x%20Memory%20Reboot%20-%20Narvent%20-%20%284K%20Music%20Video%29%20%28Mashup%20version%29%20%28ShowUsmusic%20Remix%29-G5b6Fvv0hgF7bnggqj42M7d1cxnlcr.m4a',
-    coverVideo: 'https://mkw3xpovahzkrpq2.public.blob.vercel-storage.com/video/Blade%20Runner%20_%20Alive-75laHGTDNE2TamOHYczsq0vzZs5AHO.mp4'
+    coverVideo: 'https://mkw3xpovahzkrpq2.public.blob.vercel-storage.com/video/Blade%20Runner%202049%20_%20stellar-FvM8yZACX6du3UVkFyLGk5TJHKpxzv.mp4'
   },
   {
     id: '2',
