@@ -160,11 +160,7 @@ export default function Shiba() {
           decay={1}
         />
         
-        {/* Center reference point (like a sun) */}
-        <mesh position={[0, 0, 0]}>
-          <sphereGeometry args={[2, 16, 16]} />
-          <meshStandardMaterial color="#FFD700" emissive="#FFD700" emissiveIntensity={0.3} />
-        </mesh>
+       
         
         {/* Render all models as orbiting planets */}
         {modelPaths.map((modelPath, index) => (
