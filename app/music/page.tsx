@@ -7,79 +7,83 @@ interface Track {
   id: string
   title: string
   url: string
-  coverImage: string
+  coverVideo: string
   duration?: number
 }
 
-// Local tracks array with music file links and Unsplash cover images
+// Local tracks array with music file links and cover videos
 const LOCAL_TRACKS: Track[] = [
-    {
+  {
     id: '1',
+    title: 'menory reboot + fainted',
+    url: 'https://mkw3xpovahzkrpq2.public.blob.vercel-storage.com/music/Fainted%20x%20Memory%20Reboot%20-%20Narvent%20-%20%284K%20Music%20Video%29%20%28Mashup%20version%29%20%28ShowUsmusic%20Remix%29-G5b6Fvv0hgF7bnggqj42M7d1cxnlcr.m4a',
+    coverVideo: 'https://mkw3xpovahzkrpq2.public.blob.vercel-storage.com/video/Blade%20Runner%20_%20Alive-75laHGTDNE2TamOHYczsq0vzZs5AHO.mp4'
+  },
+  {
+    id: '2',
     title: 'Lost Soul Down NBSPLV',
     url: 'https://mkw3xpovahzkrpq2.public.blob.vercel-storage.com/music/NBSPLV_-_The_lost_soul_down_X_Lost_soul__%28ChainsawMan_Girls%29%5B1%5D-liq3EBAIoPR7Y5sdl8AOHscg7raHIB.m4a',
-    coverImage: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=400&h=400&fit=crop'
+    coverVideo: 'YOUR_VIDEO_LINK_HERE'
   },
-    {
-    id: '2',
+  {
+    id: '3',
     title: 'We Are',
     url: 'https://mkw3xpovahzkrpq2.public.blob.vercel-storage.com/music/We_Are%5B1%5D-htzfT8vew2DsfsA60H42xVDLgOV50W.m4a',
-    coverImage: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=400&h=400&fit=crop'
-  },
-    {
-    id: '3',
-    title: 'Tri Poloski',
-    url: 'https://mkw3xpovahzkrpq2.public.blob.vercel-storage.com/music/Tri_Poloski%5B1%5D-EMLQBoTtHRomr9jDMTmdbxJkhFeifN.m4a',
-    coverImage: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=400&h=400&fit=crop'
-  },
-    {
-    id: '2',
-    title: 'Narkotik Kal',
-    url: 'https://mkw3xpovahzkrpq2.public.blob.vercel-storage.com/music/Narkotik_Kal%5B1%5D-GceMb1QnzGkfpFVJpZj8R77xCEMBSK.m4a',
-    coverImage: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=400&h=400&fit=crop'
-  },
-    {
-    id: '2',
-    title: 'Kompa Jersey',
-    url: 'https://mkw3xpovahzkrpq2.public.blob.vercel-storage.com/music/Kompa_Jersey%5B1%5D-hdFnKgWqERJSga285y1TUkuJGXqVTJ.m4a',
-    coverImage: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=400&h=400&fit=crop'
-  },
-    {
-    id: '2',
-    title: 'Chubina Slowed',
-    url: 'https://mkw3xpovahzkrpq2.public.blob.vercel-storage.com/music/Chub1na_%E2%80%93_%28_slowed_by_Supremacy_%29%5B1%5D-LJpAjWCa4pcDNYHsLnVgslUb7hf0CQ.m4a',
-    coverImage: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=400&h=400&fit=crop'
-  },
-
-  {
-    id: '2',
-    title: 'Matushka',
-    url: 'https://mkw3xpovahzkrpq2.public.blob.vercel-storage.com/music/%D0%9C%D0%B0%D1%82%D1%83%D1%88%D0%BA%D0%B0%5B1%5D-zb80yTlpQl4t7UnbKEIE2LRPPB0kzt.m4a',
-    coverImage: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=400&h=400&fit=crop'
-  },
-  {
-    id: '3',
-    title: 'Slava funk slowed',
-    url: 'https://mkw3xpovahzkrpq2.public.blob.vercel-storage.com/music/SLAVA.m4a',
-    coverImage: 'https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=400&h=400&fit=crop'
+    coverVideo: 'YOUR_VIDEO_LINK_HERE'
   },
   {
     id: '4',
+    title: 'Tri Poloski',
+    url: 'https://mkw3xpovahzkrpq2.public.blob.vercel-storage.com/music/Tri_Poloski%5B1%5D-EMLQBoTtHRomr9jDMTmdbxJkhFeifN.m4a',
+    coverVideo: 'YOUR_VIDEO_LINK_HERE'
+  },
+  {
+    id: '5',
+    title: 'Narkotik Kal',
+    url: 'https://mkw3xpovahzkrpq2.public.blob.vercel-storage.com/music/Narkotik_Kal%5B1%5D-GceMb1QnzGkfpFVJpZj8R77xCEMBSK.m4a',
+    coverVideo: 'YOUR_VIDEO_LINK_HERE'
+  },
+  {
+    id: '6',
+    title: 'Kompa Jersey',
+    url: 'https://mkw3xpovahzkrpq2.public.blob.vercel-storage.com/music/Kompa_Jersey%5B1%5D-hdFnKgWqERJSga285y1TUkuJGXqVTJ.m4a',
+    coverVideo: 'YOUR_VIDEO_LINK_HERE'
+  },
+  {
+    id: '7',
+    title: 'Chubina Slowed',
+    url: 'https://mkw3xpovahzkrpq2.public.blob.vercel-storage.com/music/Chub1na_%E2%80%93_%28_slowed_by_Supremacy_%29%5B1%5D-LJpAjWCa4pcDNYHsLnVgslUb7hf0CQ.m4a',
+    coverVideo: 'YOUR_VIDEO_LINK_HERE'
+  },
+  {
+    id: '8',
+    title: 'Matushka',
+    url: 'https://mkw3xpovahzkrpq2.public.blob.vercel-storage.com/music/%D0%9C%D0%B0%D1%82%D1%83%D1%88%D0%BA%D0%B0%5B1%5D-zb80yTlpQl4t7UnbKEIE2LRPPB0kzt.m4a',
+    coverVideo: 'YOUR_VIDEO_LINK_HERE'
+  },
+  {
+    id: '9',
+    title: 'Slava funk slowed',
+    url: 'https://mkw3xpovahzkrpq2.public.blob.vercel-storage.com/music/SLAVA.m4a',
+    coverVideo: 'YOUR_VIDEO_LINK_HERE'
+  },
+  {
+    id: '10',
     title: 'Slava funk',
     url: 'https://mkw3xpovahzkrpq2.public.blob.vercel-storage.com/music/SLAVA%20FUNK%21.m4a',
-    coverImage: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=400&fit=crop'
+    coverVideo: 'YOUR_VIDEO_LINK_HERE'
   },
- 
-    {
-    id: '1',
+  {
+    id: '11',
     title: 'Legends Never Die',
     url: 'https://mkw3xpovahzkrpq2.public.blob.vercel-storage.com/music/Legends_Never_Die-IOZ02emJv5ESaoi90EkeehmXy2w1Xk.m4a',
-    coverImage: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=400&fit=crop'
+    coverVideo: 'YOUR_VIDEO_LINK_HERE'
   },
-   {
-    id: '5',
+  {
+    id: '12',
     title: 'Goggins Speech',
     url: 'https://mkw3xpovahzkrpq2.public.blob.vercel-storage.com/music/z_large_file_size_pending_upload-xj4CiADvh07cbqspGj0h7au8K0ErJR.m4a',
-    coverImage: 'https://images.unsplash.com/photo-1571974599782-87624638275e?w=400&h=400&fit=crop'
+    coverVideo: 'YOUR_VIDEO_LINK_HERE'
   },
 ]
 
@@ -93,16 +97,55 @@ export default function MusicPage() {
   const [duration, setDuration] = useState(0)
   const [volume, setVolume] = useState(1)
   const [audioLoading, setAudioLoading] = useState(false)
-  // New state for playlist collapse
   const [isPlaylistExpanded, setIsPlaylistExpanded] = useState(false)
+  const [videoDuration, setVideoDuration] = useState(0)
 
   const audioRef = useRef<HTMLAudioElement>(null)
+  const videoRef = useRef<HTMLVideoElement>(null)
   const progressRef = useRef<HTMLDivElement>(null)
   const loadingTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
+  // Video sync and loop logic
+  useEffect(() => {
+  const video = videoRef.current
+  const audio = audioRef.current
+  
+  if (!video || !audio || !isPlaying) return
+
+  const syncVideo = () => {
+    const audioCurrentTime = audio.currentTime
+    const videoCurrentTime = video.currentTime
+    
+    // If video is shorter than audio, calculate loop position
+    if (videoDuration > 0 && audioCurrentTime > videoDuration) {
+      const loopTime = audioCurrentTime % videoDuration
+      // More precise sync threshold
+      if (Math.abs(videoCurrentTime - loopTime) > 0.2) {
+        video.currentTime = loopTime
+      }
+    } else {
+      // Normal sync - more precise threshold
+      if (Math.abs(videoCurrentTime - audioCurrentTime) > 0.2) {
+        video.currentTime = audioCurrentTime
+      }
+    }
+
+    // Ensure video is playing when audio is playing
+    if (video.paused && !audio.paused && !audio.ended) {
+      video.play().catch(console.error)
+    }
+  }
+
+  // Sync more frequently for smoother looping
+  const syncInterval = setInterval(syncVideo, 200) // Changed from 1000ms to 200ms
+  return () => clearInterval(syncInterval)
+}, [isPlaying, videoDuration, currentTime])
+
+
   useEffect(() => {
     const audio = audioRef.current
-    if (!audio) return
+    const video = videoRef.current
+    if (!audio || !video) return
 
     const updateTime = () => setCurrentTime(audio.currentTime)
     const updateDuration = () => setDuration(audio.duration)
@@ -110,7 +153,6 @@ export default function MusicPage() {
     const handleLoadStart = () => {
       console.log('Audio loadstart event')
       setAudioLoading(true)
-      // Set a timeout to clear loading state if it takes too long
       if (loadingTimeoutRef.current) {
         clearTimeout(loadingTimeoutRef.current)
       }
@@ -118,7 +160,7 @@ export default function MusicPage() {
         console.log('Audio loading timeout - clearing loading state')
         setAudioLoading(false)
         setIsPlaying(false)
-      }, 10000) // 10 second timeout
+      }, 10000)
     }
     
     const handleCanPlay = () => {
@@ -142,6 +184,17 @@ export default function MusicPage() {
         clearTimeout(loadingTimeoutRef.current)
         loadingTimeoutRef.current = null
       }
+      // Start video when audio starts playing
+      if (video.paused) {
+        video.play().catch(console.error)
+      }
+    }
+    
+    const handlePause = () => {
+      // Pause video when audio pauses
+      if (!video.paused) {
+        video.pause()
+      }
     }
     
     const handleError = () => {
@@ -157,6 +210,8 @@ export default function MusicPage() {
     
     const handleEnded = () => {
       setAudioLoading(false)
+      video.pause()
+      video.currentTime = 0
       if (currentTrack < tracks.length - 1) {
         setCurrentTrack(prev => prev + 1)
       } else {
@@ -165,14 +220,22 @@ export default function MusicPage() {
       }
     }
 
+    // Video event handlers
+    const handleVideoLoadedMetadata = () => {
+      setVideoDuration(video.duration)
+    }
+
     audio.addEventListener('timeupdate', updateTime)
     audio.addEventListener('loadedmetadata', updateDuration)
     audio.addEventListener('loadstart', handleLoadStart)
     audio.addEventListener('canplay', handleCanPlay)
     audio.addEventListener('waiting', handleWaiting)
     audio.addEventListener('playing', handlePlaying)
+    audio.addEventListener('pause', handlePause)
     audio.addEventListener('ended', handleEnded)
     audio.addEventListener('error', handleError)
+    
+    video.addEventListener('loadedmetadata', handleVideoLoadedMetadata)
 
     return () => {
       audio.removeEventListener('timeupdate', updateTime)
@@ -181,8 +244,11 @@ export default function MusicPage() {
       audio.removeEventListener('canplay', handleCanPlay)
       audio.removeEventListener('waiting', handleWaiting)
       audio.removeEventListener('playing', handlePlaying)
+      audio.removeEventListener('pause', handlePause)
       audio.removeEventListener('ended', handleEnded)
       audio.removeEventListener('error', handleError)
+      
+      video.removeEventListener('loadedmetadata', handleVideoLoadedMetadata)
       
       if (loadingTimeoutRef.current) {
         clearTimeout(loadingTimeoutRef.current)
@@ -195,10 +261,14 @@ export default function MusicPage() {
   }, [volume])
 
   useEffect(() => {
-    if (audioRef.current && tracks.length > 0 && isPlaying) {
+    const audio = audioRef.current
+    const video = videoRef.current
+    
+    if (audio && video && tracks.length > 0 && isPlaying) {
       const playAudio = async () => {
         try {
-          await audioRef.current?.play()
+          await audio.play()
+          // Video will be played by the 'playing' event handler
         } catch (error) {
           console.error('Error playing audio:', error)
           setIsPlaying(false)
@@ -212,6 +282,15 @@ export default function MusicPage() {
       playAudio()
     }
   }, [currentTrack, tracks.length, isPlaying])
+
+  // Reset video when track changes
+  useEffect(() => {
+    const video = videoRef.current
+    if (video) {
+      video.currentTime = 0
+      setVideoDuration(0)
+    }
+  }, [currentTrack])
 
   const togglePlay = async () => {
     if (!audioRef.current || tracks.length === 0) return
@@ -234,11 +313,9 @@ export default function MusicPage() {
         }
       } else {
         setIsPlaying(true)
-        // Auto-expand playlist on mobile when play button is clicked
         if (window.innerWidth < 1024) {
           setIsPlaylistExpanded(true)
         }
-        // Don't set loading here - let the audio events handle it
         console.log('Attempting to play audio...')
         await audioRef.current.play()
         console.log('Audio play() resolved')
@@ -278,12 +355,39 @@ export default function MusicPage() {
 
     audioRef.current.currentTime = newTime
     setCurrentTime(newTime)
+    
+    // Sync video to new time
+    if (videoRef.current) {
+      if (videoDuration > 0 && newTime > videoDuration) {
+        videoRef.current.currentTime = newTime % videoDuration
+      } else {
+        videoRef.current.currentTime = newTime
+      }
+    }
+  }
+useEffect(() => {
+  const video = videoRef.current
+  const audio = audioRef.current
+  
+  if (!video || !audio) return
+
+  const handleVideoEnded = () => {
+    // If audio is still playing and video has ended, restart the video
+    if (isPlaying && !audio.paused && !audio.ended) {
+      video.currentTime = 0
+      video.play().catch(console.error)
+    }
   }
 
+  video.addEventListener('ended', handleVideoEnded)
+  
+  return () => {
+    video.removeEventListener('ended', handleVideoEnded)
+  }
+}, [isPlaying])
   const handleTrackSelect = (index: number) => {
     setCurrentTrack(index)
     setIsPlaying(true)
-    // Auto-expand playlist on mobile when a track is selected
     if (window.innerWidth < 1024) {
       setIsPlaylistExpanded(true)
     }
@@ -300,7 +404,6 @@ export default function MusicPage() {
     return `${minutes}:${seconds.toString().padStart(2, '0')}`
   }
 
-  // Show player immediately since we have local tracks
   const showPlayer = true
 
   if (error && tracks.length === 0) {
@@ -329,21 +432,35 @@ export default function MusicPage() {
           {/* Player Section */}
           <div className="lg:col-span-1 border-2 border-gradient-to-r rounded-lg p-4 mb-4 lg:mb-0 shadow-lg">
             {hasValidTrack && (
-              <audio
-                ref={audioRef}
-                src={track.url}
-                preload="none"
-              />
+              <>
+                <audio
+                  ref={audioRef}
+                  src={track.url}
+                  preload="none"
+                />
+                <video
+                  ref={videoRef}
+                  src={track.coverVideo}
+                  preload="metadata"
+                  muted
+                  loop={false}
+                  className="hidden"
+                />
+              </>
             )}
 
             {/* Track Info */}
             <div className="text-center mb-4">
-              <div className="w-40 h-50 mx-auto mb-2 border-2 border-gradient-to-r from-purple-400 to-blue-400 rounded-full overflow-hidden">
-                {hasValidTrack && track.coverImage ? (
-                  <img 
-                    src={track.coverImage} 
-                    alt={track.title}
-                    className={`w-full h-full object-cover transition-all duration-300 ${isPlaying ? 'scale-110' : ''}`}
+              <div className=" mx-auto mb-2 border-2 border-gradient-to-r from-purple-400 to-blue-400 rounded-full overflow-hidden">
+                {hasValidTrack && track.coverVideo ? (
+                  <video
+                    ref={videoRef}
+                    src={track.coverVideo}
+                    preload="metadata"
+                    muted
+                    loop={false}
+                    className={`w-full h-full object-contain`}
+                    style={{ objectPosition: 'center' }}
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center">
@@ -360,11 +477,11 @@ export default function MusicPage() {
             <div className="mb-3">
               <div
                 ref={progressRef}
-                className="w-full h-1 border border-purple-300 rounded-full cursor-pointer hover:h-2 transition-all duration-200"
+                className="w-full h-2 border border-purple-300 rounded-full cursor-pointer  "
                 onClick={handleProgressClick}
               >
                 <div
-                  className="h-full bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 rounded-full transition-all duration-100 shadow-sm"
+                  className="h-full bg-gradient-to-r from-cyan-300 to-blue-400 rounded-full transition-all duration-100 shadow-sm"
                   style={{ width: `${duration ? (currentTime / duration) * 100 : 0}%` }}
                 />
               </div>
@@ -379,9 +496,9 @@ export default function MusicPage() {
               <button
                 onClick={prevTrack}
                 disabled={currentTrack === 0 || !hasValidTrack}
-                className="p-1 border-2 border-purple-300 rounded-full hover:border-purple-400 hover:bg-purple-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 hover:scale-105"
+                className="p-1 border-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 hover:scale-105"
               >
-                <SkipBack size={50} className="text-purple-600" />
+                <SkipBack size={50} className="" />
               </button>
 
               <button
@@ -390,20 +507,20 @@ export default function MusicPage() {
                 className="p-2 border-2 border-gradient-to-r from-purple-400 to-blue-400 rounded-full hover:from-purple-200 hover:to-blue-200 disabled:opacity-50 transition-all duration-200 hover:scale-105 shadow-lg"
               >
                 {audioLoading ? (
-                  <div className="w-10 h-10 border-2 border-purple-600 border-t-transparent rounded-full animate-spin" />
+                  <div className="w-15 h-15 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
                 ) : isPlaying ? (
-                  <Pause size={50} className="text-purple-600" />
+                  <Pause size={50} className="text-cyan-300" />
                 ) : (
-                  <Play size={50} className="ml-0.5 text-purple-600" />
+                  <Play size={50} className="ml-0.5 text-cyan-600" />
                 )}
               </button>
 
               <button
                 onClick={nextTrack}
                 disabled={currentTrack === tracks.length - 1 || !hasValidTrack}
-                className="p-1 border-2 border-blue-300 rounded-full hover:border-blue-400 hover:bg-blue-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 hover:scale-105"
+                className="p-1 border-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 hover:scale-105"
               >
-                <SkipForward size={50} className="text-blue-600" />
+                <SkipForward size={50} className="" />
               </button>
             </div>
 
@@ -448,7 +565,6 @@ export default function MusicPage() {
               <h3 className="font-semibold text-sm">
                 Playlist {tracks.length > 0 && `(${tracks.length} tracks)`}
               </h3>
-              {/* Collapse button for mobile */}
               <button
                 onClick={togglePlaylist}
                 className="lg:hidden p-1 hover:bg-gray-100 rounded transition-colors"
@@ -485,10 +601,11 @@ export default function MusicPage() {
                           <div className="w-4 h-4 mr-2 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full animate-pulse shadow-sm"></div>
                         )}
                         <div className="w-8 h-8 mr-3 rounded border overflow-hidden flex-shrink-0">
-                          <img 
-                            src={t.coverImage} 
-                            alt={t.title}
+                          <video 
+                            src={t.coverVideo} 
                             className="w-full h-full object-cover"
+                            muted
+                            preload="none"
                           />
                         </div>
                         <span>
