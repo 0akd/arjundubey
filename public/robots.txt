@@ -1,6 +1,0 @@
-User-agent: *
-Disallow: /arjundubey/arjundubey721991/
-
-Allow: /
-
-Sitemap: https://yoursite.com/sitemap.xml

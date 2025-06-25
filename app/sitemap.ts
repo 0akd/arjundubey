@@ -30,7 +30,7 @@ async function getBlogPosts() {
     return posts.map((post) => ({
       slug: post.slug,
       lastModified: post.updated_at || post.created_at,
-      priority: 0.8
+      priority: 1
     }))
   } catch (error) {
     console.error('Error fetching blog posts:', error)
@@ -50,7 +50,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     url: `${BASE_URL}${route}`,
     lastModified: now,
     changeFrequency: 'hourly' as const,
-    priority: route === '' ? 1 : 0.8,
+    priority: route === '' ? 1 : 1,
   }))
 
   // Get dynamic blog posts
@@ -88,7 +88,7 @@ async function getProjects() {
     return projects.map((project) => ({
       slug: project.slug,
       lastModified: project.updated_at || project.created_at,
-      priority: 0.7
+      priority: 1
     }))
   } catch (error) {
     console.error('Error fetching projects:', error)
