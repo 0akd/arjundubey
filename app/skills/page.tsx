@@ -124,7 +124,7 @@ function Skills() {
             </motion.div>
             
             {/* Skills Grid */}
-            <div className="grid grid-cols-4 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 gap-3">
+            <div className="grid grid-cols-4 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 gap-20">
               {categorySkills.map((skill, index) => {
                 const currentIndex = globalIndex++;
                 const isAutoAnimating = currentIndex === autoAnimateIndex;
