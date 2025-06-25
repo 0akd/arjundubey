@@ -15,8 +15,7 @@ const modelPaths = [
 
 // Revolution animation configuration
 const REVOLUTION_SPEED = 0.4; // Speed of revolution (radians per second)
-const BASE_RADIUS = 25; // Base radius for revolution
-const RADIUS_INCREMENT = 8; // Distance between orbital rings
+const BASE_RADIUS = 40; // Increased base radius for all models to orbit at same distance
 
 function MeshComponent({ 
   modelPath, 
@@ -34,8 +33,8 @@ function MeshComponent({
   const [modelLoaded, setModelLoaded] = useState(false);
   const gltf = useGLTF(modelPath);
   
-  // Calculate unique orbital parameters for each model
-  const orbitRadius = BASE_RADIUS + (modelIndex * RADIUS_INCREMENT);
+  // All models use the same orbit radius (BASE_RADIUS)
+  const orbitRadius = BASE_RADIUS;
   const initialAngle = (modelIndex / totalModels) * Math.PI * 2; // Evenly distribute around circle
   
   // Notify parent when model is loaded
@@ -112,11 +111,11 @@ export default function Shiba() {
       {!showContent && <LoadingSpinner />}
       
       <Canvas>
-        {/* Camera with custom position - adjusted for multiple orbiting models */}
+        {/* Camera with custom position - adjusted for single orbit radius */}
         <PerspectiveCamera
           makeDefault
-          position={[0, 0, 70]} // Higher and further back to see all orbits
-          fov={50} // Wider field of view to capture all models
+          position={[0, 0, 70]} // Adjusted for the increased base radius
+          fov={50} // Field of view to capture all models
         />
         
         {/* OrbitControls for interactive camera movement */}
@@ -162,7 +161,7 @@ export default function Shiba() {
         
        
         
-        {/* Render all models as orbiting planets */}
+        {/* Render all models orbiting at the same radius */}
         {modelPaths.map((modelPath, index) => (
           <MeshComponent 
             key={modelPath}
