@@ -9,11 +9,12 @@ import { Mesh } from "three";
 const modelPaths = [
   "/scene/arjun.gltf",
   "/scene/lastdance.gltf",
+   "/scene/3d.gltf",
   // Add more model paths as needed
 ];
 
 // Revolution animation configuration
-const REVOLUTION_SPEED = 0.8; // Speed of revolution (radians per second)
+const REVOLUTION_SPEED = 0.4; // Speed of revolution (radians per second)
 const BASE_RADIUS = 25; // Base radius for revolution
 const RADIUS_INCREMENT = 8; // Distance between orbital rings
 
@@ -106,7 +107,7 @@ export default function Shiba() {
   };
 
   return (
-    <div className='w-full h-48 sm:h-56 md:h-64 rounded-lg overflow-hidden shadow-sm relative'>
+    <div className='w-full h-48 sm:h-56 md:h-64 rounded-lg  shadow-sm relative'>
       {/* Loading indicator - shows until at least one model is loaded */}
       {!showContent && <LoadingSpinner />}
       
@@ -114,7 +115,7 @@ export default function Shiba() {
         {/* Camera with custom position - adjusted for multiple orbiting models */}
         <PerspectiveCamera
           makeDefault
-          position={[0, 0, 60]} // Higher and further back to see all orbits
+          position={[0, 0, 70]} // Higher and further back to see all orbits
           fov={50} // Wider field of view to capture all models
         />
         
