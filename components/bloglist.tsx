@@ -27,10 +27,11 @@ const BlogList: React.FC = () => {
       
       console.log('Fetched blog posts:', data); // Debug log
       
-      // Log each post's ID to verify they exist
+      // Log each post's slug to verify they exist
       data?.forEach((post, index) => {
         console.log(`Post ${index + 1}:`, {
           id: post.id,
+          slug: post.slug,
           title: post.title,
           published: post.published
         });
@@ -104,7 +105,6 @@ const BlogList: React.FC = () => {
           <h1 className="text-4xl font-bold mb-4">
           Blog
           </h1>
-         
           
           {/* Debug info - remove this in production */}
           <div className="mt-4 text-sm">
@@ -126,13 +126,7 @@ const BlogList: React.FC = () => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {posts.map((post) => (
-              <div key={post.id} className="relative">
-                <BlogCard post={post} />
-                {/* Debug info - remove this in production */}
-                <div className="absolute top-2 right-2 bg-black bg-opacity-50 text-xs px-2 py-1 rounded">
-                  ID: {post.id}
-                </div>
-              </div>
+              <BlogCard key={post.id} post={post} />
             ))}
           </div>
         )}

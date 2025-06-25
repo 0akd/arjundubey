@@ -99,7 +99,7 @@ function CompactCircularProgress({ percentage, size = 60, strokeWidth = 4, color
           fill="none"
           stroke="currentColor"
           strokeWidth={strokeWidth}
-          className="text-gray-200"
+          className="text-transparent"
         />
         <circle
           cx={size / 2}
@@ -213,9 +213,9 @@ export default function CompactProgressDashboard() {
       {/* Compact Header */}
       <div className="text-center mb-6">
         <h1 className="text-2xl sm:text-3xl font-bold mb-2 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-          Progress Stats
+          Progress
         </h1>
-        <p className="text-sm text-gray-600">Real-time progress tracking</p>
+       
       </div>
 
       {/* Compact Stats Grid */}

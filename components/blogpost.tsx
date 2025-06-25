@@ -2,42 +2,41 @@
 
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
-import Head from 'next/head';
 import supabase from '@/config/supabase';
 import { BlogPost } from '@/types/blogs';
 import BlogJsonLd from './BlogJsonLd';
 
 interface BlogPostProps {
-  postId: string;
+  postSlug: string;
 }
 
-const BlogPostComponent: React.FC<BlogPostProps> = ({ postId }) => {
+const BlogPostComponent: React.FC<BlogPostProps> = ({ postSlug }) => {
   const [post, setPost] = useState<BlogPost | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    console.log('BlogPostComponent received postId:', postId); // Debug log
+    console.log('BlogPostComponent received postSlug:', postSlug);
     fetchPost();
-  }, [postId]);
+  }, [postSlug]);
 
   const fetchPost = async () => {
     try {
       setLoading(true);
       setError(null);
       
-      console.log('Fetching post with ID:', postId); // Debug log
+      console.log('Fetching post with slug:', postSlug);
       
-      const { data, error, count } = await supabase
+      const { data, error } = await supabase
         .from('blog_posts')
         .select('*')
-        .eq('id', postId)
+        .eq('slug', postSlug)
         .eq('published', true);
 
-      console.log('Supabase response:', { data, error, count }); // Debug log
+      console.log('Supabase response:', { data, error });
 
       if (error) {
-        console.error('Supabase error:', error); // Debug log
+        console.error('Supabase error:', error);
         throw error;
       }
       
@@ -45,9 +44,9 @@ const BlogPostComponent: React.FC<BlogPostProps> = ({ postId }) => {
         throw new Error('Post not found or not published');
       }
       
-      setPost(data[0]); // Take the first result
+      setPost(data[0]);
     } catch (err) {
-      console.error('Error fetching post:', err); // Debug log
+      console.error('Error fetching post:', err);
       setError(err instanceof Error ? err.message : 'Post not found');
     } finally {
       setLoading(false);
@@ -100,7 +99,7 @@ const BlogPostComponent: React.FC<BlogPostProps> = ({ postId }) => {
               {error || 'The blog post you\'re looking for doesn\'t exist.'}
             </p>
             <p className="text-sm text-gray-500 mb-6">
-              Post ID: {postId}
+              Post Slug: {postSlug}
             </p>
             <div className="space-y-4">
               <button 
@@ -135,14 +134,22 @@ const BlogPostComponent: React.FC<BlogPostProps> = ({ postId }) => {
           {/* Header */}
           <header className="mb-12">
             <div className="relative h-64 sm:h-80 lg:h-96 w-full rounded-xl overflow-hidden mb-8">
-              <Image
-                src={post.image_url}
-                alt={post.title}
-                fill
-                className="object-cover"
-                priority
-                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1000px"
-              />
+              {post.image_url ? (
+                <Image
+                  src={post.image_url}
+                  alt={post.title}
+                  fill
+                  className="object-cover"
+                  priority
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1000px"
+                />
+              ) : (
+                <div className="w-full h-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                  <div className="text-white text-6xl font-bold">
+                    {post.title.charAt(0).toUpperCase()}
+                  </div>
+                </div>
+              )}
             </div>
             
             <div className="text-sm text-gray-500 mb-4">

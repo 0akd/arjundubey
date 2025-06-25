@@ -13,7 +13,7 @@ export default function BlogJsonLd({ post, baseUrl = 'https://www.arjundubey.com
     '@type': 'BlogPosting',
     headline: post.title,
     description: post.description,
-    image: post.image_url,
+    image: post.image_url || `${baseUrl}/api/og?title=${encodeURIComponent(post.title)}`,
     author: {
       '@type': 'Person',
       name: post.author || 'Arjun Dubey',
@@ -28,9 +28,9 @@ export default function BlogJsonLd({ post, baseUrl = 'https://www.arjundubey.com
     dateModified: post.updated_at || post.created_at,
     mainEntityOfPage: {
       '@type': 'WebPage',
-      '@id': `${baseUrl}/blog/${post.id}`,
+      '@id': `${baseUrl}/blog/${post.slug}`,
     },
-    url: `${baseUrl}/blog/${post.id}`,
+    url: `${baseUrl}/blog/${post.slug}`,
     keywords: post.tags?.join(', ') || 'blog, web development, programming',
     articleBody: post.content,
     wordCount: post.content.split(' ').length,

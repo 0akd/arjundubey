@@ -11,6 +11,8 @@ interface BlogFormData {
   image_url: string;
   slug: string;
   published: boolean;
+  author: string;
+  tags: string[];
 }
 
 const AdminBlogUpload: React.FC = () => {
@@ -21,8 +23,11 @@ const AdminBlogUpload: React.FC = () => {
     image_url: '',
     slug: '',
     published: false,
+    author: 'Arjun Dubey',
+    tags: [],
   });
   
+  const [tagInput, setTagInput] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [imagePreview, setImagePreview] = useState<string>('');
@@ -68,6 +73,28 @@ const AdminBlogUpload: React.FC = () => {
   const handleImageError = () => {
     setImageError(true);
     setImagePreview('');
+  };
+
+  // Handle tag input
+  const handleTagInput = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' || e.key === ',') {
+      e.preventDefault();
+      const tag = tagInput.trim().toLowerCase();
+      if (tag && !formData.tags.includes(tag)) {
+        setFormData(prev => ({
+          ...prev,
+          tags: [...prev.tags, tag]
+        }));
+      }
+      setTagInput('');
+    }
+  };
+
+  const removeTag = (tagToRemove: string) => {
+    setFormData(prev => ({
+      ...prev,
+      tags: prev.tags.filter(tag => tag !== tagToRemove)
+    }));
   };
 
   // Fetch all blog posts
@@ -125,6 +152,8 @@ const AdminBlogUpload: React.FC = () => {
       image_url: post.image_url,
       slug: post.slug,
       published: post.published,
+      author: post.author || 'Arjun Dubey',
+      tags: post.tags || [],
     });
     setImagePreview(post.image_url);
     
@@ -142,10 +171,13 @@ const AdminBlogUpload: React.FC = () => {
       image_url: '',
       slug: '',
       published: false,
+      author: 'Arjun Dubey',
+      tags: [],
     });
     setImagePreview('');
     setImageError(false);
     setMessage(null);
+    setTagInput('');
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -158,7 +190,12 @@ const AdminBlogUpload: React.FC = () => {
     }
 
     if (!formData.image_url) {
-      setMessage({ type: 'error', text: 'Please upload an image' });
+      setMessage({ type: 'error', text: 'Please provide an image URL' });
+      return;
+    }
+
+    if (!formData.author.trim()) {
+      setMessage({ type: 'error', text: 'Please provide an author name' });
       return;
     }
 
@@ -166,11 +203,18 @@ const AdminBlogUpload: React.FC = () => {
       setIsSubmitting(true);
       setMessage(null);
 
+      // Prepare data for submission
+      const submitData = {
+        ...formData,
+        tags: formData.tags.length > 0 ? formData.tags : null,
+        updated_at: new Date().toISOString(),
+      };
+
       if (editingPost) {
         // Update existing post
         const { data, error } = await supabase
           .from('blog_posts')
-          .update(formData)
+          .update(submitData)
           .eq('id', editingPost.id)
           .select()
           .single();
@@ -183,7 +227,10 @@ const AdminBlogUpload: React.FC = () => {
         // Create new post
         const { data, error } = await supabase
           .from('blog_posts')
-          .insert([formData])
+          .insert([{
+            ...submitData,
+            created_at: new Date().toISOString(),
+          }])
           .select()
           .single();
 
@@ -193,16 +240,7 @@ const AdminBlogUpload: React.FC = () => {
       }
 
       // Reset form
-      setFormData({
-        title: '',
-        description: '',
-        content: '',
-        image_url: '',
-        slug: '',
-        published: false,
-      });
-      setImagePreview('');
-      setImageError(false);
+      handleCancelEdit();
       
       // Refresh blog posts list
       fetchBlogPosts();
@@ -324,6 +362,61 @@ const AdminBlogUpload: React.FC = () => {
               <p className="text-sm mt-1 text-gray-600">Auto-generated from title, but you can customize it</p>
             </div>
 
+            {/* Author */}
+            <div>
+              <label htmlFor="author" className="block text-sm font-medium mb-2">
+                Author *
+              </label>
+              <input
+                type="text"
+                id="author"
+                name="author"
+                value={formData.author}
+                onChange={handleInputChange}
+                className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:border-transparent transition-colors"
+                placeholder="Author name"
+                required
+              />
+            </div>
+
+            {/* Tags */}
+            <div>
+              <label htmlFor="tags" className="block text-sm font-medium mb-2">
+                Tags
+              </label>
+              <input
+                type="text"
+                id="tags"
+                value={tagInput}
+                onChange={(e) => setTagInput(e.target.value)}
+                onKeyDown={handleTagInput}
+                className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:border-transparent transition-colors"
+                placeholder="Type a tag and press Enter or comma to add"
+              />
+              <p className="text-sm mt-1 text-gray-600">Press Enter or comma to add tags</p>
+              
+              {/* Display Tags */}
+              {formData.tags.length > 0 && (
+                <div className="flex flex-wrap gap-2 mt-3">
+                  {formData.tags.map((tag, index) => (
+                    <span 
+                      key={index}
+                      className="inline-flex items-center px-3 py-1 text-sm bg-blue-100 text-blue-800 rounded-full"
+                    >
+                      {tag}
+                      <button
+                        type="button"
+                        onClick={() => removeTag(tag)}
+                        className="ml-2 text-blue-600 hover:text-blue-800"
+                      >
+                        ×
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
+
             {/* Description */}
             <div>
               <label htmlFor="description" className="block text-sm font-medium mb-2">
@@ -399,11 +492,11 @@ const AdminBlogUpload: React.FC = () => {
               </label>
               
               {/* Markdown Toolbar */}
-              <div className="border border-b-0 rounded-t-lg px-4 py-2  flex flex-wrap gap-2">
+              <div className="border border-b-0 rounded-t-lg px-4 py-2 bg-gray-50 flex flex-wrap gap-2">
                 <button
                   type="button"
                   onClick={() => insertMarkdown('h1')}
-                  className="px-3 py-1 text-sm border rounded "
+                  className="px-3 py-1 text-sm border rounded hover:bg-gray-200 transition-colors"
                   title="Heading 1"
                 >
                   H1
@@ -525,20 +618,7 @@ const AdminBlogUpload: React.FC = () => {
               
               <button
                 type="button"
-                onClick={() => {
-                  setFormData({
-                    title: '',
-                    description: '',
-                    content: '',
-                    image_url: '',
-                    slug: '',
-                    published: false,
-                  });
-                  setImagePreview('');
-                  setImageError(false);
-                  setMessage(null);
-                  setEditingPost(null);
-                }}
+                onClick={handleCancelEdit}
                 className="px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
               >
                 Clear
@@ -588,9 +668,27 @@ const AdminBlogUpload: React.FC = () => {
                           
                           <p className="text-gray-600 mb-3 line-clamp-2">{post.description}</p>
                           
-                          <div className="flex items-center gap-4 text-sm text-gray-500">
-                            <span>Slug: {post.slug}</span>
+                          <div className="flex items-center gap-4 text-sm text-gray-500 mb-2">
+                            <span>By: {post.author || 'Unknown'}</span>
                             <span>•</span>
+                            <span>Slug: {post.slug}</span>
+                          </div>
+
+                          {/* Tags */}
+                          {post.tags && post.tags.length > 0 && (
+                            <div className="flex flex-wrap gap-1 mb-3">
+                              {post.tags.map((tag, index) => (
+                                <span 
+                                  key={index}
+                                  className="inline-block px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full"
+                                >
+                                  {tag}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+                          
+                          <div className="flex items-center gap-4 text-sm text-gray-500">
                             <span>Created: {new Date(post.created_at).toLocaleDateString()}</span>
                             {post.updated_at && post.updated_at !== post.created_at && (
                               <>

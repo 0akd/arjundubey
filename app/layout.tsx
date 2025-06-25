@@ -1,8 +1,8 @@
 import './globals.css'  // Import your global CSS file
-
+import Image from 'next/image'
 import type { Metadata, Viewport } from 'next'
 import Lazyw from './lazyshell'
-
+import {Inter} from 'next/font/google'
 import { cn } from "@/lib/utils";
 import ClientCursorTrail from "@/components/ClientCursorTrail";
 import BG from './bg'
@@ -95,11 +95,12 @@ export const viewport: Viewport = {
     { media: '(prefers-color-scheme: dark)', color: 'black' },
   ],
 }
-
+const inter = Inter({subsets:["latin"]});
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning >
-      <body suppressHydrationWarning>
+      <body className={inter.className} suppressHydrationWarning>
+        <Image/>
         <main className={cn(
           "bg-transparent bg-[radial-gradient(#2f7df4_1px,transparent_1px)] [background-size:16px_16px]",
         )}><BG/>
