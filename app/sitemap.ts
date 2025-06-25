@@ -11,6 +11,8 @@ const staticRoutes = [
   '/education',
   '/projects',
   '/blog',
+  '/music',
+  '/display',
 ]
 
 // Function to get dynamic blog posts from Supabase
