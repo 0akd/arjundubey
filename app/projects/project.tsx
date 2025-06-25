@@ -20,13 +20,36 @@ export default function Projects({ data }: ProjectsProps): JSX.Element {
   
   // Array of repository names to exclude from display
   const excludedRepos = [
-    "ai-customer",
-    "repo-name-2", 
-    "private-project",
-    "test-repo",
-    "old-project"
-    // Add more repository names here that you want to hide
-  ];
+  // "ai-customer",
+  "app",
+  "arjun-reboostify",
+  "business",
+  "finalvidchit",
+  "firstcabs",
+  "hama-hehehe",
+  "handdetection",
+  "hehhe",
+  "index",
+  "missiondsacplusplus",
+  "ml",
+  "multivendor",
+  "my",
+  "myportfolio",
+  "Panha",
+  "Portfolio",
+  "portfolioakdlevox",
+  "portfoliome",
+  "portfoliov2",
+  "Reboostify",
+  "reboostifyv2",
+  "rvhieriger",
+  "server-vid-chat",
+  "speakease",
+  "speakleasefinal",
+  "texttoani",
+  "todo",
+  "underdogs"
+];
   
   // Handle undefined data
   const safeData = data || [];
@@ -41,8 +64,8 @@ export default function Projects({ data }: ProjectsProps): JSX.Element {
   
   // Project configuration array for images and live links
   const projectConfig: { [key: string]: { imagePath?: string; liveLink?: string } } = {
-    "ai-customser": {
-      imagePath: "/vercel.svg",
+    "ai-customwer": {
+      imagePath: "/images/arjun.png",
       liveLink: "https://yourname.dev"
     },
   
