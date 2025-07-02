@@ -215,7 +215,7 @@ export default function CompactProgressDashboard() {
         <h1 className="text-2xl sm:text-3xl font-bold mb-2 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
           Progress
         </h1>
-       
+       <p>A person's identity is sum total of the daily habits he has</p>
       </div>
 
       {/* Compact Stats Grid */}
