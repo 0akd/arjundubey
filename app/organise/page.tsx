@@ -186,8 +186,14 @@ const [activeCounterTodo, setActiveCounterTodo] = useState<Todo | null>(null);
 
         onTodosChange([...todos, data]);
       }
+setFormData({
+  title: '',
+  description: '',
+  category: 'Intelligence',
+  is_counter: false,
+  counter_value: 0
+});
 
-      setFormData({ title: '', description: '', category: 'Intelligence' });
       setShowForm(false);
     } catch (error) {
       console.error('Error saving todo:', error);
@@ -204,17 +210,27 @@ const [activeCounterTodo, setActiveCounterTodo] = useState<Todo | null>(null);
     }
 
     setEditingTodo(todo);
-    setFormData({
-      title: todo.title,
-      description: todo.description,
-      category: todo.category
-    });
+setFormData({
+  title: todo.title,
+  description: todo.description,
+  category: todo.category,
+  is_counter: todo.is_counter ?? false,
+  counter_value: todo.counter_value ?? 0
+});
+
     setShowForm(true);
   };
 
   const cancelEdit = () => {
     setEditingTodo(null);
-    setFormData({ title: '', description: '', category: 'Intelligence' });
+ setFormData({
+  title: '',
+  description: '',
+  category: 'Intelligence',
+  is_counter: false,
+  counter_value: 0
+});
+
     setShowForm(false);
   };
 
