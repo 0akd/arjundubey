@@ -4,6 +4,7 @@ import { Plus, Check,ChevronDown, Trash2,IndianRupee, Edit2,RotateCcw, Target,Bi
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { app } from "@/firebase";
 import supabase from '@/config/supabase';
+import CounterSnapshot from './todosnapshot'
 
 interface Todo {
   id: number;
@@ -13,6 +14,8 @@ interface Todo {
   completed: boolean;
   created_at: string;
   user_email: string;
+    is_counter?: boolean;        // ✅ new
+  counter_value?: number; 
 }
 
 interface CategoryData {
@@ -105,9 +108,12 @@ function TodoApp({ todos, onTodosChange, userEmail, isAdmin }: {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    category: 'Intelligence'
+    category: 'Intelligence',
+      is_counter: false,         // ✅ new
+  counter_value: 0  
   });
   const [loading, setLoading] = useState(false);
+const [activeCounterTodo, setActiveCounterTodo] = useState<Todo | null>(null);
 
   // Initialize all categories as expanded on first load
   useEffect(() => {
@@ -139,11 +145,14 @@ function TodoApp({ todos, onTodosChange, userEmail, isAdmin }: {
         // Update existing todo
         const { error } = await supabase
           .from('todos')
-          .update({
-            title: formData.title,
-            description: formData.description,
-            category: formData.category
-          })
+   .update({
+  title: formData.title,
+  description: formData.description,
+  category: formData.category,
+  is_counter: formData.is_counter,
+  counter_value: formData.counter_value
+})
+
           .eq('id', editingTodo.id)
           .eq('user_email', ADMIN_EMAIL);
 
@@ -158,17 +167,20 @@ function TodoApp({ todos, onTodosChange, userEmail, isAdmin }: {
         setEditingTodo(null);
       } else {
         // Add new todo
-        const { data, error } = await supabase
-          .from('todos')
-          .insert([{
-            title: formData.title,
-            description: formData.description,
-            category: formData.category,
-            completed: false,
-            user_email: ADMIN_EMAIL
-          }])
-          .select()
-          .single();
+       const { data, error } = await supabase
+  .from('todos')
+  .insert([{
+    title: formData.title,
+    description: formData.description,
+    category: formData.category,
+    completed: false,
+    user_email: ADMIN_EMAIL,
+    is_counter: formData.is_counter,
+    counter_value: formData.counter_value
+  }])
+  .select()
+  .single();
+
 
         if (error) throw error;
 
@@ -234,43 +246,71 @@ function TodoApp({ todos, onTodosChange, userEmail, isAdmin }: {
     }
   };
 
-  const resetAllTodos = async () => {
-    if (!isAdmin) {
-      alert('Only the administrator can reset todos.');
-      return;
+ const resetAllTodos = async () => {
+  if (!isAdmin) return;
+
+  const counterTodos = todos.filter(todo => todo.is_counter);
+
+  if (counterTodos.length === 0) {
+    alert("No counter todos to snapshot.");
+    return;
+  }
+
+  setLoading(true);
+
+  try {
+    const snapshots = counterTodos.map(todo => ({
+      todo_id: todo.id,
+      snapshot_value: todo.counter_value || 0,
+    }));
+
+    // Insert snapshots
+    const { error: insertError } = await supabase
+      .from('counter_snapshots')
+      .insert(snapshots);
+
+    if (insertError) throw insertError;
+
+    // Prune old snapshots
+    for (const todo of counterTodos) {
+      await supabase.rpc('prune_old_snapshots', { target_todo_id: todo.id });
     }
 
-    const completedTodos = todos.filter(todo => todo.completed);
-    if (completedTodos.length === 0) {
-      alert('No completed todos to reset.');
-      return;
-    }
+    // ✅ Reset counters to 0
+    const { error: counterResetError } = await supabase
+      .from('todos')
+      .update({ counter_value: 0 })
+      .eq('user_email', ADMIN_EMAIL)
+      .eq('is_counter', true);
 
-    if (!confirm(`Are you sure you want to mark all ${completedTodos.length} completed todos as incomplete?`)) {
-      return;
-    }
+    if (counterResetError) throw counterResetError;
 
-    setLoading(true);
-    try {
-      const { error } = await supabase
-        .from('todos')
-        .update({ completed: false })
-        .eq('user_email', ADMIN_EMAIL)
-        .eq('completed', true);
+    // ✅ Uncheck all completed todos
+    const { error: uncheckError } = await supabase
+      .from('todos')
+      .update({ completed: false })
+      .eq('user_email', ADMIN_EMAIL)
+      .eq('completed', true);
 
-      if (error) throw error;
+    if (uncheckError) throw uncheckError;
 
-      const updatedTodos = todos.map(todo => ({ ...todo, completed: false }));
-      onTodosChange(updatedTodos);
-      
-      alert(`Successfully reset ${completedTodos.length} todos to incomplete status.`);
-    } catch (error) {
-      console.error('Error resetting todos:', error);
-      alert('Error resetting todos. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
+    // ✅ Update UI state
+    const updatedTodos = todos.map(todo => ({
+      ...todo,
+      completed: false,
+      counter_value: todo.is_counter ? 0 : todo.counter_value,
+    }));
+    onTodosChange(updatedTodos);
+
+    alert("All todos reset and counter snapshots taken.");
+  } catch (error) {
+    console.error('Error resetting todos:', error);
+    alert("Error resetting todos.");
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   const deleteTodo = async (id: number) => {
     if (!isAdmin) {
@@ -307,6 +347,36 @@ function TodoApp({ todos, onTodosChange, userEmail, isAdmin }: {
     const completed = categoryTodos.filter(todo => todo.completed).length;
     return (completed / categoryTodos.length) * 100;
   };
+const updateCounter = async (id: number, delta: number) => {
+  if (!isAdmin) return;
+
+  const todo = todos.find(t => t.id === id);
+  if (!todo || !todo.is_counter) return;
+
+  const newValue = Math.max(0, (todo.counter_value ?? 0) + delta);
+
+  try {
+    const { error } = await supabase
+      .from('todos')
+      .update({ counter_value: newValue })
+      .eq('id', id)
+      .eq('user_email', ADMIN_EMAIL);
+
+    if (error) throw error;
+
+    const updatedTodos = todos.map(t =>
+      t.id === id ? { ...t, counter_value: newValue } : t
+    );
+    onTodosChange(updatedTodos);
+
+    if (activeCounterTodo && activeCounterTodo.id === id) {
+      setActiveCounterTodo({ ...activeCounterTodo, counter_value: newValue });
+    }
+  } catch (err) {
+    console.error('Failed to update counter:', err);
+    alert('Error updating counter. Try again.');
+  }
+};
 
   return (
     <div className="space-y-4 sm:space-y-6 px-2 sm:px-0">
@@ -382,6 +452,29 @@ function TodoApp({ todos, onTodosChange, userEmail, isAdmin }: {
               className="w-full p-2 sm:p-3 border rounded-lg h-20 sm:h-24 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
               disabled={loading}
             />
+            {formData.is_counter && (
+  <input
+    type="number"
+    placeholder="Initial counter value"
+    value={formData.counter_value}
+    onChange={(e) => setFormData({ ...formData, counter_value: parseInt(e.target.value) || 0 })}
+    className="w-full p-2 sm:p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
+    disabled={loading}
+  />
+)}
+
+            <select
+  value={formData.is_counter ? 'counter' : 'checkbox'}
+  onChange={(e) =>
+    setFormData({ ...formData, is_counter: e.target.value === 'counter' })
+  }
+  className="w-full p-2 sm:p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
+  disabled={loading}
+>
+  <option value="checkbox">Checkbox</option>
+  <option value="counter">Counter</option>
+</select>
+
             <select
               value={formData.category}
               onChange={(e) => setFormData({ ...formData, category: e.target.value })}
@@ -490,14 +583,24 @@ function TodoApp({ todos, onTodosChange, userEmail, isAdmin }: {
                       </p>
                     ) : (
                       categoryTodos.map(todo => (
-                        <div
-                          key={todo.id}
-                          className={`flex items-start gap-2 sm:gap-3 p-3 sm:p-4  border rounded-lg transition-all ${
-                            todo.completed ? 'opacity-75' : 'hover:shadow-sm'
-                          }`}
-                        >
-                          <button
-                            onClick={() => toggleTodo(todo.id)}
+                        
+                <div
+  key={todo.id}
+  className={`flex items-start gap-2 sm:gap-3 p-3 sm:p-4 border rounded-lg transition-all ${
+    todo.completed ? 'opacity-75' : 'hover:shadow-sm'
+  } ${todo.is_counter && isAdmin ? 'cursor-pointer' : ''}`}
+  onClick={() => {
+    if (todo.is_counter && isAdmin) {
+      setActiveCounterTodo(todo);
+    }
+  }}
+>
+
+                    <button
+  onClick={(e) => {
+    e.stopPropagation();
+    toggleTodo(todo.id);
+  }}
                             className={`flex-shrink-0 w-5 h-5 sm:w-6 sm:h-6 rounded-full border-2 flex items-center justify-center mt-0.5 sm:mt-1 transition-all ${
                               todo.completed 
                                 ? 'bg-green-500 border-green-500 ' 
@@ -514,7 +617,21 @@ function TodoApp({ todos, onTodosChange, userEmail, isAdmin }: {
                               todo.completed ? 'line-through text-gray-500' : ''
                             }`}>
                               {todo.title}
-                            </h4>
+                            </h4>        <CounterSnapshot todoId={todo.id} />
+                          {todo.is_counter && (
+  <div className="mt-2 text-sm">
+    <button
+      onClick={() => setActiveCounterTodo(todo)}
+      className="font-mono text-blue-600 underline"
+      disabled={!isAdmin}
+    >
+      Counter: {todo.counter_value ?? 0}
+    </button>
+
+  </div>
+)}
+
+
                             {todo.description && (
                               <p className={`text-xs sm:text-sm mt-1 ${
                                 todo.completed ? 'line-through text-gray-400' : 'text-gray-600'
@@ -528,8 +645,11 @@ function TodoApp({ todos, onTodosChange, userEmail, isAdmin }: {
                           </div>
                           
                           <div className="flex gap-1 sm:gap-2 flex-shrink-0">
-                            <button
-                              onClick={() => editTodo(todo)}
+                   <button
+  onClick={(e) => {
+    e.stopPropagation();
+    editTodo(todo);
+  }}
                               className={`p-1 sm:p-1.5 rounded transition-colors ${
                                 isAdmin 
                                   ? 'text-blue-600 hover:bg-blue-100 cursor-pointer' 
@@ -540,8 +660,11 @@ function TodoApp({ todos, onTodosChange, userEmail, isAdmin }: {
                             >
                               <Edit2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                             </button>
-                            <button
-                              onClick={() => deleteTodo(todo.id)}
+                      <button
+  onClick={(e) => {
+    e.stopPropagation();
+    deleteTodo(todo.id);
+  }}
                               className={`p-1 sm:p-1.5 rounded transition-colors ${
                                 isAdmin 
                                   ? 'text-red-600 hover:bg-red-100 cursor-pointer' 
@@ -558,6 +681,39 @@ function TodoApp({ todos, onTodosChange, userEmail, isAdmin }: {
                     )}
                   </div>
                 </div>
+                {activeCounterTodo && (
+  <div className="fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center">
+    <div className="bg-white rounded-xl p-8 relative w-full max-w-md shadow-lg text-center">
+      <h2 className="text-xl font-semibold mb-6">
+        Adjust Counter for: <br /><span className="text-blue-600">{activeCounterTodo.title}</span>
+      </h2>
+
+      <div className="flex items-center justify-between">
+        <button
+          onClick={() => updateCounter(activeCounterTodo.id, -1)}
+          className="text-5xl text-red-600 hover:text-red-800 w-1/3"
+        >
+          −
+        </button>
+        <div className="text-3xl font-mono">{activeCounterTodo.counter_value}</div>
+        <button
+          onClick={() => updateCounter(activeCounterTodo.id, 1)}
+          className="text-5xl text-green-600 hover:text-green-800 w-1/3"
+        >
+          +
+        </button>
+      </div>
+
+      <button
+        onClick={() => setActiveCounterTodo(null)}
+        className="mt-8 px-4 py-2 border rounded-lg text-sm hover:bg-gray-100"
+      >
+        Close
+      </button>
+    </div>
+  </div>
+)}
+
               </div>
             </div>
           );

@@ -104,7 +104,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <main className={cn(
           "bg-transparent bg-[radial-gradient(#2f7df4_1px,transparent_1px)] [background-size:16px_16px]",
         )}><BG/>
-          <ClientCursorTrail className="pointer-events-none inset-0 -z-10 " />
+          <ClientCursorTrail className="pointer-events-none inset-0 " />
           <Lazyw>
             {children}
           </Lazyw>

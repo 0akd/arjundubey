@@ -6,7 +6,7 @@ import { ThemeProvider } from 'next-themes'
 const Nav = lazy(() => import('./nav/page'))
 const Footr = lazy(() => import('./footr/page'))
 const Llm = lazy(() => import('./llm/page'))
-const BAr = lazy(()=>import('./Bar/page'))
+
 export default function Lazyw({ children }: { children: React.ReactNode }) {
   return (
      <ThemeProvider
@@ -20,7 +20,7 @@ export default function Lazyw({ children }: { children: React.ReactNode }) {
         {children}
         <Llm />
         <Footr />
-        <BAr/>
+     
       </Suspense>
     </ThemeProvider>
   )
