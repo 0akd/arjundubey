@@ -856,24 +856,20 @@ useEffect(() => {
       </h2>
 
       <div className="flex items-center justify-between">
-    <button
-  onClick={() => {
-    if (activeCounterTodo) {
+   <button
+    onMouseDown={(e) => e.preventDefault()}
+    onClick={() => {
       updateCounter(activeCounterTodo.id, -1);
-   requestAnimationFrame(() => {
-  inputRef.current?.focus();
-});
-// short delay prevents flicker
-    }
-  }}
-  className="text-5xl text-red-600 hover:text-red-800 w-1/3"
->
-          −
-        </button>
+      inputRef.current?.focus();
+    }}
+    className="text-5xl px-4 text-red-500"
+  >
+    −
+  </button>
 <div className="flex flex-col items-center gap-3">
   <input
     ref={inputRef}
-    type="number"
+    type="tel"
     value={counterInputValue}
     onChange={(e) =>
       setCounterInputValue(e.target.value === '' ? '' : parseInt(e.target.value))
@@ -909,20 +905,16 @@ useEffect(() => {
   </button>
 </div>
 
-    <button
-  onClick={() => {
-    if (activeCounterTodo) {
+   <button
+    onMouseDown={(e) => e.preventDefault()}
+    onClick={() => {
       updateCounter(activeCounterTodo.id, 1);
-   requestAnimationFrame(() => {
-  inputRef.current?.focus();
-});
-
-    }
-  }}
-  className="text-5xl text-green-600 hover:text-green-800 w-1/3"
->
-          +
-        </button>
+      inputRef.current?.focus();
+    }}
+    className="text-5xl px-4 text-green-500"
+  >
+    +
+  </button>
       </div>
       
 <button
@@ -953,7 +945,7 @@ useEffect(() => {
                     {new Date(snap.snap_at).toLocaleDateString()}
                   </span>
                   <input
-                    type="number"
+                    type="tel"
                     value={snap.snapshot_value}
                     onChange={(e) => {
                       const newVal = parseInt(e.target.value) || 0;
