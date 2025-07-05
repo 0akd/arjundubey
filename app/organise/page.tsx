@@ -507,6 +507,13 @@ const saveManualCounterValue = async () => {
   }
 };
 
+useEffect(() => {
+  if (addMode && inputRef.current) {
+    setTimeout(() => {
+      inputRef.current?.focus();
+    }, 50); // short delay helps with mobile keyboard
+  }
+}, [addMode]);
 
 useEffect(() => {
   const handleClickOutside = (event: MouseEvent) => {
