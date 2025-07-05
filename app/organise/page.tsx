@@ -117,6 +117,7 @@ const [activeCounterTodo, setActiveCounterTodo] = useState<Todo | null>(null);
 const modalRef = useRef<HTMLDivElement>(null);
 const [counterInputValue, setCounterInputValue] = useState<number | ''>('');
 const inputRef = useRef<HTMLInputElement | null>(null);
+const [addMode, setAddMode] = useState(false);
 
 
 
@@ -125,6 +126,11 @@ const inputRef = useRef<HTMLInputElement | null>(null);
 
 
 
+useEffect(() => {
+  if (activeCounterTodo) {
+    setCounterInputValue(addMode ? 0 : (activeCounterTodo.counter_value ?? 0));
+  }
+}, [activeCounterTodo, addMode]);
 
   // Initialize all categories as expanded on first load
   useEffect(() => {
@@ -410,9 +416,16 @@ const saveManualCounterValue = async () => {
     typeof counterInputValue === 'number' &&
     !isNaN(counterInputValue)
   ) {
-    await updateCounter(activeCounterTodo.id, counterInputValue - (activeCounterTodo.counter_value ?? 0));
+    const delta = addMode
+      ? counterInputValue
+      : counterInputValue - (activeCounterTodo.counter_value ?? 0);
+    await updateCounter(activeCounterTodo.id, delta);
+    if (addMode) {
+      setCounterInputValue(0); // reset to 0 after adding
+    }
   }
 };
+
 
 
 useEffect(() => {
@@ -811,6 +824,13 @@ useEffect(() => {
           +
         </button>
       </div>
+      
+<button
+  onClick={() => setAddMode(prev => !prev)}
+  className={`px-4 py-1 text-sm rounded-lg border ${addMode ? 'bg-yellow-500' : 'bg-gray-300'} text-white hover:opacity-90`}
+>
+  {addMode ? 'Add Mode: ON' : 'Add Mode: OFF'}
+</button>
 
 
     </div>
