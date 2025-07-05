@@ -114,6 +114,17 @@ function TodoApp({ todos, onTodosChange, userEmail, isAdmin }: {
   });
   const [loading, setLoading] = useState(false);
 const [activeCounterTodo, setActiveCounterTodo] = useState<Todo | null>(null);
+const modalRef = useRef<HTMLDivElement>(null);
+const [counterInputValue, setCounterInputValue] = useState<number | ''>('');
+const inputRef = useRef<HTMLInputElement | null>(null);
+
+
+
+
+
+
+
+
 
   // Initialize all categories as expanded on first load
   useEffect(() => {
@@ -393,6 +404,53 @@ const updateCounter = async (id: number, delta: number) => {
     alert('Error updating counter. Try again.');
   }
 };
+const saveManualCounterValue = async () => {
+  if (
+    activeCounterTodo &&
+    typeof counterInputValue === 'number' &&
+    !isNaN(counterInputValue)
+  ) {
+    await updateCounter(activeCounterTodo.id, counterInputValue - (activeCounterTodo.counter_value ?? 0));
+  }
+};
+
+
+useEffect(() => {
+  const handleClickOutside = (event: MouseEvent) => {
+    if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
+      setActiveCounterTodo(null);
+    }
+  };
+
+  if (activeCounterTodo) {
+    document.addEventListener("mousedown", handleClickOutside);
+  }
+
+  return () => {
+    document.removeEventListener("mousedown", handleClickOutside);
+  };
+}, [activeCounterTodo]);
+useEffect(() => {
+  if (activeCounterTodo) {
+    setCounterInputValue(activeCounterTodo.counter_value ?? 0);
+  }
+}, [activeCounterTodo]);
+useEffect(() => {
+  if (activeCounterTodo && inputRef.current) {
+    // slight delay improves mobile keyboard pop-up reliability
+    setTimeout(() => {
+      inputRef.current?.focus();
+    }, 100);
+  }
+}, [activeCounterTodo]);
+
+
+
+
+
+
+
+
 
   return (
     <div className="space-y-4 sm:space-y-6 px-2 sm:px-0">
@@ -698,8 +756,8 @@ const updateCounter = async (id: number, delta: number) => {
                   </div>
                 </div>
                 {activeCounterTodo && (
-  <div className="fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center">
-    <div className="bg-white rounded-xl p-8 relative w-full max-w-md shadow-lg text-center">
+  <div className="fixed inset-0  flex items-center justify-center">
+    <div       ref={modalRef} className=" rounded-xl bg-white/10 backdrop-blur-sm p-8 relative w-full max-w-md shadow-lg text-center">
       <h2 className="text-xl font-semibold mb-6">
         Adjust Counter for: <br /><span className="text-blue-600">{activeCounterTodo.title}</span>
       </h2>
@@ -711,7 +769,41 @@ const updateCounter = async (id: number, delta: number) => {
         >
           −
         </button>
-        <div className="text-3xl font-mono">{activeCounterTodo.counter_value}</div>
+<div className="flex flex-col items-center gap-3">
+  <input
+    ref={inputRef}
+    type="number"
+    value={counterInputValue}
+    onChange={(e) =>
+      setCounterInputValue(e.target.value === '' ? '' : parseInt(e.target.value))
+    }
+    onKeyDown={(e) => {
+      if (e.key === 'Enter') saveManualCounterValue();
+    }}
+    className="   font-mono text-center w-full border rounded-lg  appearance-none"
+    min={0}
+    style={{
+    fontSize: '10rem',
+    appearance: 'none',
+    WebkitAppearance: 'none',
+    MozAppearance: 'textfield',
+    lineHeight: 1,
+  
+  }}
+  />
+
+  <button
+    onClick={saveManualCounterValue}
+    disabled={
+      typeof counterInputValue !== 'number' ||
+      counterInputValue === (activeCounterTodo?.counter_value ?? 0)
+    }
+    className="px-4 py-1 text-sm rounded-lg border bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
+  >
+    Save
+  </button>
+</div>
+
         <button
           onClick={() => updateCounter(activeCounterTodo.id, 1)}
           className="text-5xl text-green-600 hover:text-green-800 w-1/3"
@@ -720,12 +812,7 @@ const updateCounter = async (id: number, delta: number) => {
         </button>
       </div>
 
-      <button
-        onClick={() => setActiveCounterTodo(null)}
-        className="mt-8 px-4 py-2 border rounded-lg text-sm hover:bg-gray-100"
-      >
-        Close
-      </button>
+
     </div>
   </div>
 )}

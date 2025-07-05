@@ -1,4 +1,14 @@
 @import "tailwindcss";
+/* Add this to your global CSS (optional if not using Tailwind plugin) */
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type=number] {
+  -moz-appearance: textfield;
+}
 
 /* Base variables - no theme specifics */
 :root {
