@@ -161,11 +161,6 @@ const snapshotsChanged = (): boolean => {
   });
 };
 
-useEffect(() => {
-  if (activeCounterTodo) {
-    setCounterInputValue(addMode ? 0 : (activeCounterTodo.counter_value ?? 0));
-  }
-}, [activeCounterTodo, addMode]);
 
   // Initialize all categories as expanded on first load
   useEffect(() => {
@@ -502,10 +497,15 @@ const saveManualCounterValue = async () => {
       }
     }
 
-    if (addMode) setCounterInputValue(0);
+    // ✅ Reset input and refocus to keep keyboard open
+    if (addMode) {
+      setCounterInputValue(0);
+      requestAnimationFrame(() => {
+        inputRef.current?.focus();
+      });
+    }
   }
 };
-
 
 
 useEffect(() => {
@@ -858,10 +858,15 @@ useEffect(() => {
       <div className="flex items-center justify-between">
    <button
     onMouseDown={(e) => e.preventDefault()}
-    onClick={() => {
-      updateCounter(activeCounterTodo.id, -1);
-      inputRef.current?.focus();
-    }}
+onClick={() => {
+  if (addMode) {
+    setCounterInputValue(prev => Math.max(0, (typeof prev === 'number' ? prev : 0) - 1));
+  } else {
+    updateCounter(activeCounterTodo.id, -1);
+  }
+  inputRef.current?.focus();
+}}
+
     className="text-5xl px-4 text-red-500"
   >
     −
@@ -877,7 +882,7 @@ useEffect(() => {
     onKeyDown={(e) => {
       if (e.key === 'Enter') saveManualCounterValue();
     }}
-    className="   font-mono text-center w-[5rem] border rounded-lg  appearance-none"
+    className="   font-mono text-center w-[7rem] border rounded-lg  appearance-none"
     min={0}
     style={{
     fontSize: '4rem',
@@ -889,28 +894,46 @@ useEffect(() => {
   }}
   />
 
+{!addMode && (
   <button
     onClick={saveManualCounterValue}
-  disabled={
-  typeof counterInputValue !== 'number' ||
-  (
-    counterInputValue === (activeCounterTodo?.counter_value ?? 0) &&
-    !snapshotsChanged()
-  )
-}
-
+    disabled={
+      typeof counterInputValue !== 'number' ||
+      (
+        counterInputValue === (activeCounterTodo?.counter_value ?? 0) &&
+        !snapshotsChanged()
+      )
+    }
     className="px-4 py-1 text-sm rounded-lg border bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
   >
     Save
   </button>
+)}
+
+  {addMode && (
+  <button
+    onClick={saveManualCounterValue}
+    disabled={typeof counterInputValue !== 'number' || counterInputValue <= 0}
+    className="px-4 py-1 text-sm rounded-lg border bg-green-600 text-white hover:bg-green-700 disabled:opacity-50"
+  >
+    Add
+  </button>
+)}
+
+
 </div>
 
    <button
     onMouseDown={(e) => e.preventDefault()}
-    onClick={() => {
-      updateCounter(activeCounterTodo.id, 1);
-      inputRef.current?.focus();
-    }}
+onClick={() => {
+  if (addMode) {
+    setCounterInputValue(prev => Math.max(0, (typeof prev === 'number' ? prev : 0) + 1));
+  } else {
+    updateCounter(activeCounterTodo.id, 1);
+  }
+  inputRef.current?.focus();
+}}
+
     className="text-5xl px-4 text-green-500"
   >
     +
