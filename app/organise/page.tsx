@@ -129,6 +129,7 @@ const [originalSnapshots, setOriginalSnapshots] = useState<typeof recentSnapshot
 
 
 
+
 useEffect(() => {
   const loadSnapshots = async () => {
     if (!activeCounterTodo) return;
@@ -855,10 +856,17 @@ useEffect(() => {
       </h2>
 
       <div className="flex items-center justify-between">
-        <button
-          onClick={() => updateCounter(activeCounterTodo.id, -1)}
-          className="text-5xl text-red-600 hover:text-red-800 w-1/3"
-        >
+    <button
+  onClick={() => {
+    if (activeCounterTodo) {
+      updateCounter(activeCounterTodo.id, -1);
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 50); // short delay prevents flicker
+    }
+  }}
+  className="text-5xl text-red-600 hover:text-red-800 w-1/3"
+>
           −
         </button>
 <div className="flex flex-col items-center gap-3">
@@ -900,10 +908,17 @@ useEffect(() => {
   </button>
 </div>
 
-        <button
-          onClick={() => updateCounter(activeCounterTodo.id, 1)}
-          className="text-5xl text-green-600 hover:text-green-800 w-1/3"
-        >
+    <button
+  onClick={() => {
+    if (activeCounterTodo) {
+      updateCounter(activeCounterTodo.id, 1);
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 50);
+    }
+  }}
+  className="text-5xl text-green-600 hover:text-green-800 w-1/3"
+>
           +
         </button>
       </div>
