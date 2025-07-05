@@ -21,6 +21,7 @@ Money: <IndianRupee size={24} />,
   Spiritual: <Flower size={24} />
 };
 
+
 export default function TodoApp({ todos, onTodosChange, userEmail, isAdmin }: { 
   todos: Todo[], 
   onTodosChange: (todos: Todo[]) => void,
@@ -55,6 +56,17 @@ const [timerRunning, setTimerRunning] = useState(false);
 const [manualTimerValue, setManualTimerValue] = useState<number | ''>('');
 
 const timerRef = useRef<NodeJS.Timeout | null>(null);
+const tickAudioRef = useRef<HTMLAudioElement | null>(null);
+useEffect(() => {
+  if (typeof Audio !== 'undefined') {
+    tickAudioRef.current = new Audio('/sounds/ticking-slow.mp3');
+    tickAudioRef.current.loop = true;
+    tickAudioRef.current.preload = 'auto'; // ✅ preload audio
+    tickAudioRef.current.load();           // ✅ ensure browser fetches it now
+  }
+}, []);
+
+
 useEffect(() => {
   if (timerRunning) {
     timerRef.current = setInterval(() => {
@@ -65,8 +77,42 @@ useEffect(() => {
   }
   return () => clearInterval(timerRef.current!);
 }, [timerRunning]);
+const [timerSnapshots, setTimerSnapshots] = useState<
+  { id: number; snapshot_value: number; snap_at: string }[]
+>([]);
 
 
+useEffect(() => {
+  const loadSnapshots = async () => {
+    if (!activeTimerTodo) return;
+
+    const { data, error } = await supabase
+      .from('timer_snapshots')
+      .select('id, snapshot_value, snap_at')
+      .eq('todo_id', activeTimerTodo.id)
+      .gte('snap_at', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString())
+      .order('snap_at', { ascending: false });
+
+    if (error) {
+      console.error('Failed to load snapshots:', error);
+    } else {
+      setTimerSnapshots(data);
+    }
+  };
+
+  loadSnapshots();
+}, [activeTimerTodo]);
+
+
+const formatTime = (totalSeconds: number) => {
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+
+  if (hours > 0) return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+  if (minutes > 0) return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+  return `${String(seconds).padStart(2, '0')}`;
+};
 
 
 
@@ -263,7 +309,7 @@ setFormData({
   if (!isAdmin) return;
 
   const counterTodos = todos.filter(todo => todo.is_counter);
-
+  const timerTodos = todos.filter(todo => todo.is_timer);
   if (counterTodos.length === 0) {
     alert("No counter todos to snapshot.");
     return;
@@ -288,20 +334,39 @@ setFormData({
     for (const todo of counterTodos) {
       await supabase.rpc('prune_old_snapshots', { target_todo_id: todo.id });
     }
+ // Snapshot timer todos ✅ NEW
+    const timerSnapshots = timerTodos.map(todo => ({
+      todo_id: todo.id,
+      snapshot_value: todo.timer_value || 0,
+    }));
+    await supabase.from('timer_snapshots').insert(timerSnapshots);
 
+    // Optional: prune snapshots
+    for (const todo of [...counterTodos, ...timerTodos]) {
+      await supabase.rpc('prune_old_snapshots', { target_todo_id: todo.id });
+    }
   
     const { error: counterResetError } = await supabase
       .from('todos')
       .update({ counter_value: 0 })
       .in('user_email', ADMIN_EMAILS)
       .eq('is_counter', true);
-
+    await supabase
+      .from('todos')
+      .update({ timer_value: 0 })
+      .in('user_email', ADMIN_EMAILS)
+      .eq('is_timer', true);
     if (counterResetError) throw counterResetError;
+    await supabase
+      .from('todos')
+      .update({ completed: false })
+      .in('user_email', ADMIN_EMAILS)
+      .eq('completed', true);
 
     const { error: uncheckError } = await supabase
       .from('todos')
       .update({ completed: false })
-      .eq('user_email', ADMIN_EMAILS)
+      .in('user_email', ADMIN_EMAILS)
       .eq('completed', true);
 
     if (uncheckError) throw uncheckError;
@@ -311,6 +376,7 @@ setFormData({
       ...todo,
       completed: false,
       counter_value: todo.is_counter ? 0 : todo.counter_value,
+      timer_value: todo.is_timer ? 0 : todo.timer_value,
     }));
     onTodosChange(updatedTodos);
 
@@ -337,7 +403,7 @@ setFormData({
         .from('todos')
         .delete()
         .eq('id', id)
-        .eq('user_email', ADMIN_EMAILS);
+        .in('user_email', ADMIN_EMAILS);
 
       if (error) throw error;
 
@@ -374,7 +440,7 @@ const updateCounter = async (id: number, delta: number) => {
       .from('todos')
       .update({ counter_value: newValue })
       .eq('id', id)
-      .eq('user_email', ADMIN_EMAILS);
+      .in('user_email', ADMIN_EMAILS);
 
     if (updateError) throw updateError;
 
@@ -400,7 +466,7 @@ const { data: snapshots, error: snapError } = await supabase
         .from('todos')
         .update({ completed: true })
         .eq('id', id)
-        .eq('user_email', ADMIN_EMAILS);
+        .in('user_email', ADMIN_EMAILS);
 
       if (completeError) throw completeError;
 
@@ -766,6 +832,16 @@ onClick={() => {
 
   </div>
 )}
+{todo.is_timer && timerSnapshots.length > 0 && (
+  <div className="mt-2 text-xs text-gray-500 font-mono">
+    {timerSnapshots.map(snap => (
+      <div key={snap.id} className="flex justify-between">
+        <span>{new Date(snap.snap_at).toLocaleDateString()}</span>
+        <span>{new Date(snap.snapshot_value * 1000).toISOString().substr(11, 8)}</span>
+      </div>
+    ))}
+  </div>
+)}
 
 
                             {todo.description && (
@@ -962,9 +1038,20 @@ onClick={() => {
   </div>
 )}{activeTimerTodo && (
   <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-    <div className="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full text-center space-y-4">
+    <div className="bg-white/10 backdrop-blur-sm p-6 rounded-lg shadow-xl max-w-sm w-full text-center space-y-4">
       <h2 className="text-lg font-bold">{activeTimerTodo.title}</h2>
-      <p className="text-4xl font-mono">{new Date(elapsed * 1000).toISOString().substr(11, 8)}</p>
+     <p
+  className={`font-mono text-center transition-all duration-300 ease-in-out ${
+    elapsed >= 3600
+      ? 'text-3xl sm:text-4xl'
+      : elapsed >= 60
+      ? 'text-5xl sm:text-6xl'
+      : 'text-6xl sm:text-7xl'
+  }`}
+>
+  {formatTime(elapsed)}
+</p>
+
       <input
   type="number"
   min={0}
@@ -985,7 +1072,7 @@ onClick={() => {
           .from('todos')
           .update({ timer_value: manualTimerValue })
           .eq('id', activeTimerTodo.id)
-          .eq('user_email', userEmail);
+          .in('user_email', ADMIN_EMAILS);
 
         if (error) throw error;
 
@@ -1010,41 +1097,42 @@ onClick={() => {
 
       <div className="flex justify-center gap-4">
         <button
-       onClick={async () => {
+onClick={async () => {
   if (timerRunning) {
     setTimerRunning(false);
+ tickAudioRef.current?.pause();
+if (tickAudioRef.current) tickAudioRef.current.currentTime = 0;
 
-    // ✅ Save timer value to Supabase
+
     if (activeTimerTodo) {
-        if (activeTimerTodo) {
-  setManualTimerValue(activeTimerTodo.timer_value ?? 0);
-}
-
+      setManualTimerValue(activeTimerTodo.timer_value ?? 0);
       try {
         const { error } = await supabase
-  .from('todos')
-  .update({ timer_value: (activeTimerTodo.timer_value ?? 0) + elapsed })
-
+          .from('todos')
+          .update({ timer_value: (activeTimerTodo.timer_value ?? 0) + elapsed })
           .eq('id', activeTimerTodo.id)
-          .eq('user_email', userEmail); // optional: restrict by email
+          .in('user_email', ADMIN_EMAILS);
 
         if (error) throw error;
       } catch (err) {
         console.error('Failed to save timer:', err);
         alert('Failed to save timer to database.');
       }
-    }onTodosChange(
-  todos.map(todo =>
-    todo.id === activeTimerTodo.id
-      ? { ...todo, timer_value: (todo.timer_value ?? 0) + elapsed }
-      : todo
-  )
-);
 
+      onTodosChange(
+        todos.map(todo =>
+          todo.id === activeTimerTodo.id
+            ? { ...todo, timer_value: (todo.timer_value ?? 0) + elapsed }
+            : todo
+        )
+      );
+    }
   } else {
     setTimerRunning(true);
+    tickAudioRef.current?.play().catch(err => console.warn('Failed to play sound:', err));
   }
 }}
+
 
           className={`px-4 py-2 text-white rounded-lg ${timerRunning ? 'bg-red-500' : 'bg-green-500'}`}
         >
@@ -1061,11 +1149,15 @@ onClick={() => {
         </button>
       </div>
       <button
-        onClick={() => {
-          setTimerRunning(false);
-          setActiveTimerTodo(null);
-          setElapsed(0);
-        }}
+     onClick={() => {
+  setTimerRunning(false);
+ tickAudioRef.current?.pause();
+if (tickAudioRef.current) tickAudioRef.current.currentTime = 0;
+
+  setActiveTimerTodo(null);
+  setElapsed(0);
+}}
+
         className="text-sm text-gray-600 underline"
       >
         Close
