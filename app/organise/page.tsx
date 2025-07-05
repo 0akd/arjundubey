@@ -860,9 +860,10 @@ useEffect(() => {
   onClick={() => {
     if (activeCounterTodo) {
       updateCounter(activeCounterTodo.id, -1);
-      setTimeout(() => {
-        inputRef.current?.focus();
-      }, 50); // short delay prevents flicker
+   requestAnimationFrame(() => {
+  inputRef.current?.focus();
+});
+// short delay prevents flicker
     }
   }}
   className="text-5xl text-red-600 hover:text-red-800 w-1/3"
@@ -912,9 +913,10 @@ useEffect(() => {
   onClick={() => {
     if (activeCounterTodo) {
       updateCounter(activeCounterTodo.id, 1);
-      setTimeout(() => {
-        inputRef.current?.focus();
-      }, 50);
+   requestAnimationFrame(() => {
+  inputRef.current?.focus();
+});
+
     }
   }}
   className="text-5xl text-green-600 hover:text-green-800 w-1/3"
