@@ -852,7 +852,7 @@ useEffect(() => {
   <div className="fixed inset-0  flex items-center justify-center">
     <div       ref={modalRef} className=" rounded-xl bg-white/10 backdrop-blur-sm p-8 relative w-full max-w-md shadow-lg text-center">
       <h2 className="text-xl font-semibold mb-6">
-        Adjust Counter for: <br /><span className="text-blue-600">{activeCounterTodo.title}</span>
+       <span className="text-blue-600">{activeCounterTodo.title}</span>
       </h2>
 
       <div className="flex items-center justify-between">
@@ -881,10 +881,10 @@ useEffect(() => {
     onKeyDown={(e) => {
       if (e.key === 'Enter') saveManualCounterValue();
     }}
-    className="   font-mono text-center w-full border rounded-lg  appearance-none"
+    className="   font-mono text-center w-[5rem] border rounded-lg  appearance-none"
     min={0}
     style={{
-    fontSize: '10rem',
+    fontSize: '4rem',
     appearance: 'none',
     WebkitAppearance: 'none',
     MozAppearance: 'textfield',
