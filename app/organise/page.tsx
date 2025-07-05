@@ -118,13 +118,47 @@ const modalRef = useRef<HTMLDivElement>(null);
 const [counterInputValue, setCounterInputValue] = useState<number | ''>('');
 const inputRef = useRef<HTMLInputElement | null>(null);
 const [addMode, setAddMode] = useState(false);
+const [recentSnapshots, setRecentSnapshots] = useState<
+  { id: number; snapshot_value: number; snap_at: string }[]
+>([]);
+const [originalSnapshots, setOriginalSnapshots] = useState<typeof recentSnapshots>([]);
+ const [isCollapsed, setIsCollapsed] = useState(true);
 
 
 
 
 
 
+useEffect(() => {
+  const loadSnapshots = async () => {
+    if (!activeCounterTodo) return;
 
+    setCounterInputValue(addMode ? 0 : (activeCounterTodo.counter_value ?? 0));
+
+    const { data, error } = await supabase
+      .from('counter_snapshots')
+      .select('id, snapshot_value, snap_at')
+      .eq('todo_id', activeCounterTodo.id)
+      .gte('snap_at', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString())
+      .order('snap_at', { ascending: false });
+
+    if (error) {
+      console.error('Error loading snapshots:', error);
+      setRecentSnapshots([]);
+    } else {
+      setRecentSnapshots(data);
+      setOriginalSnapshots(data);
+    }
+  };
+
+  loadSnapshots();
+}, [activeCounterTodo, addMode]);
+const snapshotsChanged = (): boolean => {
+  return recentSnapshots.some(snap => {
+    const original = originalSnapshots.find(o => o.id === snap.id);
+    return original?.snapshot_value !== snap.snapshot_value;
+  });
+};
 
 useEffect(() => {
   if (activeCounterTodo) {
@@ -389,27 +423,60 @@ const updateCounter = async (id: number, delta: number) => {
   const newValue = Math.max(0, (todo.counter_value ?? 0) + delta);
 
   try {
-    const { error } = await supabase
+    console.log('Updating counter value to:', newValue);
+
+    const { error: updateError } = await supabase
       .from('todos')
       .update({ counter_value: newValue })
       .eq('id', id)
       .eq('user_email', ADMIN_EMAIL);
 
-    if (error) throw error;
+    if (updateError) throw updateError;
+
+    console.log('Fetching snapshot from past 7 days...');
+const { data: snapshots, error: snapError } = await supabase
+  .from('counter_snapshots')
+  .select('snapshot_value, snap_at')
+  .eq('todo_id', id)
+  .gte('snap_at', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString())
+  .order('snap_at', { ascending: false })
+  .limit(1);
+
+    if (snapError) throw snapError;
+
+    const latestSnapshotValue = snapshots?.[0]?.snapshot_value ?? null;
+    console.log('Latest snapshot value:', latestSnapshotValue);
+
+    let completed = todo.completed;
+    if (latestSnapshotValue !== null && newValue >= latestSnapshotValue && !todo.completed) {
+      console.log('Marking as completed...');
+
+      const { error: completeError } = await supabase
+        .from('todos')
+        .update({ completed: true })
+        .eq('id', id)
+        .eq('user_email', ADMIN_EMAIL);
+
+      if (completeError) throw completeError;
+
+      completed = true;
+    }
 
     const updatedTodos = todos.map(t =>
-      t.id === id ? { ...t, counter_value: newValue } : t
+      t.id === id ? { ...t, counter_value: newValue, completed } : t
     );
     onTodosChange(updatedTodos);
 
     if (activeCounterTodo && activeCounterTodo.id === id) {
       setActiveCounterTodo({ ...activeCounterTodo, counter_value: newValue });
     }
-  } catch (err) {
-    console.error('Failed to update counter:', err);
-    alert('Error updating counter. Try again.');
+  } catch (err: any) {
+    console.error('Detailed error in updateCounter:', err?.message || err);
+    alert(`Error updating counter: ${err?.message || 'Unknown error'}`);
   }
 };
+
+
 const saveManualCounterValue = async () => {
   if (
     activeCounterTodo &&
@@ -419,10 +486,22 @@ const saveManualCounterValue = async () => {
     const delta = addMode
       ? counterInputValue
       : counterInputValue - (activeCounterTodo.counter_value ?? 0);
+
     await updateCounter(activeCounterTodo.id, delta);
-    if (addMode) {
-      setCounterInputValue(0); // reset to 0 after adding
+
+    // ✅ Save all edited snapshots
+    for (const snap of recentSnapshots) {
+      const { error } = await supabase
+        .from('counter_snapshots')
+        .update({ snapshot_value: snap.snapshot_value })
+        .eq('id', snap.id);
+
+      if (error) {
+        console.error(`Failed to update snapshot ID ${snap.id}:`, error);
+      }
     }
+
+    if (addMode) setCounterInputValue(0);
   }
 };
 
@@ -807,10 +886,14 @@ useEffect(() => {
 
   <button
     onClick={saveManualCounterValue}
-    disabled={
-      typeof counterInputValue !== 'number' ||
-      counterInputValue === (activeCounterTodo?.counter_value ?? 0)
-    }
+  disabled={
+  typeof counterInputValue !== 'number' ||
+  (
+    counterInputValue === (activeCounterTodo?.counter_value ?? 0) &&
+    !snapshotsChanged()
+  )
+}
+
     className="px-4 py-1 text-sm rounded-lg border bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
   >
     Save
@@ -831,6 +914,46 @@ useEffect(() => {
 >
   {addMode ? 'Add Mode: ON' : 'Add Mode: OFF'}
 </button>
+{recentSnapshots.length > 0 && (
+        <div className="mt-6">
+          <div className="flex justify-between items-center">
+            <h3 className="text-sm font-semibold text-gray-200 mb-2">
+              Past 7 Days Snapshots
+            </h3>
+            <button
+              onClick={() => setIsCollapsed(prev => !prev)}
+              className="text-sm text-blue-400 underline focus:outline-none"
+            >
+              {isCollapsed ? 'Show' : 'Hide'}
+            </button>
+          </div>
+
+          {!isCollapsed && (
+            <div className="space-y-2 max-h-64 overflow-y-auto">
+              {recentSnapshots.map((snap) => (
+                <div key={snap.id} className="flex items-center justify-between gap-4">
+                  <span className="text-xs text-gray-300">
+                    {new Date(snap.snap_at).toLocaleDateString()}
+                  </span>
+                  <input
+                    type="number"
+                    value={snap.snapshot_value}
+                    onChange={(e) => {
+                      const newVal = parseInt(e.target.value) || 0;
+                      setRecentSnapshots(prev =>
+                        prev.map(s =>
+                          s.id === snap.id ? { ...s, snapshot_value: newVal } : s
+                        )
+                      );
+                    }}
+                    className="w-24 p-1 text-sm rounded border bg-white text-black text-center"
+                  />
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
 
 
     </div>
