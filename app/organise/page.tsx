@@ -941,6 +941,7 @@ onClick={() => {
       </div>
       
 <button
+  onMouseDown={(e) => e.preventDefault()}
   onClick={() => setAddMode(prev => !prev)}
   className={`px-4 py-1 text-sm rounded-lg border ${addMode ? 'bg-yellow-500' : 'bg-gray-300'} text-white hover:opacity-90`}
 >
