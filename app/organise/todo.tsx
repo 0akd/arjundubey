@@ -54,6 +54,7 @@ const [activeTimerTodo, setActiveTimerTodo] = useState<Todo | null>(null);
 const [elapsed, setElapsed] = useState(0);
 const [timerRunning, setTimerRunning] = useState(false);
 const [manualTimerValue, setManualTimerValue] = useState<number | ''>('');
+const [showTimerSnapshots, setShowTimerSnapshots] = useState(false);
 
 const timerRef = useRef<NodeJS.Timeout | null>(null);
 const tickAudioRef = useRef<HTMLAudioElement | null>(null);
@@ -1052,7 +1053,17 @@ onClick={() => {
   {formatTime(elapsed)}
 </p>
 
-      <input
+      {activeTimerTodo?.is_timer && timerSnapshots.length > 0 && (
+  <div className="mt-4">
+    <button
+      onClick={() => setShowTimerSnapshots(prev => !prev)}
+      className="text-sm  underline mb-2"
+    >
+      {showTimerSnapshots ? 'Hide Snapshots' : 'Show Snapshots'}
+    </button>
+
+    {showTimerSnapshots && (
+      <div className="text-xs  font-mono space-y-1"> <input
   type="number"
   min={0}
   className="w-full p-2 border rounded text-center font-mono"
@@ -1060,8 +1071,7 @@ onClick={() => {
   onChange={(e) =>
     setManualTimerValue(e.target.value === '' ? '' : parseInt(e.target.value))
   }
-/>
-<button
+/><button
   onClick={async () => {
     if (
       typeof manualTimerValue === 'number' &&
@@ -1090,10 +1100,53 @@ onClick={() => {
       }
     }
   }}
-  className="mt-2 px-4 py-2 bg-blue-600 text-white rounded"
+  className="mt-2 px-4 py-2  rounded"
 >
   Save Timer Value
 </button>
+        {timerSnapshots.map(snap => (
+          <div key={snap.id} className="flex justify-between items-center gap-2">
+            <span>{new Date(snap.snap_at).toLocaleDateString()}</span>
+            <input
+              type="number"
+              min={0}
+              value={snap.snapshot_value}
+              onChange={(e) => {
+                const newVal = parseInt(e.target.value) || 0;
+                setTimerSnapshots(prev =>
+                  prev.map(s =>
+                    s.id === snap.id ? { ...s, snapshot_value: newVal } : s
+                  )
+                );
+              }}
+              className="w-24 p-1 text-xs  rounded border text-center "
+            />
+          </div>
+        ))}<button
+  onClick={async () => {
+    for (const snap of timerSnapshots) {
+      const { error } = await supabase
+        .from('timer_snapshots')
+        .update({ snapshot_value: snap.snapshot_value })
+        .eq('id', snap.id);
+
+      if (error) {
+        console.error(`Failed to update snapshot ID ${snap.id}:`, error);
+        alert('Error saving some snapshots.');
+      }
+    }
+    alert('Snapshots saved.');
+  }}
+  className="mt-2 px-4 py-2 bg-green-600 text-white rounded"
+>
+  Save Snapshots
+</button>
+      </div>
+    )}
+  </div>
+)}
+
+
 
       <div className="flex justify-center gap-4">
         <button
@@ -1134,19 +1187,55 @@ if (tickAudioRef.current) tickAudioRef.current.currentTime = 0;
 }}
 
 
-          className={`px-4 py-2 text-white rounded-lg ${timerRunning ? 'bg-red-500' : 'bg-green-500'}`}
+          className={`px-4 py-2  rounded-lg ${timerRunning ? 'bg-red-500' : 'bg-green-500'}`}
         >
           {timerRunning ? 'Stop' : 'Start'}
         </button>
-        <button
-          onClick={() => {
-            setTimerRunning(false);
-            setElapsed(0);
-          }}
-          className="px-4 py-2 bg-gray-300 rounded-lg"
-        >
-          Reset
-        </button>
+    <button
+  onClick={async () => {
+    tickAudioRef.current?.pause();
+    if (tickAudioRef.current) tickAudioRef.current.currentTime = 0;
+
+    if (timerRunning) {
+      // 🟥 Timer is running: just stop and reset
+      setTimerRunning(false);
+      setElapsed(0);
+    } else {
+      // 🟩 Timer is already stopped: subtract elapsed
+      if (activeTimerTodo) {
+        const newTimerValue = Math.max(0, (activeTimerTodo.timer_value ?? 0) );
+
+        try {
+          const { error } = await supabase
+            .from('todos')
+            .update({ timer_value: newTimerValue })
+            .eq('id', activeTimerTodo.id)
+            .in('user_email', ADMIN_EMAILS);
+
+          if (error) throw error;
+
+          onTodosChange(
+            todos.map(todo =>
+              todo.id === activeTimerTodo.id
+                ? { ...todo, timer_value: newTimerValue }
+                : todo
+            )
+          );
+        } catch (err) {
+          console.error('Failed to subtract timer:', err);
+          alert('Error updating timer value.');
+        }
+      }
+
+      setElapsed(0);
+    }
+  }}
+  className="px-4 py-2 bg-gray-300 rounded-lg"
+>
+  Reset
+</button>
+
+
       </div>
       <button
      onClick={() => {
@@ -1163,6 +1252,8 @@ if (tickAudioRef.current) tickAudioRef.current.currentTime = 0;
         Close
       </button>
     </div>
+ 
+
   </div>
 )}
 
