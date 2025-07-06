@@ -3,6 +3,8 @@ import CounterSnapshot from './todosnapshot'
 import type { Todo, CategoryData } from './types';
 import supabase from '@/config/supabase';
 import { Plus, Check,ChevronDown, Trash2,IndianRupee, Edit2,RotateCcw,BicepsFlexed,Flower, Brain,StretchVertical,  Loader2, Lock } from 'lucide-react';
+import * as LucideIcons from 'lucide-react';
+
 const categories = [
   'Intelligence',
   'Flexibility',
@@ -66,6 +68,49 @@ useEffect(() => {
     tickAudioRef.current.load();           // ✅ ensure browser fetches it now
   }
 }, []);
+
+const [newCategory, setNewCategory] = useState('');
+const [newIcon, setNewIcon] = useState('');
+
+
+useEffect(() => {
+  const fetchCategories = async () => {
+    const { data, error } = await supabase
+      .from('categories')
+      .select('name, icon_name')
+      .order('name', { ascending: true });
+
+    if (error) {
+      console.error('Failed to fetch categories:', error);
+    } else {
+      setCategories(data);
+    }
+  };
+
+  fetchCategories();
+}, []);
+
+const [categories, setCategories] = useState<{ name: string; icon_name: string | null }[]>([]);
+
+const addCategory = async () => {
+  if (!newCategory.trim() || !newIcon.trim()) return;
+
+  const { error } = await supabase
+    .from('categories')
+    .insert({ name: newCategory.trim(), icon_name: newIcon.trim() });
+
+  if (error) {
+    console.error('Failed to add category:', error);
+    alert('Error adding category');
+  } else {
+    setNewCategory('');
+    setNewIcon('');
+    const { data } = await supabase.from('categories').select('name, icon_name');
+    if (data !== null) {
+      setCategories(data);
+    }
+  }
+};
 
 
 useEffect(() => {
@@ -155,7 +200,7 @@ const snapshotsChanged = (): boolean => {
   useEffect(() => {
     const initialExpanded: Record<string, boolean> = {};
     categories.forEach(category => {
-      initialExpanded[category] = false;
+      initialExpanded[category.name] = false;
     });
     setExpandedCategories(initialExpanded);
   }, []);
@@ -562,6 +607,19 @@ useEffect(() => {
 
 
 
+const deleteCategory = async (cat: string) => {
+  const { error } = await supabase
+    .from('categories')
+    .delete()
+    .eq('name', cat);
+
+  if (error) {
+    console.error('Error deleting category', error);
+    alert('Error deleting category');
+  } else {
+    setCategories(categories.filter(c => c));
+  }
+};
 
 
 
@@ -570,7 +628,30 @@ useEffect(() => {
 
   return (
     <div className="space-y-4 sm:space-y-6 px-2 sm:px-0">
-      {/* Header Section */}
+      {/* Header Section */}<div className="mt-4 space-x-2">
+<div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
+  <input
+    value={newCategory}
+    onChange={(e) => setNewCategory(e.target.value)}
+    className="border p-2 rounded w-full"
+    placeholder="New category name"
+  />
+  <input
+    value={newIcon}
+    onChange={(e) => setNewIcon(e.target.value)}
+    className="border p-2 rounded w-full"
+    placeholder="Lucide icon name (e.g., Brain, Flower)"
+  />
+  <button
+    onClick={addCategory}
+    className="bg-green-500 text-white px-4 py-2 rounded"
+  >
+    Add
+  </button>
+</div>
+
+</div>
+
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
         <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
           {isAdmin ? (
@@ -670,16 +751,25 @@ useEffect(() => {
 </select>
 
 
-            <select
-              value={formData.category}
-              onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-              className="w-full p-2 sm:p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
-              disabled={loading}
-            >
-              {categories.map(category => (
-                <option key={category} value={category}>{category}</option>
-              ))}
-            </select>
+<select
+  value={formData.category}
+  onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+>
+  {categories.map((category) => (
+    <option key={category.name} value={category.name}>
+      {category.name}
+    </option>
+  ))}
+</select>
+
+{categories.map(cat => (
+  <div key={cat.name} className="flex gap-2 items-center">
+    <span>{cat.name} {cat.icon_name && `(${cat.icon_name})`}</span>
+    <button onClick={() => deleteCategory(cat.name)} className="text-red-500">Delete</button>
+  </div>
+))}
+
+
             <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
               <button
                 onClick={addTodo}
@@ -703,25 +793,28 @@ useEffect(() => {
 
       {/* Categories Grid */}
       <div className="grid gap-4 sm:gap-6">
-        {categories.map(category => {
-          const categoryTodos = getTodosByCategory(category);
-          const completionPercentage = getCompletionPercentage(category);
-          const isExpanded = expandedCategories[category];
-          
-          return (
-            <div key={category} className="border rounded-lg shadow-sm  overflow-hidden">
-              {/* Category Header - Always Visible */}
-              <div 
-                className="p-4 sm:p-6 cursor-pointer select-none  transition-colors"
-                onClick={() => toggleCategory(category)}
-              >
-                <div className="flex justify-between items-center">
-                  <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
-                    <div className="flex items-center gap-2">
-                      {categoryIcons[category as keyof typeof categoryIcons]}
-                      <h3 className="text-lg sm:text-xl font-semibold truncate">
-                        {category}
-                      </h3>
+   {categories.map(category => {
+  const categoryTodos = getTodosByCategory(category.name);
+  const completionPercentage = getCompletionPercentage(category.name);
+  const isExpanded = expandedCategories[category.name];
+
+  return (
+    <div key={category.name} className="border rounded-lg shadow-sm overflow-hidden">
+      {/* Category Header */}
+      <div 
+        className="p-4 sm:p-6 cursor-pointer select-none transition-colors"
+        onClick={() => toggleCategory(category.name)}
+      >
+        <div className="flex justify-between items-center">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+            <div className="flex items-center gap-2">
+              {/* Icon Rendering */}
+              {category.icon_name && (LucideIcons as any)[category.icon_name] && (
+                React.createElement((LucideIcons as any)[category.icon_name], { size: 24 })
+              )}
+              <h3 className="text-lg sm:text-xl font-semibold truncate">
+                {category.name}
+              </h3>
                     </div>
                     <button
                       className={`p-1 rounded-full transition-transform duration-200 ${
