@@ -5,23 +5,8 @@ import supabase from '@/config/supabase';
 import { Plus, Check,ChevronDown, Trash2,IndianRupee, Edit2,RotateCcw,BicepsFlexed,Flower, Brain,StretchVertical,  Loader2, Lock } from 'lucide-react';
 import * as LucideIcons from 'lucide-react';
 
-const categories = [
-  'Intelligence',
-  'Flexibility',
-  'Strength',
-  'Spiritual',
-  'Money'
 
-];
 const ADMIN_EMAILS = ['reboostify@gmail.com', 'unidimensia@gmail.com'];
-const categoryIcons = {
-  Intelligence: <Brain size={24} />,
-  Flexibility: <StretchVertical size={24} />,
- 
-Money: <IndianRupee size={24} />,
-  Strength: <BicepsFlexed size={24} />,
-  Spiritual: <Flower size={24} />
-};
 
 
 export default function TodoApp({ todos, onTodosChange, userEmail, isAdmin }: { 
@@ -40,9 +25,11 @@ const [formData, setFormData] = useState({
   is_counter: false,
   counter_value: 0,
   is_timer: false,
-  is_website: false, // ✅ Add this
-  link: ''
+  is_website: false,
+  link: '',
+  click_count: 0 // Add this
 });
+
 
   const [loading, setLoading] = useState(false);
 const [activeCounterTodo, setActiveCounterTodo] = useState<Todo | null>(null);
@@ -109,6 +96,8 @@ const editCategory = async (oldName: string, newName: string, newIcon: string) =
     alert('Error editing category');
   }
 };
+const [activeWebsiteTodo, setActiveWebsiteTodo] = useState<Todo | null>(null);
+
 const timerRef = useRef<NodeJS.Timeout | null>(null);
 const tickAudioRef = useRef<HTMLAudioElement | null>(null);
 useEffect(() => {
@@ -122,7 +111,51 @@ useEffect(() => {
 
 const [newCategory, setNewCategory] = useState('');
 const [newIcon, setNewIcon] = useState('');
+const handleWebsiteClick = async (todo: Todo) => {
+  if (!todo.is_website || !todo.link) return;
+  
+  const currentClickCount = (todo.click_count || 0) + 1;
+  
+  try {
+    // Update click count in database
+    const { error } = await supabase
+      .from('todos')
+      .update({ 
+        click_count: currentClickCount,
+        // Auto-check if clicked more than twice
+        completed: currentClickCount > 2 ? true : todo.completed
+      })
+      .eq('id', todo.id)
+      .in('user_email', ADMIN_EMAILS);
 
+    if (error) throw error;
+
+    // Update local state
+    const updatedTodos = todos.map(t =>
+      t.id === todo.id 
+        ? { 
+            ...t, 
+            click_count: currentClickCount,
+            completed: currentClickCount > 2 ? true : t.completed
+          }
+        : t
+    );
+    onTodosChange(updatedTodos);
+
+    // Open the website
+    window.open(todo.link, '_blank');
+
+    // Show notification when auto-checked
+    if (currentClickCount > 2 && !todo.completed) {
+      alert(`"${todo.title}" has been automatically marked as completed after ${currentClickCount} clicks!`);
+    }
+
+  } catch (error) {
+    console.error('Error updating website click count:', error);
+    // Still open the link even if update fails
+    window.open(todo.link, '_blank');
+  }
+};
 
 
 useEffect(() => {
@@ -320,7 +353,8 @@ const addTodo = async () => {
           is_timer: formData.is_timer,
           is_website: formData.is_website,
           counter_value: formData.counter_value,
-          link: formData.link
+          link: formData.link,
+          click_count: formData.click_count // Add this
         })
         .eq('id', editingTodo.id)
         .in('user_email', ADMIN_EMAILS);
@@ -329,7 +363,13 @@ const addTodo = async () => {
 
       const updatedTodos = todos.map(todo => 
         todo.id === editingTodo.id 
-          ? { ...todo, title: formData.title, description: formData.description, category: formData.category }
+          ? { 
+              ...todo, 
+              title: formData.title, 
+              description: formData.description, 
+              category: formData.category,
+              click_count: formData.click_count // Add this
+            }
           : todo
       );
       onTodosChange(updatedTodos);
@@ -347,7 +387,8 @@ const addTodo = async () => {
           is_counter: formData.is_counter,
           is_website: formData.is_website,
           counter_value: formData.counter_value,
-          link: formData.link
+          link: formData.link,
+          click_count: 0 // Initialize with 0 clicks
         }])
         .select()
         .single();
@@ -357,16 +398,17 @@ const addTodo = async () => {
       onTodosChange([...todos, data]);
     }
 
-    // ✅ Reset form with proper category
+    // Reset form
     setFormData({
       title: '',
       description: '',
-      category: categories.length > 0 ? categories[0].name : '', // Use first available category
+      category: categories.length > 0 ? categories[0].name : '',
       is_counter: false,
       is_timer: false,
       is_website: false,
       counter_value: 0,
-      link: ''
+      link: '',
+      click_count: 0 // Add this
     });
     setShowForm(false);
   } catch (error) {
@@ -389,28 +431,33 @@ const editTodo = (todo: Todo) => {
     category: todo.category,
     is_counter: todo.is_counter ?? false,
     is_timer: todo.is_timer ?? false,
-    is_website: todo.is_website ?? false, // ✅ Add this
+    is_website: todo.is_website ?? false,
     counter_value: todo.counter_value ?? 0,
-    link: todo.link || ''
+    link: todo.link || '',
+    click_count: todo.click_count || 0 // Add this
   });
 
   setShowForm(true);
 };
 
- const cancelEdit = () => {
+// 7. Update the cancelEdit function
+const cancelEdit = () => {
   setEditingTodo(null);
   setFormData({
     title: '',
     description: '',
-    category: categories.length > 0 ? categories[0].name : '', // ✅ Use first available category
+    category: categories.length > 0 ? categories[0].name : '',
     is_counter: false,
     is_timer: false,
     counter_value: 0,
     is_website: false,
-    link: ''
+    link: '',
+    click_count: 0 // Add this
   });
   setShowForm(false);
 };
+
+ 
   const toggleTodo = async (id: number) => {
     if (!isAdmin) {
       alert('Only the administrator can modify todos.');
@@ -439,82 +486,101 @@ const editTodo = (todo: Todo) => {
     }
   };
 
- const resetAllTodos = async () => {
+const resetAllTodos = async () => {
   if (!isAdmin) return;
 
-  const counterTodos = todos.filter(todo => todo.is_counter);
-  const timerTodos = todos.filter(todo => todo.is_timer);
-  if (counterTodos.length === 0) {
-    alert("No counter todos to snapshot.");
+  const completedTodos = todos.filter(todo => todo.completed);
+  if (completedTodos.length === 0) {
+    alert("No completed todos to reset.");
     return;
   }
+
+  const counterTodos = completedTodos.filter(todo => todo.is_counter);
+  const timerTodos = completedTodos.filter(todo => todo.is_timer);
+  const websiteTodos = completedTodos.filter(todo => todo.is_website);
 
   setLoading(true);
 
   try {
-    const snapshots = counterTodos.map(todo => ({
-      todo_id: todo.id,
-      snapshot_value: todo.counter_value || 0,
-    }));
+    // ✅ 1. Snapshot counters
+    if (counterTodos.length > 0) {
+      const snapshots = counterTodos.map(todo => ({
+        todo_id: todo.id,
+        snapshot_value: todo.counter_value || 0,
+      }));
 
+      const { error: insertError } = await supabase
+        .from('counter_snapshots')
+        .insert(snapshots);
 
-    const { error: insertError } = await supabase
-      .from('counter_snapshots')
-      .insert(snapshots);
+      if (insertError) throw insertError;
 
-    if (insertError) throw insertError;
-
-  
-    for (const todo of counterTodos) {
-      await supabase.rpc('prune_old_snapshots', { target_todo_id: todo.id });
+      // Prune old snapshots
+      for (const todo of counterTodos) {
+        await supabase.rpc('prune_old_snapshots', { target_todo_id: todo.id });
+      }
     }
- // Snapshot timer todos ✅ NEW
-    const timerSnapshots = timerTodos.map(todo => ({
-      todo_id: todo.id,
-      snapshot_value: todo.timer_value || 0,
-    }));
-    await supabase.from('timer_snapshots').insert(timerSnapshots);
 
-    // Optional: prune snapshots
-    for (const todo of [...counterTodos, ...timerTodos]) {
-      await supabase.rpc('prune_old_snapshots', { target_todo_id: todo.id });
+    // ✅ 2. Snapshot timers
+    if (timerTodos.length > 0) {
+      const timerSnapshots = timerTodos.map(todo => ({
+        todo_id: todo.id,
+        snapshot_value: todo.timer_value || 0,
+      }));
+
+      await supabase.from('timer_snapshots').insert(timerSnapshots);
+
+      for (const todo of timerTodos) {
+        await supabase.rpc('prune_old_snapshots', { target_todo_id: todo.id });
+      }
     }
-  
-    const { error: counterResetError } = await supabase
+
+    // ✅ 3. Reset values ONLY for completed todos
+    const completedTodoIds = completedTodos.map(todo => todo.id);
+
+    // Counter reset
+    await supabase
       .from('todos')
       .update({ counter_value: 0 })
       .in('user_email', ADMIN_EMAILS)
-      .eq('is_counter', true);
+      .in('id', counterTodos.map(t => t.id));
+
+    // Timer reset
     await supabase
       .from('todos')
       .update({ timer_value: 0 })
       .in('user_email', ADMIN_EMAILS)
-      .eq('is_timer', true);
-    if (counterResetError) throw counterResetError;
+      .in('id', timerTodos.map(t => t.id));
+
+    // Website click count reset
+    await supabase
+      .from('todos')
+      .update({ click_count: 0 })
+      .in('user_email', ADMIN_EMAILS)
+      .in('id', websiteTodos.map(t => t.id));
+
+    // ✅ Uncheck only completed todos
     await supabase
       .from('todos')
       .update({ completed: false })
       .in('user_email', ADMIN_EMAILS)
-      .eq('completed', true);
+      .in('id', completedTodoIds);
 
-    const { error: uncheckError } = await supabase
-      .from('todos')
-      .update({ completed: false })
-      .in('user_email', ADMIN_EMAILS)
-      .eq('completed', true);
+    // ✅ Update local state
+    const updatedTodos = todos.map(todo => {
+      if (!todo.completed) return todo;
 
-    if (uncheckError) throw uncheckError;
+      return {
+        ...todo,
+        completed: false,
+        counter_value: todo.is_counter ? 0 : todo.counter_value,
+        timer_value: todo.is_timer ? 0 : todo.timer_value,
+        click_count: todo.is_website ? 0 : todo.click_count,
+      };
+    });
 
-  
-    const updatedTodos = todos.map(todo => ({
-      ...todo,
-      completed: false,
-      counter_value: todo.is_counter ? 0 : todo.counter_value,
-      timer_value: todo.is_timer ? 0 : todo.timer_value,
-    }));
     onTodosChange(updatedTodos);
-
-    alert("All todos reset and counter snapshots taken.");
+    alert("Reset completed todos and saved snapshots.");
   } catch (error) {
     console.error('Error resetting todos:', error);
     alert("Error resetting todos.");
@@ -919,23 +985,23 @@ const deleteCategory = async (cat: string) => {
                     ) : (
                       categoryTodos.map(todo => (
                         
-                <div
+     <div
   key={todo.id}
   className={`flex items-start gap-2 sm:gap-3 p-3 sm:p-4 border rounded-lg transition-all ${
     todo.completed ? 'opacity-75' : 'hover:shadow-sm'
-  } ${todo.is_counter && isAdmin ? 'cursor-pointer' : ''}`}
-onClick={() => {
+  } ${(todo.is_counter || todo.is_timer || todo.is_website) && isAdmin ? 'cursor-pointer' : ''}`}
+ onClick={() => {
   if (todo.is_counter && isAdmin) {
     setActiveCounterTodo(todo);
   } else if (todo.is_timer && isAdmin) {
     setActiveTimerTodo(todo);
   } else if (todo.is_website && todo.link) {
-    // For website todos, open link directly
-    window.open(todo.link, '_blank');
+    setActiveWebsiteTodo(todo); // ✅ instead of handleWebsiteClick
   }
 }}
 
 >
+
 
                     <button
   onClick={(e) => {
@@ -995,14 +1061,25 @@ onClick={() => {
                                 {todo.description}
                               </p>
                             )}{todo.is_website && todo.link && (
-  <a
-    href={todo.link}
-    target="_blank"
-    rel="noopener noreferrer"
-    className="text-xs text-blue-500 underline break-all mt-1 inline-block"
-  >
-    Visit Site
-  </a>
+  <div className="mt-1">
+    <a
+      href={todo.link}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="text-xs text-blue-500 underline break-all inline-block"
+      onClick={(e) => e.stopPropagation()} // Prevent parent click
+    >
+      Visit Site
+    </a>
+    {todo.click_count && todo.click_count > 0 && (
+      <span className="text-xs text-gray-500 ml-2">
+        ({todo.click_count} click{todo.click_count !== 1 ? 's' : ''})
+        {todo.click_count > 2 && !todo.completed && (
+          <span className="text-green-600 font-medium"> - Auto-completed!</span>
+        )}
+      </span>
+    )}
+  </div>
 )}
 
 
@@ -1547,7 +1624,30 @@ if (tickAudioRef.current) tickAudioRef.current.currentTime = 0;
               Admin Only
             </div>
           )}
-        </div>
+        </div>{activeWebsiteTodo && (
+  <div
+    className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
+      onClick={() => {
+    setActiveWebsiteTodo(null); // 👈 close when background clicked
+  }}
+  
+  >
+    <div
+      className="bg-white/10 backdrop-blur-sm rounded-xl p-6 w-full max-w-sm text-center cursor-pointer shadow-lg"
+        onClick={() => {
+      handleWebsiteClick(activeWebsiteTodo);
+      setActiveWebsiteTodo(null);
+    }}
+    >
+      <h2 className="text-lg font-semibold mb-2 text-blue-700">{activeWebsiteTodo.title}</h2>
+      {activeWebsiteTodo.description && (
+        <p className="text-sm ">{activeWebsiteTodo.description}</p>
+      )}
+    
+    </div>
+  </div>
+)}
+
       </div>
 </div>
     </div>

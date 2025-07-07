@@ -13,6 +13,7 @@ export interface Todo {
     timer_value:number;
     link:string;
     is_website:boolean;
+     click_count?: number; 
 }
 
 export interface CategoryData {
