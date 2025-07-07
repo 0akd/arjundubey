@@ -79,7 +79,7 @@ const routes = [
     opacity: [0, 1, 1],
   }}
   transition={{
-    duration: 3,
+    duration: 1.5,
     ease: 'easeOut',
 
   }}
