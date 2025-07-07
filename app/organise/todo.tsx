@@ -33,14 +33,17 @@ export default function TodoApp({ todos, onTodosChange, userEmail, isAdmin }: {
   const [showForm, setShowForm] = useState(false);
   const [editingTodo, setEditingTodo] = useState<Todo | null>(null);
   const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({});
-  const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    category: 'Intelligence',
-      is_counter: false,         // ✅ new
-  counter_value: 0  ,
-    is_timer: false, // ✅ new
-  });
+const [formData, setFormData] = useState({
+  title: '',
+  description: '',
+  category: '', 
+  is_counter: false,
+  counter_value: 0,
+  is_timer: false,
+  is_website: false, // ✅ Add this
+  link: ''
+});
+
   const [loading, setLoading] = useState(false);
 const [activeCounterTodo, setActiveCounterTodo] = useState<Todo | null>(null);
 const modalRef = useRef<HTMLDivElement>(null);
@@ -57,7 +60,55 @@ const [elapsed, setElapsed] = useState(0);
 const [timerRunning, setTimerRunning] = useState(false);
 const [manualTimerValue, setManualTimerValue] = useState<number | ''>('');
 const [showTimerSnapshots, setShowTimerSnapshots] = useState(false);
+const [editingCategory, setEditingCategory] = useState<{ name: string; icon_name: string | null } | null>(null);
+const [editCategoryName, setEditCategoryName] = useState('');
+const [editCategoryIcon, setEditCategoryIcon] = useState('');
 
+// Add this function after your addCategory function (around line 100)
+const editCategory = async (oldName: string, newName: string, newIcon: string) => {
+  if (!newName.trim() || !newIcon.trim()) return;
+
+  try {
+    // Update the category in database
+    const { error } = await supabase
+      .from('categories')
+      .update({ name: newName.trim(), icon_name: newIcon.trim() })
+      .eq('name', oldName);
+
+    if (error) throw error;
+
+    // Update todos that use this category
+    const { error: todoError } = await supabase
+      .from('todos')
+      .update({ category: newName.trim() })
+      .eq('category', oldName)
+      .in('user_email', ADMIN_EMAILS);
+
+    if (todoError) throw todoError;
+
+    // Refresh categories list
+    const { data } = await supabase.from('categories').select('name, icon_name');
+    if (data !== null) {
+      setCategories(data);
+    }
+
+    // Update local todos state
+    const updatedTodos = todos.map(todo => 
+      todo.category === oldName ? { ...todo, category: newName.trim() } : todo
+    );
+    onTodosChange(updatedTodos);
+
+    // Reset edit state
+    setEditingCategory(null);
+    setEditCategoryName('');
+    setEditCategoryIcon('');
+
+    alert('Category updated successfully!');
+  } catch (error) {
+    console.error('Error editing category:', error);
+    alert('Error editing category');
+  }
+};
 const timerRef = useRef<NodeJS.Timeout | null>(null);
 const tickAudioRef = useRef<HTMLAudioElement | null>(null);
 useEffect(() => {
@@ -71,6 +122,7 @@ useEffect(() => {
 
 const [newCategory, setNewCategory] = useState('');
 const [newIcon, setNewIcon] = useState('');
+
 
 
 useEffect(() => {
@@ -149,7 +201,16 @@ useEffect(() => {
   loadSnapshots();
 }, [activeTimerTodo]);
 
-
+useEffect(() => {
+  if (categories.length > 0) {
+    setFormData(prev => ({
+      ...prev,
+      category: prev.category && categories.some(cat => cat.name === prev.category) 
+        ? prev.category 
+        : categories[0].name
+    }));
+  }
+}, [categories]);
 const formatTime = (totalSeconds: number) => {
   const hours = Math.floor(totalSeconds / 3600);
   const minutes = Math.floor((totalSeconds % 3600) / 60);
@@ -195,7 +256,18 @@ const snapshotsChanged = (): boolean => {
   });
 };
 
-
+const initializeFormData = () => {
+  return {
+    title: '',
+    description: '',
+    category: categories.length > 0 ? categories[0].name : '',
+    is_counter: false,
+    is_timer: false,
+    is_website: false,
+    counter_value: 0,
+    link: ''
+  };
+};
   // Initialize all categories as expanded on first load
   useEffect(() => {
     const initialExpanded: Record<string, boolean> = {};
@@ -211,118 +283,134 @@ const snapshotsChanged = (): boolean => {
       [category]: !prev[category]
     }));
   };
+const addTodo = async () => {
+  if (!isAdmin) {
+    alert('Only the administrator can add or edit todos.');
+    return;
+  }
 
-  const addTodo = async () => {
-    if (!isAdmin) {
-      alert('Only the administrator can add or edit todos.');
-      return;
+  if (!formData.title.trim()) return;
+  
+  // ✅ Add validation for category
+  if (!formData.category || formData.category.trim() === '') {
+    alert('Please select a valid category.');
+    return;
+  }
+
+  // ✅ Verify category exists in database
+  const categoryExists = categories.some(cat => cat.name === formData.category);
+  if (!categoryExists) {
+    alert('Selected category does not exist. Please choose a valid category.');
+    return;
+  }
+
+
+  
+  setLoading(true);
+  try {
+    if (editingTodo) {
+      // Update existing todo
+      const { error } = await supabase
+        .from('todos')
+        .update({
+          title: formData.title,
+          description: formData.description,
+          category: formData.category,
+          is_counter: formData.is_counter,
+          is_timer: formData.is_timer,
+          is_website: formData.is_website,
+          counter_value: formData.counter_value,
+          link: formData.link
+        })
+        .eq('id', editingTodo.id)
+        .in('user_email', ADMIN_EMAILS);
+
+      if (error) throw error;
+
+      const updatedTodos = todos.map(todo => 
+        todo.id === editingTodo.id 
+          ? { ...todo, title: formData.title, description: formData.description, category: formData.category }
+          : todo
+      );
+      onTodosChange(updatedTodos);
+      setEditingTodo(null);
+    } else {
+      const { data, error } = await supabase
+        .from('todos')
+        .insert([{
+          title: formData.title,
+          description: formData.description,
+          category: formData.category,
+          completed: false,
+          user_email: userEmail,
+          is_timer: formData.is_timer,
+          is_counter: formData.is_counter,
+          is_website: formData.is_website,
+          counter_value: formData.counter_value,
+          link: formData.link
+        }])
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      onTodosChange([...todos, data]);
     }
 
-    if (!formData.title.trim()) return;
-    
-    setLoading(true);
-    try {
-      if (editingTodo) {
-        // Update existing todo
-        const { error } = await supabase
-          .from('todos')
-   .update({
-  title: formData.title,
-  description: formData.description,
-  category: formData.category,
-  is_counter: formData.is_counter,
-  is_timer: formData.is_timer,
-
-  counter_value: formData.counter_value
-})
-
-          .eq('id', editingTodo.id)
-          .in('user_email', ADMIN_EMAILS);
-
-        if (error) throw error;
-
-        const updatedTodos = todos.map(todo => 
-          todo.id === editingTodo.id 
-            ? { ...todo, title: formData.title, description: formData.description, category: formData.category }
-            : todo
-        );
-        onTodosChange(updatedTodos);
-        setEditingTodo(null);
-      } else {
-      
-       const { data, error } = await supabase
-  .from('todos')
-  .insert([{
-    title: formData.title,
-    description: formData.description,
-    category: formData.category,
-    completed: false,
-user_email: userEmail, // ✅ correct: insert the currently logged-in user's email
-is_timer: formData.is_timer,
-
-    is_counter: formData.is_counter,
-    counter_value: formData.counter_value
-  }])
-  .select()
-  .single();
-
-
-        if (error) throw error;
-
-        onTodosChange([...todos, data]);
-      }
-setFormData({
-  title: '',
-  description: '',
-  category: 'Intelligence',
-  is_counter: false,
-    is_timer: false, // ✅ new
-  counter_value: 0
-});
-
-      setShowForm(false);
-    } catch (error) {
-      console.error('Error saving todo:', error);
-      alert('Error saving todo. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const editTodo = (todo: Todo) => {
-    if (!isAdmin) {
-      alert('Only the administrator can edit todos.');
-      return;
-    }
-
-    setEditingTodo(todo);
-setFormData({
-  title: todo.title,
-  description: todo.description,
-  category: todo.category,
-  is_counter: todo.is_counter ?? false,
-  is_timer: formData.is_timer,
-
-  counter_value: todo.counter_value ?? 0
-});
-
-    setShowForm(true);
-  };
-
-  const cancelEdit = () => {
-    setEditingTodo(null);
- setFormData({
-  title: '',
-  description: '',
-  category: 'Intelligence',
-  is_counter: false,
-    is_timer: false, // ✅ new
-  counter_value: 0
-});
-
+    // ✅ Reset form with proper category
+    setFormData({
+      title: '',
+      description: '',
+      category: categories.length > 0 ? categories[0].name : '', // Use first available category
+      is_counter: false,
+      is_timer: false,
+      is_website: false,
+      counter_value: 0,
+      link: ''
+    });
     setShowForm(false);
-  };
+  } catch (error) {
+    console.error('Error saving todo:', error);
+    alert('Error saving todo. Please try again.');
+  } finally {
+    setLoading(false);
+  }
+};
+const editTodo = (todo: Todo) => {
+  if (!isAdmin) {
+    alert('Only the administrator can edit todos.');
+    return;
+  }
 
+  setEditingTodo(todo);
+  setFormData({
+    title: todo.title,
+    description: todo.description,
+    category: todo.category,
+    is_counter: todo.is_counter ?? false,
+    is_timer: todo.is_timer ?? false,
+    is_website: todo.is_website ?? false, // ✅ Add this
+    counter_value: todo.counter_value ?? 0,
+    link: todo.link || ''
+  });
+
+  setShowForm(true);
+};
+
+ const cancelEdit = () => {
+  setEditingTodo(null);
+  setFormData({
+    title: '',
+    description: '',
+    category: categories.length > 0 ? categories[0].name : '', // ✅ Use first available category
+    is_counter: false,
+    is_timer: false,
+    counter_value: 0,
+    is_website: false,
+    link: ''
+  });
+  setShowForm(false);
+};
   const toggleTodo = async (id: number) => {
     if (!isAdmin) {
       alert('Only the administrator can modify todos.');
@@ -628,63 +716,9 @@ const deleteCategory = async (cat: string) => {
 
   return (
     <div className="space-y-4 sm:space-y-6 px-2 sm:px-0">
-      {/* Header Section */}<div className="mt-4 space-x-2">
-<div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
-  <input
-    value={newCategory}
-    onChange={(e) => setNewCategory(e.target.value)}
-    className="border p-2 rounded w-full"
-    placeholder="New category name"
-  />
-  <input
-    value={newIcon}
-    onChange={(e) => setNewIcon(e.target.value)}
-    className="border p-2 rounded w-full"
-    placeholder="Lucide icon name (e.g., Brain, Flower)"
-  />
-  <button
-    onClick={addCategory}
-    className="bg-green-500 text-white px-4 py-2 rounded"
-  >
-    Add
-  </button>
-</div>
+      {/* Header Section */}
 
-</div>
-
-      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
-        <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
-          {isAdmin ? (
-            <>
-              <button
-                onClick={resetAllTodos}
-                className="flex items-center justify-center gap-2 px-3 sm:px-4 py-2 border border-red-300 text-red-700 rounded-lg  transition-colors text-sm sm:text-base"
-                disabled={loading || todos.filter(todo => todo.completed).length === 0}
-                title={todos.filter(todo => todo.completed).length === 0 ? 'No completed todos to reset' : 'Reset all completed todos'}
-              >
-                <RotateCcw className="w-4 h-4 sm:w-5 sm:h-5" />
-                <span className="hidden sm:inline">Reset All</span>
-                <span className="sm:hidden">Reset</span>
-                ({todos.filter(todo => todo.completed).length})
-              </button>
-              <button
-                onClick={() => setShowForm(!showForm)}
-                className="flex items-center justify-center gap-2 px-3 sm:px-4 py-2 bg-blue-600  rounded-lg transition-colors text-sm sm:text-base"
-                disabled={loading}
-              >
-                <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
-                <span className="hidden sm:inline">Add Todo</span>
-                <span className="sm:hidden">Add</span>
-              </button>
-            </>
-          ) : (
-            <div className="flex items-center justify-center gap-2 px-3 sm:px-4 py-2   rounded-lg cursor-not-allowed text-sm sm:text-base">
-              <Lock className="w-4 h-4 sm:w-5 sm:h-5" />
-              Admin Only
-            </div>
-          )}
-        </div>
-      </div>
+   
 
       {/* Read-only Notice */}
       {!isAdmin && (
@@ -722,7 +756,17 @@ const deleteCategory = async (cat: string) => {
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               className="w-full p-2 sm:p-3 border rounded-lg h-20 sm:h-24 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
               disabled={loading}
-            />
+            />{formData.is_website && (
+  <input
+    type="url"
+    placeholder="Website URL"
+    value={formData.link}
+    onChange={(e) => setFormData({ ...formData, link: e.target.value })}
+    className="w-full p-2 sm:p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
+    disabled={loading}
+  />
+)}
+
             {formData.is_counter && (
   <input
     type="number"
@@ -733,41 +777,44 @@ const deleteCategory = async (cat: string) => {
     disabled={loading}
   />
 )}
-
 <select
-  value={formData.is_counter ? 'counter' : formData.is_timer ? 'timer' : 'checkbox'}
+  value={
+    formData.is_counter ? 'counter' : 
+    formData.is_timer ? 'timer' : 
+    formData.is_website ? 'website' : 'checkbox'
+  }
   onChange={(e) => {
     const value = e.target.value;
     setFormData({
       ...formData,
       is_counter: value === 'counter',
       is_timer: value === 'timer',
+      is_website: value === 'website', // ✅ Add this
+      link: value === 'website' ? formData.link : '' // Clear link if not website
     });
   }}
+  className="w-full p-2 sm:p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
 >
   <option value="checkbox">Checkbox</option>
   <option value="counter">Counter</option>
   <option value="timer">Timer</option>
+  <option value="website">Website</option> {/* ✅ Add this */}
 </select>
+
 
 
 <select
   value={formData.category}
   onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+  className="border p-2 rounded"
 >
-  {categories.map((category) => (
-    <option key={category.name} value={category.name}>
-      {category.name}
+  {categories.map(cat => (
+    <option key={cat.name} value={cat.name}>
+      {cat.name}
     </option>
   ))}
 </select>
 
-{categories.map(cat => (
-  <div key={cat.name} className="flex gap-2 items-center">
-    <span>{cat.name} {cat.icon_name && `(${cat.icon_name})`}</span>
-    <button onClick={() => deleteCategory(cat.name)} className="text-red-500">Delete</button>
-  </div>
-))}
 
 
             <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
@@ -882,6 +929,9 @@ onClick={() => {
     setActiveCounterTodo(todo);
   } else if (todo.is_timer && isAdmin) {
     setActiveTimerTodo(todo);
+  } else if (todo.is_website && todo.link) {
+    // For website todos, open link directly
+    window.open(todo.link, '_blank');
   }
 }}
 
@@ -944,7 +994,18 @@ onClick={() => {
                               }`}>
                                 {todo.description}
                               </p>
-                            )}
+                            )}{todo.is_website && todo.link && (
+  <a
+    href={todo.link}
+    target="_blank"
+    rel="noopener noreferrer"
+    className="text-xs text-blue-500 underline break-all mt-1 inline-block"
+  >
+    Visit Site
+  </a>
+)}
+
+
                             <p className="text-xs text-gray-400 mt-1">
                               Created {new Date(todo.created_at).toLocaleDateString()}
                             </p>
@@ -1356,6 +1417,139 @@ if (tickAudioRef.current) tickAudioRef.current.currentTime = 0;
           );
         })}
       </div>
+      <div className="mt-4 space-x-2">
+<div className="mt-4 space-x-2">
+  <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
+    <input
+      value={newCategory}
+      onChange={(e) => setNewCategory(e.target.value)}
+      className="border p-2 rounded w-full"
+      placeholder="New category name"
+    />
+    <input
+      value={newIcon}
+      onChange={(e) => setNewIcon(e.target.value)}
+      className="border p-2 rounded w-full"
+      placeholder="Lucide icon name (e.g., Brain, Flower)"
+    />
+    <button
+      onClick={addCategory}
+      className="bg-green-500 text-white px-4 py-2 rounded"
+    >
+      Add
+    </button>
+  </div>
+
+<div className="mt-4 space-y-2">
+    {categories.map(cat => (
+      <div key={cat.name} className="flex gap-2 items-center p-3 border rounded-lg">
+        {editingCategory?.name === cat.name ? (
+          // Edit Mode
+          <div className="flex gap-2 items-center flex-1">
+            <input
+              value={editCategoryName}
+              onChange={(e) => setEditCategoryName(e.target.value)}
+              className="border p-1 rounded flex-1"
+              placeholder="Category name"
+            />
+            <input
+              value={editCategoryIcon}
+              onChange={(e) => setEditCategoryIcon(e.target.value)}
+              className="border p-1 rounded flex-1"
+              placeholder="Icon name"
+            />
+            <button
+              onClick={() => editCategory(cat.name, editCategoryName, editCategoryIcon)}
+              className="bg-blue-500 text-white px-3 py-1 rounded text-sm"
+            >
+              Save
+            </button>
+            <button
+              onClick={() => {
+                setEditingCategory(null);
+                setEditCategoryName('');
+                setEditCategoryIcon('');
+              }}
+              className="bg-gray-500 text-white px-3 py-1 rounded text-sm"
+            >
+              Cancel
+            </button>
+          </div>
+        ) : (
+          // Display Mode
+          <>
+            <div className="flex items-center gap-2 flex-1">
+              {cat.icon_name && (LucideIcons as any)[cat.icon_name] && (
+                React.createElement((LucideIcons as any)[cat.icon_name], { size: 20 })
+              )}
+              <span className="font-medium">{cat.name}</span>
+              {cat.icon_name && (
+                <span className="text-sm text-gray-500">({cat.icon_name})</span>
+              )}
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={() => {
+                  setEditingCategory(cat);
+                  setEditCategoryName(cat.name);
+                  setEditCategoryIcon(cat.icon_name || '');
+                }}
+                className="text-blue-500 hover:bg-blue-100 px-2 py-1 rounded text-sm"
+              >
+                Edit
+              </button>
+              <button
+                onClick={() => {
+                  if (confirm(`Are you sure you want to delete the category "${cat.name}"? This will affect all todos in this category.`)) {
+                    deleteCategory(cat.name);
+                  }
+                }}
+                className="text-red-500 hover:bg-red-100 px-2 py-1 rounded text-sm"
+              >
+                Delete
+              </button>
+            </div>
+          </>
+        )}
+      </div>
+    ))}
+  </div>
+</div>
+
+   <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
+          {isAdmin ? (
+            <>
+              <button
+                onClick={resetAllTodos}
+                className="flex items-center justify-center gap-2 px-3 sm:px-4 py-2 border border-red-300 text-red-700 rounded-lg  transition-colors text-sm sm:text-base"
+                disabled={loading || todos.filter(todo => todo.completed).length === 0}
+                title={todos.filter(todo => todo.completed).length === 0 ? 'No completed todos to reset' : 'Reset all completed todos'}
+              >
+                <RotateCcw className="w-4 h-4 sm:w-5 sm:h-5" />
+                <span className="hidden sm:inline">Reset All</span>
+                <span className="sm:hidden">Reset</span>
+                ({todos.filter(todo => todo.completed).length})
+              </button>
+              <button
+                onClick={() => setShowForm(!showForm)}
+                className="flex items-center justify-center gap-2 px-3 sm:px-4 py-2 bg-blue-600  rounded-lg transition-colors text-sm sm:text-base"
+                disabled={loading}
+              >
+                <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
+                <span className="hidden sm:inline">Add Todo</span>
+                <span className="sm:hidden">Add</span>
+              </button>
+            </>
+          ) : (
+            <div className="flex items-center justify-center gap-2 px-3 sm:px-4 py-2   rounded-lg cursor-not-allowed text-sm sm:text-base">
+              <Lock className="w-4 h-4 sm:w-5 sm:h-5" />
+              Admin Only
+            </div>
+          )}
+        </div>
+      </div>
+</div>
     </div>
   );
 }

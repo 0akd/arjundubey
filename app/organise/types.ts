@@ -11,6 +11,8 @@ export interface Todo {
   counter_value?: number;
     is_timer: boolean; // ✅ new
     timer_value:number;
+    link:string;
+    is_website:boolean;
 }
 
 export interface CategoryData {

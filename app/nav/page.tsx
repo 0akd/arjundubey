@@ -176,24 +176,14 @@ export default function NavBar() {
           
           {/* Sidebar toggle on the right */}
           <div className="flex-shrink-0">
-            <button
-              onClick={toggleSidebar}
-              className="z-20 p-2 rounded-md  transition-colors duration-200"
-              aria-label="Toggle sidebar"
-            >
-              <div className="w-6 h-6 flex flex-col justify-center items-center">
-                <div className={`w-5 h-0.5 transition-all duration-300 ${isSidebarOpen ? 'rotate-45 translate-y-1.5' : 'mb-1'}`} style={{ backgroundColor: 'currentColor' }} />
-                <div className={`w-5 h-0.5 transition-all duration-300 ${isSidebarOpen ? 'opacity-0' : 'mb-1'}`} style={{ backgroundColor: 'currentColor' }} />
-                <div className={`w-5 h-0.5 transition-all duration-300 ${isSidebarOpen ? '-rotate-45 -translate-y-1.5' : ''}`} style={{ backgroundColor: 'currentColor' }} />
-              </div>
-            </button>
+              <Sidebar/>
           </div>
           
           {/* Sidebar */}
-         
+     
         </div>
       </nav>
-       <Sidebar isOpen={isSidebarOpen} onClose={closeSidebar} />
+    
     </>
   )
 }

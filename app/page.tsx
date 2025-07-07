@@ -6,6 +6,7 @@ import ClientSEOWrapper from '@/components/ClientSEOWrapper'
 import SmoothScrollStyles from '@/components/scrollstyle'
 import PageWrapper from '@/components/pagewrap'
 
+
 // This stays as a server component - metadata export is allowed here
 export const metadata: Metadata = {
   title: 'Arjun Dubey',

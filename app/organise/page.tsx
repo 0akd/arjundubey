@@ -452,9 +452,15 @@ useEffect(() => {
         );
       }
   return (
-    <div className=" pt-6">
-       
-      <div className="max-w-6xl mx-auto px-6">
+    <div className=" ">
+         <div className="border rounded-xl p-6 shadow-sm">
+          {activeTab === 'todos' ? (
+            <TodoApp todos={todos} onTodosChange={setTodos} userEmail={currentUserEmail} isAdmin={isAdmin} />
+          ) : (
+            <ProgressCircles todos={todos} />
+          )}
+        </div>
+      <div className="max-w-6xl mx-auto 6">
         {/* Header with navigation */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
           <div>
@@ -518,13 +524,7 @@ useEffect(() => {
         </div>
 
         {/* Main Content */}
-        <div className="border rounded-xl p-6 shadow-sm">
-          {activeTab === 'todos' ? (
-            <TodoApp todos={todos} onTodosChange={setTodos} userEmail={currentUserEmail} isAdmin={isAdmin} />
-          ) : (
-            <ProgressCircles todos={todos} />
-          )}
-        </div>
+      
 
    
        <div className="p-4">
