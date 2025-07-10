@@ -90,7 +90,14 @@ const startEdit = (question: Question) => {
   setTitle(question.title)
   setContent(question.content)
   setEditId(question.id)
-  setYoutubeUrl((question.youtube_url as string[])?.join(', ') || '')
+  const youtubeUrls = Array.isArray(question.youtube_url)
+  ? question.youtube_url
+  : typeof question.youtube_url === 'string'
+  ? question.youtube_url.split(',').map((url) => url.trim())
+  : []
+
+setYoutubeUrl(youtubeUrls.join(', '))
+
   setCode(question.code || '')
 setCodeBlocks(question.code_blocks || [''])
 setCategory(question.category || '')
