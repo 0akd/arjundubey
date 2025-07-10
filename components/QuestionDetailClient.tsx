@@ -9,7 +9,7 @@ export default function QuestionDetailClient({ data }: { data: any }) {
   const urls = Array.isArray(data.youtube_url)
     ? data.youtube_url
     : typeof data.youtube_url === 'string'
-    ? data.youtube_url.split(',').map((u) => u.trim())
+  ? data.youtube_url.split(',').map((u: string) => u.trim()) 
     : []
 
   const handleFullscreen = () => {
