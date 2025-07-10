@@ -7,6 +7,7 @@ type Question = {
   id: number
   title: string
   slug:string
+  category:string
 }
 
 export default function QuestionListPage() {
