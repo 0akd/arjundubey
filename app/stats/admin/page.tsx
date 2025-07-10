@@ -102,7 +102,14 @@ const startEdit = (question: Question) => {
 setYoutubeUrl(youtubeUrls.join(', '))
 
   setCode(question.code || '')
-setCodeBlocks(question.code_blocks || [''])
+const normalizedCodeBlocks = Array.isArray(question.code_blocks)
+  ? question.code_blocks
+  : typeof question.code_blocks === 'string'
+  ? [question.code_blocks]
+  : ['']
+
+setCodeBlocks(normalizedCodeBlocks)
+
 setCategory(question.category || '')
 
 
