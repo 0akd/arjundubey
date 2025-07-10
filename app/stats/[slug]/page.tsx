@@ -1,6 +1,6 @@
-// app/stats/[slug]/page.tsx
 import supabase from '@/config/supabase'
-import QuestionDetailClient from './QuestionDetailClient'
+import QuestionDetailClient from '@/components/QuestionDetailClient'
+import { notFound } from 'next/navigation'
 
 export default async function Page({ params }: { params: { slug: string } }) {
   const { data, error } = await supabase
@@ -10,8 +10,7 @@ export default async function Page({ params }: { params: { slug: string } }) {
     .single()
 
   if (error || !data) {
-    // Use notFound() or redirect('/404') if you want
-    return <div>Not found</div>
+    notFound()
   }
 
   return <QuestionDetailClient data={data} />

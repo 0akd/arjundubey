@@ -1,8 +1,7 @@
-// app/stats/[slug]/QuestionDetailClient.tsx
 'use client'
 
 import { useRef } from 'react'
-import HintBox from './llm'
+import HintBox from '@/app/stats/llm'
 
 export default function QuestionDetailClient({ data }: { data: any }) {
   const containerRef = useRef<HTMLDivElement>(null)

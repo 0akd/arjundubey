@@ -5,7 +5,7 @@ import Lazyw from './lazyshell'
 import {Inter} from 'next/font/google'
 import { cn } from "@/lib/utils";
 import ClientCursorTrail from "@/components/ClientCursorTrail";
-import BG from './bg'
+import BG from './bgwrap'
 import { siteConfig } from '@/lib/seo'
 export const dynamic = 'force-dynamic'
 export const dynamicParams = true
