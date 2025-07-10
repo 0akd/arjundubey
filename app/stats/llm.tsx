@@ -4,14 +4,20 @@ import { Lightbulb, Loader2 } from 'lucide-react'
 
 const AWANLLM_API_KEY = '0fb30cc8-f5d7-407b-ab38-279a8be29658'
 
-export default function HintBox({ questionTitle,questioncontent }: { questionTitle: string ,questioncontent:string}) {
+interface ContentChunk {
+  id: string
+  type: 'bold' | 'italic' | 'text'
+  content: string
+}
+
+export default function HintBox({ questionTitle, questioncontent }: { questionTitle: string, questioncontent: string }) {
   const [showHint, setShowHint] = useState(false)
   const [streaming, setStreaming] = useState(false)
-  const [renderedChunks, setRenderedChunks] = useState<JSX.Element[]>([])
+  const [contentChunks, setContentChunks] = useState<ContentChunk[]>([])
 
   const fetchHintStream = async () => {
     setStreaming(true)
-    setRenderedChunks([])
+    setContentChunks([])
 
     try {
       const res = await fetch('https://api.awanllm.com/v1/chat/completions', {
@@ -70,11 +76,11 @@ export default function HintBox({ questionTitle,questioncontent }: { questionTit
                 const completedLines = parts.slice(0, -1)
                 buffer = parts[parts.length - 1] // keep remainder
 
-                const jsx = completedLines.map((line, i) =>
+                const newChunks = completedLines.map((line, i) =>
                   parseMarkdownLine(line + '\n', `${Date.now()}-${i}`)
                 )
 
-                setRenderedChunks((prev) => [...prev, ...jsx])
+                setContentChunks((prev) => [...prev, ...newChunks])
               }
             } catch {}
           }
@@ -83,35 +89,50 @@ export default function HintBox({ questionTitle,questioncontent }: { questionTit
 
       // flush remaining buffer
       if (buffer.trim()) {
-        setRenderedChunks((prev) => [...prev, parseMarkdownLine(buffer, `final-${Date.now()}`)])
+        setContentChunks((prev) => [...prev, parseMarkdownLine(buffer, `final-${Date.now()}`)])
       }
     } catch (err) {
-      setRenderedChunks([
-        <p key="error" className="text-red-500">Failed to fetch hint.</p>
+      setContentChunks([
+        { id: 'error', type: 'text', content: 'Failed to fetch hint.' }
       ])
     } finally {
       setStreaming(false)
     }
   }
 
-  const parseMarkdownLine = (line: string, key: string): JSX.Element => {
+  const parseMarkdownLine = (line: string, key: string): ContentChunk => {
     const trimmed = line.trim()
 
     if (/^\*\*.+\*\*$/.test(trimmed)) {
       const text = trimmed.replace(/^\*\*(.+)\*\*$/, '$1')
-      return <h3 key={key} className="font-bold text-base text-gray-900 mt-3">{text}</h3>
+      return { id: key, type: 'bold', content: text }
     }
 
     if (/^\*.+\*$/.test(trimmed)) {
       const text = trimmed.replace(/^\*(.+)\*$/, '$1')
-      return <h4 key={key} className="font-semibold text-sm text-gray-700 mt-2">{text}</h4>
+      return { id: key, type: 'italic', content: text }
     }
 
-    return <p key={key} className="text-sm text-gray-800">{trimmed}</p>
+    return { id: key, type: 'text', content: trimmed }
+  }
+
+  const renderChunk = (chunk: ContentChunk) => {
+    switch (chunk.type) {
+      case 'bold':
+        return <h3 key={chunk.id} className="font-bold text-base text-gray-900 mt-3">{chunk.content}</h3>
+      case 'italic':
+        return <h4 key={chunk.id} className="font-semibold text-sm text-gray-700 mt-2">{chunk.content}</h4>
+      case 'text':
+        return chunk.content === 'Failed to fetch hint.' ? 
+          <p key={chunk.id} className="text-red-500">{chunk.content}</p> :
+          <p key={chunk.id} className="text-sm text-gray-800">{chunk.content}</p>
+      default:
+        return <p key={chunk.id} className="text-sm text-gray-800">{chunk.content}</p>
+    }
   }
 
   const handleToggleHint = () => {
-    if (!showHint && renderedChunks.length === 0) {
+    if (!showHint && contentChunks.length === 0) {
       fetchHintStream()
     }
     setShowHint((prev) => !prev)
@@ -129,7 +150,7 @@ export default function HintBox({ questionTitle,questioncontent }: { questionTit
 
       {showHint && (
         <div className="mt-3 border border-yellow-300 bg-yellow-50 rounded p-3 text-sm space-y-1 max-w-xl">
-          {renderedChunks}
+          {contentChunks.map(renderChunk)}
           {streaming && (
             <span className="inline-block animate-pulse text-gray-400">▍</span>
           )}
