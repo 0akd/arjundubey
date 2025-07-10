@@ -4,13 +4,16 @@ import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import supabase from '@/config/supabase'
 import HintBox from './llm'
-type Props = {
+import type { Metadata } from 'next'
+
+interface PageProps {
   params: {
     slug: string
   }
 }
 
-export default function QuestionDetailPage({ params }: Props) {
+
+export default function QuestionDetailPage({ params }: PageProps) {
   const [data, setData] = useState<any>(null)
   const [error, setError] = useState<string | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
