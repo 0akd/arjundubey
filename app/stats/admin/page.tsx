@@ -7,6 +7,9 @@ type Question = {
   title: string
     youtube_url?: string
   content: string
+  code:string
+  category:string
+  code_blocks:string
 }
 
 export default function QuestionManager() {
