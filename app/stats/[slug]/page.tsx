@@ -5,15 +5,13 @@ import { useRouter } from 'next/navigation'
 import supabase from '@/config/supabase'
 import HintBox from './llm'
 import type { Metadata } from 'next'
+import { type InferGetServerSidePropsType } from 'next'
 
-interface PageProps {
-  params: {
-    slug: string
-  }
+interface Props {
+  params: { slug: string }
 }
 
-
-export default function QuestionDetailPage({ params }: PageProps) {
+export default function Page({ params }: Props) {
   const [data, setData] = useState<any>(null)
   const [error, setError] = useState<string | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
