@@ -40,7 +40,9 @@ const routes = [
   { label: 'About', path: '/about' },
 { label: 'Background', path: '/education' },
   { label: 'Music', path: '/music' },
+    {label:'Stats',path:'/reality'},
   { label: 'Donate', path: '/donate' },
+
   // Add more routes here as needed
 ];
 
