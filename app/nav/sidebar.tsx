@@ -28,7 +28,7 @@ const Modal: React.FC = () => {
   }, [isOpen]);
 const router = useRouter();
 
-
+const [openCategory, setOpenCategory] = useState<string | null>(null);
 
 
 
@@ -36,15 +36,38 @@ const router = useRouter();
 
 
 const routes = [
-    { label: 'Home', path: '/' },
-  { label: 'About', path: '/about' },
-{ label: 'Background', path: '/education' },
-  { label: 'Music', path: '/music' },
-    {label:'Stats',path:'/reality'},
-  { label: 'Donate', path: '/donate' },
+  // {
+  //   category: 'Main',
+  //   children: [
+  
+  //   ]
+  // },
+  // {
+  //   category: 'Academics',
+  //   children: [
 
-  // Add more routes here as needed
+  //   ]
+  // },
+  // {
+  //   category: 'Entertainment',
+  //   children: [
+   
+  //   ]
+  // },
+  {
+    category: 'Me',
+    children: [
+
+          { label: 'Home', path: '/' },
+      { label: 'About', path: '/about' },
+            { label: 'Background', path: '/education' },
+         { label: 'Music', path: '/music' },
+      { label: 'Stats', path: '/reality' },
+      { label: 'Donate', path: '/donate' },
+    ]
+  }
 ];
+
 
 
 
@@ -75,7 +98,7 @@ const routes = [
             ref={modalRef}
             className=" overflow-auto h-[50%] border-t-4 border-b-4 border-1  p-6 rounded-xl shadow-lg w-[50%] "
           >
-         <motion.div
+       <motion.div
   animate={{
     y: [0, '-50%', 0],
     opacity: [0, 1, 1],
@@ -86,19 +109,57 @@ const routes = [
 
   }}
 >
-     
- {routes.map((route) => (
-  <button
-    key={route.path}
-    onClick={() => {
-      setIsOpen(false);
-      router.push(route.path);
-    }}
-    className="mt-2 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 w-full"
-  >
-    {route.label}
-  </button>
-))}</motion.div>
+  {openCategory === null ? (
+    // Show super category list
+    <div className="space-y-2">
+      {routes.map((group) => (
+        <button
+          key={group.category}
+          onClick={() => setOpenCategory(group.category)}
+          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 w-full text-left"
+        >
+          {group.category}
+        </button>
+      ))}
+    </div>
+  ) : (
+    // Show selected category's children 
+    <motion.div
+  animate={{
+    y: [0, '-50%', 0],
+    opacity: [0, 1, 1],
+  }}
+  transition={{
+    duration: 1.5,
+    ease: 'easeOut',
+
+  }}
+>  
+    <div className="space-y-2">
+      <button
+        onClick={() => setOpenCategory(null)}
+        className="mb-2 px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 w-full"
+      >
+        ← Back
+      </button>
+    {routes
+        .find((group) => group.category === openCategory)
+        ?.children.map((route) => (
+          <button
+            key={route.path}
+            onClick={() => {
+              setIsOpen(false);
+              router.push(route.path);
+            }}
+            className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 w-full"
+          >
+            {route.label}
+          </button>
+        ))}
+    </div></motion.div>
+  )}
+</motion.div>
+
 
           </div>
         </div>
