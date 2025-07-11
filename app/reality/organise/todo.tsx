@@ -18,6 +18,8 @@ export default function TodoApp({ todos, onTodosChange, userEmail, isAdmin }: {
   const [showForm, setShowForm] = useState(false);
   const [editingTodo, setEditingTodo] = useState<Todo | null>(null);
   const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({});
+  const timerModalRef = useRef<HTMLDivElement | null>(null);
+
 const [formData, setFormData] = useState({
   title: '',
   description: '',
@@ -29,7 +31,7 @@ const [formData, setFormData] = useState({
   link: '',
   click_count: 0 // Add this
 });
-
+  const [isOpen, setIsOpen] = useState(false);
 
   const [loading, setLoading] = useState(false);
 const [activeCounterTodo, setActiveCounterTodo] = useState<Todo | null>(null);
@@ -253,7 +255,28 @@ const formatTime = (totalSeconds: number) => {
   if (minutes > 0) return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
   return `${String(seconds).padStart(2, '0')}`;
 };
+useEffect(() => {
+  const handleClickOutside = (event: MouseEvent) => {
+    if (
+      timerModalRef.current &&
+      !timerModalRef.current.contains(event.target as Node)
+    ) {
+      tickAudioRef.current?.pause();
+      if (tickAudioRef.current) tickAudioRef.current.currentTime = 0;
+      setTimerRunning(false);
+      setActiveTimerTodo(null);
+      setElapsed(0);
+    }
+  };
 
+  if (activeTimerTodo) {
+    document.addEventListener('mousedown', handleClickOutside);
+  }
+
+  return () => {
+    document.removeEventListener('mousedown', handleClickOutside);
+  };
+}, [activeTimerTodo]);
 
 
 
@@ -1270,7 +1293,7 @@ onClick={() => {
   </div>
 )}{activeTimerTodo && (
   <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-    <div className="bg-white/10 backdrop-blur-sm p-6 rounded-lg shadow-xl max-w-sm w-full text-center space-y-4">
+    <div   ref={timerModalRef} className="bg-white/10 backdrop-blur-sm p-6 rounded-lg shadow-xl max-w-sm w-full text-center space-y-4">
       <h2 className="text-lg font-bold">{activeTimerTodo.title}</h2>
      <p
   className={`font-mono text-center transition-all duration-300 ease-in-out ${
@@ -1494,6 +1517,56 @@ if (tickAudioRef.current) tickAudioRef.current.currentTime = 0;
           );
         })}
       </div>
+{activeWebsiteTodo && (
+  <div
+    className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
+      onClick={() => {
+    setActiveWebsiteTodo(null); // 👈 close when background clicked
+  }}
+  
+  >
+    <div
+      className="bg-white/10 backdrop-blur-sm rounded-xl p-6 w-full max-w-sm text-center cursor-pointer shadow-lg"
+        onClick={() => {
+      handleWebsiteClick(activeWebsiteTodo);
+      setActiveWebsiteTodo(null);
+    }}
+    >
+      <h2 className="text-lg font-semibold mb-2 text-blue-700">{activeWebsiteTodo.title}</h2>
+      {activeWebsiteTodo.description && (
+        <p className="text-sm ">{activeWebsiteTodo.description}</p>
+      )}
+    
+    </div>
+  </div>
+)}
+
+
+
+
+
+
+
+
+
+
+
+ <div className="max-w-md mx-auto mt-10">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className=""
+      >
+        {isOpen ? 'Hide Details' : 'Show Details'}
+      </button>
+
+      <div
+        className={`overflow-hidden transition-all duration-500 ease-in-out ${
+          isOpen ? 'max-h-96 opacity-100 mt-4' : 'max-h-0 opacity-0'
+        }`}
+      >
+
+
+      
       <div className="mt-4 space-x-2">
 <div className="mt-4 space-x-2">
   <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
@@ -1624,32 +1697,10 @@ if (tickAudioRef.current) tickAudioRef.current.currentTime = 0;
               Admin Only
             </div>
           )}
-        </div>{activeWebsiteTodo && (
-  <div
-    className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
-      onClick={() => {
-    setActiveWebsiteTodo(null); // 👈 close when background clicked
-  }}
-  
-  >
-    <div
-      className="bg-white/10 backdrop-blur-sm rounded-xl p-6 w-full max-w-sm text-center cursor-pointer shadow-lg"
-        onClick={() => {
-      handleWebsiteClick(activeWebsiteTodo);
-      setActiveWebsiteTodo(null);
-    }}
-    >
-      <h2 className="text-lg font-semibold mb-2 text-blue-700">{activeWebsiteTodo.title}</h2>
-      {activeWebsiteTodo.description && (
-        <p className="text-sm ">{activeWebsiteTodo.description}</p>
-      )}
-    
-    </div>
-  </div>
-)}
-
+        </div>
       </div>
-</div>
+</div> </div>
+    </div>
     </div>
   );
 }

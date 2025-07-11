@@ -2,13 +2,13 @@ import { NextRequest, NextResponse } from "next/server";
 import { authMiddleware, redirectToHome, redirectToLogin } from "next-firebase-auth-edge";
 import { clientConfig, serverConfig } from "./config/config";
 
-const PUBLIC_PATHS = ['/test','/reality','/register','/iframe','/music','/leetcode','/word','/display','/donate', '/login','/views', '/organise','/progress', '/blog','/about','/projects','/','/education','/stats','/logout','/rout','/footr','/webby','/admin/blog'];
+const PUBLIC_PATHS = ['/test','/learn','/reality','/register','/iframe','/music','/leetcode','/word','/display','/donate', '/login','/views', '/organise','/progress', '/blog','/about','/projects','/','/education','/stats','/logout','/rout','/footr','/webby','/admin/blog'];
 const AUTH_REQUIRED_PATHS = ['/organise']; // Add your protected routes here
 const PASSWORD_PROTECTED_PATHS = ['']; // Routes that need password protection
 const PASSWORD_AUTH_PATH = '/password-auth';
 
 // Define path prefixes that should be completely excluded from any protection
-const EXCLUDED_PATH_PREFIXES = ['/stats/', '/blog/',];
+const EXCLUDED_PATH_PREFIXES = ['/stats/', '/blog/','/learn/'];
 
 // Helper function to check if a path should be excluded
 function isExcludedPath(pathname: string): boolean {
