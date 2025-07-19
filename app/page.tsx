@@ -44,7 +44,7 @@ const About = lazy(() => import('./about/page'))
 const Expedu = lazy(() => import('./education/page'))
 const Projects = lazy(() => import('./projects/page'))
 const Blog = lazy(() => import('./blog/page'))
-const Progress = lazy(() => import('./reality/page'))
+// const Progress = lazy(() => import('./reality/page'))
 const Donate = lazy(() => import ('./donate/page'))
 const LeeCode = lazy(() => import ('./leetcode/page'))
 const Music = lazy(() => import ('./music/page'))
@@ -107,9 +107,9 @@ export default function Home() {
             <LazySection animationType="fadeIn" delay={1}>
               <Donate />
             </LazySection>
-                 <LazySection animationType="blur" delay={1.2}>
+                 {/* <LazySection animationType="blur" delay={1.2}>
               <Progress />
-            </LazySection>
+            </LazySection> */}
             
             {/* LeetCode section - fade up */}
             <LazySection animationType="fadeUp" delay={1.6}>
