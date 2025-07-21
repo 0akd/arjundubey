@@ -3,6 +3,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import {  ExternalLink, Copy, CheckCircle, AlertCircle } from 'lucide-react';
 import { Plus, Minus, Download, Eye, Edit3, Save, Trash2, Calendar, MapPin, Phone, Mail, Github, Linkedin, Globe } from 'lucide-react';
 
+
 interface PersonalInfo {
   name: string;
   title: string;
@@ -302,12 +303,12 @@ const URLResumeGenerator = () => {
       </html>
     `);
 
-    printWindow.document.close();
+  
 
     printWindow.onload = () => {
       setTimeout(() => {
         printWindow.print();
-        printWindow.close();
+     
       }, 500);
     };
   };
@@ -476,6 +477,7 @@ const URLResumeGenerator = () => {
     );
   }
 
+
   if (error) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -635,6 +637,7 @@ const URLResumeGenerator = () => {
               <Download className="w-4 h-4" />
               Download PDF
             </button>
+                 
           </div>
         </div>
         
