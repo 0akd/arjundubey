@@ -312,6 +312,15 @@ const URLResumeGenerator = () => {
 
     };
   };
+useEffect(() => {
+  if (resumeData) {
+    const timer = setTimeout(() => {
+      handlePrint();
+    }, 0);
+
+    return () => clearTimeout(timer);
+  }
+}, [resumeData]); // ← only run when resumeData is available
 
   const copyToClipboard = async (text: string) => {
     try {
