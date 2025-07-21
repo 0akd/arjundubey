@@ -303,13 +303,13 @@ const URLResumeGenerator = () => {
       </html>
     `);
 
-  
+    printWindow.document.close();
 
     printWindow.onload = () => {
-      setTimeout(() => {
+   
         printWindow.print();
-     
-      }, 500);
+   
+
     };
   };
 
