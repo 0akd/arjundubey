@@ -8,7 +8,7 @@ const PASSWORD_PROTECTED_PATHS = ['']; // Routes that need password protection
 const PASSWORD_AUTH_PATH = '/password-auth';
 
 // Define path prefixes that should be completely excluded from any protection
-const EXCLUDED_PATH_PREFIXES = ['/stats/', '/blog/','/learn/'];
+const EXCLUDED_PATH_PREFIXES = ['/stats/', '/blog/','/learn/','/resume/'];
 
 // Helper function to check if a path should be excluded
 function isExcludedPath(pathname: string): boolean {
