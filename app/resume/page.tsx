@@ -239,83 +239,86 @@ const URLResumeGenerator = () => {
   }, []);
 
   const handlePrint = () => {
-    const resume = resumeRef.current;
-    if (!resume) return;
+  const resume = resumeRef.current;
+  if (!resume) return;
 
-    const printWindow = window.open('', '_blank');
-    if (!printWindow) return;
+  const resumeHTML = `
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <title>Resume - ${resumeData?.personal.name || 'Resume'}</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <style>
+          html, body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            background: white;
+          }
 
-    const resumeHTML = resume.innerHTML;
+          a {
+            color: #2563eb;
+            text-decoration: underline;
+          }
 
-    printWindow.document.write(`
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <title>Resume - ${resumeData?.personal.name || 'Resume'}</title>
-          <script src="https://cdn.tailwindcss.com"></script>
-          <style>
-            html, body {
-              width: 100%;
-              height: 100%;
-              margin: 0;
-              padding: 0;
-              background: white;
+          @media print {
+            body {
+              -webkit-print-color-adjust: exact;
+              color-adjust: exact;
             }
 
             a {
-              color: #2563eb;
-              text-decoration: underline;
+              color: #2563eb !important;
+              text-decoration: underline !important;
             }
 
-            @media print {
-              body {
-                -webkit-print-color-adjust: exact;
-                color-adjust: exact;
-              }
-
-              a {
-                color: #2563eb !important;
-                text-decoration: underline !important;
-              }
-
-              @page {
-                size: auto;
-                margin: 0in;
-              }
-
-              .print\\:shadow-none {
-                box-shadow: none !important;
-              }
-
-              .print\\:mb-0 {
-                margin-bottom: 0 !important;
-              }
+            @page {
+              size: auto;
+              margin: 0in;
             }
-          </style>
-        </head>
-        <body>
-          <div class="w-full h-full flex justify-center items-start p-8">
-            <div style="width: 8.5in;" class="bg-white shadow-lg print:shadow-none print:mb-0">
-              ${resumeHTML}
-            </div>
+
+            .print\\:shadow-none {
+              box-shadow: none !important;
+            }
+
+            .print\\:mb-0 {
+              margin-bottom: 0 !important;
+            }
+          }
+        </style>
+      </head>
+      <body onload="window.print()">
+        <div class="w-full h-full flex justify-center items-start p-8">
+          <div style="width: 8.5in;" class="bg-white shadow-lg print:shadow-none print:mb-0">
+            ${resume.innerHTML}
           </div>
-        </body>
-      </html>
-    `);
+        </div>
+      </body>
+    </html>
+  `;
 
-    printWindow.document.close();
+  // Create blob
+  const blob = new Blob([resumeHTML], { type: 'text/html' });
 
-    printWindow.onload = () => {
-   
-        printWindow.print();
-   
+  // Create object URL
+  const url = URL.createObjectURL(blob);
 
-    };
-  };
+  // Open like a regular link
+  const a = document.createElement('a');
+  a.href = url;
+  a.target = '_blank';
+  a.rel = 'noopener noreferrer';
+  a.click();
+
+  // Optional: revoke URL after some time
+  setTimeout(() => URL.revokeObjectURL(url), 10000);
+};
+
 useEffect(() => {
   if (resumeData) {
     const timer = setTimeout(() => {
-      window.alert("Your resume will be printed now.");
+  
       handlePrint();
     }, 0);
 
