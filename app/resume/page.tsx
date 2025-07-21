@@ -323,7 +323,7 @@ useEffect(() => {
   }
 }, [resumeData]);
 
-}, [resumeData]); // ← only run when resumeData is available
+// ← only run when resumeData is available
 
   const copyToClipboard = async (text: string) => {
     try {
