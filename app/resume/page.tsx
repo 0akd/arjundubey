@@ -237,13 +237,21 @@ const URLResumeGenerator = () => {
     
     setIsLoading(false);
   }, []);
-
-  const handlePrint = () => {
+const handlePrint = () => {
   const resume = resumeRef.current;
   if (!resume) return;
 
-  const resumeHTML = `
-    <!DOCTYPE html>
+  const iframe = document.createElement('iframe');
+  iframe.style.display = 'none';
+
+  document.body.appendChild(iframe);
+  const doc = iframe.contentWindow?.document;
+
+  if (!doc) return;
+
+  doc.open();
+  doc.write(`
+  <!DOCTYPE html>
     <html>
       <head>
         <title>Resume - ${resumeData?.personal.name || 'Resume'}</title>
@@ -296,24 +304,10 @@ const URLResumeGenerator = () => {
         </div>
       </body>
     </html>
-  `;
-
-  // Create blob
-  const blob = new Blob([resumeHTML], { type: 'text/html' });
-
-  // Create object URL
-  const url = URL.createObjectURL(blob);
-
-  // Open like a regular link
-  const a = document.createElement('a');
-  a.href = url;
-  a.target = '_blank';
-  a.rel = 'noopener noreferrer';
-  a.click();
-
-  // Optional: revoke URL after some time
-  setTimeout(() => URL.revokeObjectURL(url), 10000);
+  `);
+  doc.close();
 };
+
 
 useEffect(() => {
   if (resumeData) {
