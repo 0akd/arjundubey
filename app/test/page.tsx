@@ -77,32 +77,32 @@ const SectionHeader = ({ title }: { title: string }) => (
 const ResumeBuilder = () => {
   const [resumeData, setResumeData] = useState<ResumeData>({
     personal: {
-      name: 'Jake Ryan',
+      name: 'Arjun Kumar Dubey',
       title: 'Software Developer',
-      email: 'jake@su.edu',
-      phone: '123-456-7890',
-      location: 'Georgetown, TX',
-      linkedin: 'linkedin.com/in/jake',
-      github: 'github.com/jake',
-      website: ''
+      email: 'arjunexisted@gmail.com',
+      phone: '+91 80760 08591',
+      location: 'New Delhi, India',
+      linkedin: 'linkedin.com/in/arjundubeycom',
+      github: 'github.com/arjundubeyg',
+      website: 'arjundubey.com'
     },
     education: [
       {
         id: '1',
-        institution: 'Southwestern University',
-        degree: 'Bachelor of Arts in Computer Science, Minor in Business',
-        location: 'Georgetown, TX',
-        startDate: 'Aug. 2018',
-        endDate: 'May 2021'
+        institution: 'Delhi Technological University',
+        degree: 'Bachelor of Technology in Electrical Engineering',
+        location: 'New Delhi',
+        startDate: 'Aug. 2024',
+        endDate: 'May 2028'
       },
-      {
-        id: '2',
-        institution: 'Blinn College',
-        degree: 'Associate\'s in Liberal Arts',
-        location: 'Bryan, TX',
-        startDate: 'Aug. 2014',
-        endDate: 'May 2018'
-      }
+      // {
+      //   id: '2',
+      //   institution: 'Blinn College',
+      //   degree: 'Associate\'s in Liberal Arts',
+      //   location: 'Bryan, TX',
+      //   startDate: 'Aug. 2014',
+      //   endDate: 'May 2018'
+      // }
     ],
     experience: [
       {
@@ -173,7 +173,17 @@ const ResumeBuilder = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [activeSection, setActiveSection] = useState<string | null>(null);
   const resumeRef = useRef<HTMLDivElement>(null);
+ useEffect(() => {
+    const savedData = localStorage.getItem('resumeData');
+    if (savedData) {
+      setResumeData(JSON.parse(savedData));
+    }
+  }, []);
 
+  // Save to localStorage when resumeData changes
+  useEffect(() => {
+    localStorage.setItem('resumeData', JSON.stringify(resumeData));
+  }, [resumeData]);
   const updatePersonal = (field: keyof PersonalInfo, value: string) => {
     setResumeData(prev => ({
       ...prev,
@@ -947,10 +957,10 @@ const handlePrint = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4">
+    <div className="min-h-screen  p-4">
       {/* Control Panel */}
       <div className="max-w-4xl mx-auto mb-6">
-        <div className="bg-white rounded-lg shadow-md p-4 flex flex-wrap items-center gap-4">
+        <div className="rounded-lg shadow-md p-4 flex flex-wrap items-center gap-4">
           <h1 className="text-2xl font-bold text-gray-800 flex-1">
             Developer Resume Builder
           </h1>
@@ -959,8 +969,8 @@ const handlePrint = () => {
               onClick={() => setIsEditing(!isEditing)}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${
                 isEditing
-                  ? 'bg-green-600 text-white hover:bg-green-700'
-                  : 'bg-blue-600 text-white hover:bg-blue-700'
+                  ? 'bg-green-600  hover:bg-green-700'
+                  : 'bg-blue-600  hover:bg-blue-700'
               }`}
             >
               {isEditing ? (
@@ -977,7 +987,7 @@ const handlePrint = () => {
             </button>
             <button
               onClick={handlePrint}
-              className="flex items-center gap-2 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+              className="flex items-center gap-2 px-4 py-2   rounded-lg "
             >
               <Download className="w-4 h-4" />
               Print/Download
