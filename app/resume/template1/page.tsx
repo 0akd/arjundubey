@@ -341,7 +341,8 @@ useEffect(() => {
           <div className="text-sm mt-1 flex flex-wrap justify-center gap-4">
             <div className="flex items-center gap-1">
               <Phone className="w-3 h-3" />
-              <span>{data.personal.phone}</span>
+               <a href={`https://wa.me/${data.personal.phone}`} target="_blank" rel="noopener noreferrer" >
+               {data.personal.phone}</a>
             </div>
             <div className="flex items-center gap-1">
               <Mail className="w-3 h-3" />
