@@ -351,20 +351,20 @@ useEffect(() => {
             </div>
             <div className="flex items-center gap-1">
               <Linkedin className="w-3 h-3" />
-              <a href={`https://${data.personal.linkedin}`} target="_blank" rel="noopener noreferrer" className="hover:text-blue-600">
-                {data.personal.linkedin}
+              <a href={`https://www.linkedin.com/in/${data.personal.linkedin}`} target="_blank" rel="noopener noreferrer" className="hover:text-blue-600">
+                LinkedIn@{data.personal.linkedin}
               </a>
             </div>
             <div className="flex items-center gap-1">
               <Github className="w-3 h-3" />
-              <a href={`https://${data.personal.github}`} target="_blank" rel="noopener noreferrer" className="hover:text-blue-600">
-                {data.personal.github}
+              <a href={`https://github.com/${data.personal.github}`} target="_blank" rel="noopener noreferrer" className="hover:text-blue-600">
+                Github@{data.personal.github}
               </a>
             </div>
             {data.personal.website && (
               <div className="flex items-center gap-1">
                 <Globe className="w-3 h-3" />
-                <a href={data.personal.website} target="_blank" rel="noopener noreferrer" className="hover:text-blue-600">
+                <a href={`https://www.${data.personal.website}`} target="_blank" rel="noopener noreferrer" className="hover:text-blue-600">
                   {data.personal.website}
                 </a>
               </div>
@@ -460,12 +460,12 @@ useEffect(() => {
           <SectionHeader title="Technical Skills" />
           <div className="text-sm space-y-2">
             {Object.entries(data.skills).map(([category, skills]) => (
-              <div key={category} className="flex">
+              <div key={category} className="flex gap-x-6">
                 <span className="font-bold capitalize w-24 flex-shrink-0">
                   {category}:
                 </span>
                 <div className="flex-1">
-                  {skills.join(', ')}
+                  {skills.join(' | ')}
                 </div>
               </div>
             ))}
