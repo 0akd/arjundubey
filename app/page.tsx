@@ -5,7 +5,7 @@ import LazySection from '@/components/LazySection' // We'll create this as a sep
 import ClientSEOWrapper from '@/components/ClientSEOWrapper'
 import SmoothScrollStyles from '@/components/scrollstyle'
 import PageWrapper from '@/components/pagewrap'
-
+import UnderConstructionOverlay from './underconstruction'
 
 // This stays as a server component - metadata export is allowed here
 export const metadata: Metadata = {
@@ -66,7 +66,7 @@ export default function Home() {
       
       {/* Add smooth scrolling styles as a client component */}
       <SmoothScrollStyles />
-      
+        <UnderConstructionOverlay />
       <PageWrapper>
         <main className="overflow-hidden">
           <div>

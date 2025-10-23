@@ -59,11 +59,11 @@ const routes = [
     children: [
 
           { label: 'Home', path: '/' },
-      { label: 'About', path: '/about' },
-            { label: 'Background', path: '/education' },
-         { label: 'Music', path: '/music' },
-      { label: 'Stats', path: '/reality' },
-      { label: 'Donate', path: '/donate' },
+      // { label: 'About', path: '/about' },
+      //       { label: 'Background', path: '/education' },
+      //    { label: 'Music', path: '/music' },
+      // { label: 'Stats', path: '/reality' },
+      // { label: 'Donate', path: '/donate' },
     ]
   }
 ];
